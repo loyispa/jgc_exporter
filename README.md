@@ -1,7 +1,6 @@
 # jgc_exporter
 
-JGC_exporter is a exporter that can continuous analysis hotspot jvm garbage collection log files, and automatically detect garbage collectors. The ability of parsing depends on the [gctoolkit](https://github.com/microsoft/gctoolkit), supports most mainstream garbage collections, such as ParNew、CMS、G1、ZGC, etc.
-
+JGC_exporter is an exporter that can continuous analysis hotspot jvm garbage collection log files, and automatically detect garbage collectors. The ability of parsing depends on the [gctoolkit](https://github.com/microsoft/gctoolkit), supports most mainstream garbage collections, such as ParNew、CMS、G1、ZGC, etc.
 # Running the exporter
 JDK require: 11+
 
