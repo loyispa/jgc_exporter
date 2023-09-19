@@ -15,5 +15,10 @@ hostPort: 127.0.0.1:5898
 fileRegexPattern: /path/to/serviceA/gc.*.log,/path/to/serviceB/gc.*.log
 ```
 
+# Building
+```
+./mvnw clean package
+```
+
 # Contributing
 All external contributions are welcome, docs, bugfixes and features. 
