@@ -52,4 +52,20 @@ public class TailerTest {
         }
         Assert.assertEquals(total, 100);
     }
+
+    @Test
+    public void testFileRemove() throws Exception {
+
+        File temp = File.createTempFile("temp", "log");
+
+        Tailer tailer =
+                new Tailer(temp, true, Config.DEFAULT_BATCH_SIZE, Config.DEFAULT_BUFFER_SIZE);
+
+        Assert.assertEquals(tailer.rotate(), false);
+
+        temp.delete();
+        temp.createNewFile();
+
+        Assert.assertEquals(tailer.rotate(), true);
+    }
 }
