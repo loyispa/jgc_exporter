@@ -23,10 +23,10 @@ import prometheus.exporter.jgc.parser.collector.TimePercentile;
 public class Metrics {
     private Metrics() {}
 
-    public static final Counter PROCESS_GC_LOG =
+    public static final Counter PROCESS_LOG_LINE =
             Counter.build()
                     .labelNames("path")
-                    .name("jgc_process_gc_log")
+                    .name("jgc_process_log_line")
                     .help("help")
                     .create()
                     .register();

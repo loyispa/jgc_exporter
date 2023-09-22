@@ -17,11 +17,11 @@ package prometheus.exporter.jgc.tailer;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
@@ -31,14 +31,14 @@ import prometheus.exporter.jgc.tool.Config;
 public class TailerManager {
     private static final Logger LOG = LoggerFactory.getLogger(TailerManager.class);
     private final TailerMatcher tailerMatcher;
-    private final Map<File, Tailer> tailers = new HashMap<>();
-    private final ScheduledExecutorService checker;
-    private final Thread runner;
+    private final Map<File, Tailer> registry = new HashMap<>();
+    private final ScheduledExecutorService watcher;
     private final Lock lock;
     private final Listener listener;
     private final int batchSize;
     private final int bufferSize;
     private final long idleTimeout;
+    private final AtomicBoolean started = new AtomicBoolean(true);
 
     public TailerManager(Config config, Listener listener) {
         this.tailerMatcher = new TailerMatcher(config.getFileRegexPattern());
@@ -47,65 +47,71 @@ public class TailerManager {
         this.bufferSize = config.getBufferSize();
         this.listener = Objects.requireNonNull(listener);
         this.lock = new ReentrantLock();
-        this.checker =
-                Executors.newSingleThreadScheduledExecutor(
-                        new ThreadFactoryBuilder().setNameFormat("tail-checker").build());
-        this.checker.scheduleAtFixedRate(new CheckerRunnable(), 0, 5, TimeUnit.SECONDS);
-        this.runner = new Thread(new TailerRunnable(), "tail-runner");
-        this.runner.setDaemon(true);
-        this.runner.start();
+        this.watcher =
+                Executors.newScheduledThreadPool(
+                        2, new ThreadFactoryBuilder().setNameFormat("tail-watcher").build());
+        this.watcher.scheduleAtFixedRate(new WatchRunnable(), 0, 5, TimeUnit.SECONDS);
+        this.watcher.submit(new TailerRunnable());
     }
 
-    private boolean isIdle(long lastModified) {
-        return lastModified + idleTimeout < System.currentTimeMillis();
-    }
-
-    private class CheckerRunnable implements Runnable {
+    private class WatchRunnable implements Runnable {
         @Override
         public void run() {
+            if (!started.get()) {
+                return;
+            }
             lock.lock();
             try {
                 final List<File> matchingFiles =
-                        tailerMatcher.findMatchingFiles(f -> !isIdle(f.lastModified()));
+                        tailerMatcher.findMatchingFiles(
+                                f -> f.lastModified() + idleTimeout > System.currentTimeMillis());
                 for (File file : matchingFiles) {
-                    tailers.computeIfAbsent(
+                    registry.computeIfAbsent(
                             file,
                             f -> {
-                                Tailer tailer = new Tailer(f, true, batchSize, bufferSize);
+                                Tailer tailer =
+                                        new Tailer(f, true, batchSize, bufferSize, idleTimeout);
                                 try {
                                     listener.onOpen(f);
                                 } catch (Throwable t) {
-                                    LOG.error("Open tailer fail: {}", f, t);
+                                    LOG.error("Open file failed: {}", f, t);
                                 }
                                 return tailer;
                             });
                 }
 
-                final Iterator<Tailer> iterator = tailers.values().iterator();
+                final Iterator<Tailer> iterator = registry.values().iterator();
                 while (iterator.hasNext()) {
                     Tailer tailer = iterator.next();
                     if (tailer.rotate()) {
-                        LOG.info("Rotate {}", tailer);
-                    } else if (isIdle(tailer.getLastUpdated()) && !tailer.needTail()) {
+                        LOG.info("Rotate file {}", tailer);
+                    } else if (!tailer.needTail()) {
                         try {
-                            tailer.close();
-                        } catch (IOException e) {
+                            close(tailer);
                         } finally {
-                            LOG.info("Remove tailer {}", tailer);
                             iterator.remove();
-                            try {
-                                listener.onClose(tailer.getFile());
-                            } catch (Throwable t) {
-                                LOG.error("Close tailer fail: {}", tailer.getFile(), t);
-                            }
                         }
                     }
                 }
 
             } catch (Throwable t) {
-                LOG.error("Check tailer fail.", t);
+                LOG.error("Watch file failed.", t);
             } finally {
                 lock.unlock();
+            }
+        }
+    }
+
+    private void close(Tailer tailer) {
+        File file = tailer.getFile();
+        try {
+            LOG.info("Remove file {}", file);
+            tailer.close();
+        } finally {
+            try {
+                listener.onClose(file);
+            } catch (Throwable t) {
+                LOG.error("Close file failed: {}", file, t);
             }
         }
     }
@@ -113,11 +119,11 @@ public class TailerManager {
     private class TailerRunnable implements Runnable {
         @Override
         public void run() {
-            while (true) {
+            while (started.get()) {
                 int produceLines = 0;
                 lock.lock();
                 try {
-                    for (Tailer tailer : tailers.values()) {
+                    for (Tailer tailer : registry.values()) {
                         try {
                             File file = tailer.getFile();
                             List<String> lines = tailer.readLines();
@@ -126,7 +132,7 @@ public class TailerManager {
                             }
                             produceLines += lines.size();
                         } catch (Throwable t) {
-                            LOG.error("Read tailer fail: {}", tailer, t);
+                            LOG.error("Read file failed: {}", tailer, t);
                         }
                     }
                 } finally {
@@ -138,8 +144,26 @@ public class TailerManager {
                     } catch (InterruptedException ignore) {
                     }
                 }
-                LOG.debug("Produce {} lines", produceLines);
+                LOG.debug("Read {} lines", produceLines);
             }
+
+            lock.lock();
+            try {
+                registry.values().forEach(TailerManager.this::close);
+            } finally {
+                registry.clear();
+                lock.unlock();
+            }
+        }
+    }
+
+    public void close() {
+        if (started.compareAndSet(true, false)) {
+            LOG.info("TailerManager is closing.");
+            watcher.shutdown();
+            LOG.info("TailerManager closed.");
+        } else {
+            LOG.warn("TailerManager already closed.");
         }
     }
 
