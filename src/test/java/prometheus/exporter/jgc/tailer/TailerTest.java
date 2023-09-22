@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.concurrent.Phaser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class TailerTest {
     private static final Logger LOG = LoggerFactory.getLogger(TailerTest.class);
 
     @Test
-    public void test() throws Exception {
+    public void testRead() throws Exception {
 
         File temp = File.createTempFile("temp", "log");
         temp.deleteOnExit();
@@ -41,7 +42,12 @@ public class TailerTest {
         pw.close();
 
         Tailer tailer =
-                new Tailer(temp, false, Config.DEFAULT_BATCH_SIZE, Config.DEFAULT_BUFFER_SIZE);
+                new Tailer(
+                        temp,
+                        false,
+                        Config.DEFAULT_BATCH_SIZE,
+                        Config.DEFAULT_BUFFER_SIZE,
+                        Config.DEFAULT_IDLE_TIMEOUT);
         int total = 0;
         while (true) {
             List<String> lines = tailer.readLines();
@@ -54,12 +60,17 @@ public class TailerTest {
     }
 
     @Test
-    public void testFileRemove() throws Exception {
+    public void testRotate() throws Exception {
 
         File temp = File.createTempFile("temp", "log");
 
         Tailer tailer =
-                new Tailer(temp, true, Config.DEFAULT_BATCH_SIZE, Config.DEFAULT_BUFFER_SIZE);
+                new Tailer(
+                        temp,
+                        true,
+                        Config.DEFAULT_BATCH_SIZE,
+                        Config.DEFAULT_BUFFER_SIZE,
+                        Config.DEFAULT_IDLE_TIMEOUT);
 
         Assert.assertEquals(tailer.rotate(), false);
 
@@ -67,5 +78,58 @@ public class TailerTest {
         temp.createNewFile();
 
         Assert.assertEquals(tailer.rotate(), true);
+    }
+
+    @Test
+    public void testFind() throws Exception {
+
+        File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
+        tmpdir.delete();
+        tmpdir.mkdir();
+
+        for (int i = 0; i < 10; ++i) {
+            File temp = File.createTempFile("test", "log", tmpdir);
+            temp.deleteOnExit();
+        }
+
+        TailerMatcher matcher = new TailerMatcher(tmpdir.getPath() + "/.*.log");
+        int files = matcher.findMatchingFiles(f -> true).size();
+        Assert.assertEquals(10, files);
+    }
+
+    @Test
+    public void testListen() throws Exception {
+
+        File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
+        tmpdir.delete();
+        tmpdir.mkdir();
+
+        File temp = File.createTempFile("test", "log", tmpdir);
+        temp.deleteOnExit();
+
+        Config config = new Config();
+        config.setFileRegexPattern(tmpdir.getPath() + "/.*.log");
+
+        Phaser phaser = new Phaser(2);
+        TailerManager manager =
+                new TailerManager(
+                        config,
+                        new TailerManager.Listener() {
+                            @Override
+                            public void onOpen(File file) {
+                                phaser.arriveAndDeregister();
+                            }
+
+                            @Override
+                            public void onClose(File file) {
+                                phaser.arriveAndDeregister();
+                            }
+
+                            @Override
+                            public void onRead(File file, String line) {}
+                        });
+
+        manager.close();
+        phaser.awaitAdvance(0);
     }
 }

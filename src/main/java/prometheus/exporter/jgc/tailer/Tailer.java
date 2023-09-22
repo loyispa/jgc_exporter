@@ -23,7 +23,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Tailer implements Closeable {
+public class Tailer {
     private static final Logger LOG = LoggerFactory.getLogger(Tailer.class);
     private static final byte BYTE_NL = (byte) 10;
     private static final byte BYTE_CR = (byte) 13;
@@ -37,20 +37,25 @@ public class Tailer implements Closeable {
     private final boolean seekToEnd;
     private final int batchSize;
     private final int bufferSize;
+    private final long idleTimeout;
     private final byte[] readBuffer;
     private final LineBuffer lineBuffer;
 
-    public Tailer(File file, boolean seekToEnd, int batchSize, int bufferSize) {
+    public Tailer(File file, boolean seekToEnd, int batchSize, int bufferSize, long idleTimeout) {
         this.file = Objects.requireNonNull(file);
         this.seekToEnd = seekToEnd;
         if (batchSize <= 0) {
             throw new IllegalArgumentException("batchSize");
         }
-        this.batchSize = batchSize;
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("bufferSize");
         }
+        if (idleTimeout <= 0) {
+            throw new IllegalArgumentException("idleTimeout");
+        }
+        this.batchSize = batchSize;
         this.bufferSize = bufferSize;
+        this.idleTimeout = idleTimeout;
         this.readBuffer = new byte[bufferSize];
         this.lineBuffer = new LineBuffer();
         refresh();
@@ -84,25 +89,27 @@ public class Tailer implements Closeable {
 
     public boolean needTail() {
         try {
-            return this.raf != null && this.raf.getFilePointer() < this.raf.length();
-        } catch (IOException ex) {
-            return false;
+            if (isIdle()) {
+                return this.raf != null && this.raf.getFilePointer() < this.raf.length();
+            }
+        } catch (IOException ignore) {
         }
+        return true;
     }
 
-    public long getLastUpdated() {
-        return lastUpdated;
+    private boolean isIdle() {
+        return lastUpdated + idleTimeout < System.currentTimeMillis();
     }
 
     public File getFile() {
         return file;
     }
 
-    @Override
-    public void close() throws IOException {
+    public void close() {
         if (this.raf != null) {
             try {
                 this.raf.close();
+            } catch (IOException ignore) {
             } finally {
                 this.raf = null;
             }

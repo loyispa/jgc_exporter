@@ -13,7 +13,7 @@ java -jar jgc_exporter.jar /path/to/config.yaml
 
 A simple `config.yaml` looks like below:
 ```yaml
-hostPort: 127.0.0.1:5898
+hostPort: 0.0.0.0:5898
 fileRegexPattern: /path/to/serviceA/gc.*.log,/path/to/serviceB/gc.*.log
 ```
 
@@ -23,7 +23,7 @@ fileRegexPattern: /path/to/serviceA/gc.*.log,/path/to/serviceB/gc.*.log
 ```
 
 # Contributing
-All external contributions are welcome, docs, bugfixes and features.
+All contributions are welcome, docs, bugfixes or features.
 
 [maven-build-image]: https://github.com/loyispa/jgc_exporter/workflows/Java%20CI%20with%20Maven/badge.svg
 [maven-build-url]: https://github.com/loyispa/jgc_exporter/actions/workflows/maven.yaml
