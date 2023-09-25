@@ -79,7 +79,7 @@ public class Bootstrap {
 
         @Override
         public void onRead(File file, String line) {
-            PROCESS_LOG_LINE.labels(file.getPath()).inc();
+            GC_LOG_LINE.labels(file.getPath()).inc();
             registry.computeIfPresent(
                     file,
                     (f, log) -> {
