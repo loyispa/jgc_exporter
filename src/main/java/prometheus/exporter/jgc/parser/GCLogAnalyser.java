@@ -17,8 +17,10 @@ package prometheus.exporter.jgc.parser;
 
 import static java.lang.Class.forName;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.microsoft.gctoolkit.aggregator.Aggregation;
 import com.microsoft.gctoolkit.aggregator.Aggregator;
+import com.microsoft.gctoolkit.io.GCLogFile;
 import com.microsoft.gctoolkit.jvm.Diary;
 import com.microsoft.gctoolkit.jvm.JavaVirtualMachine;
 import com.microsoft.gctoolkit.message.DataSourceChannel;
@@ -48,12 +50,12 @@ public class GCLogAnalyser {
         "com.microsoft.gctoolkit.parser.UnifiedSurvivorMemoryPoolParser",
         "prometheus.exporter.jgc.parser.zgc.ContinousZGCParser"
     };
-    private final ContinousGCLogFile logFile;
+    private final GCLogFile logFile;
     private JavaVirtualMachine javaVirtualMachine;
     private List<Aggregator<? extends Aggregation>> aggregators;
     private List<DataSourceParser> dataSourceParsers;
 
-    public GCLogAnalyser(ContinousGCLogFile logFile) throws IOException {
+    public GCLogAnalyser(GCLogFile logFile) throws IOException {
         this.logFile = logFile;
         loadJavaVirtualMachine();
         loadAggregators();
@@ -67,6 +69,11 @@ public class GCLogAnalyser {
     private void loadAggregators() {
         this.aggregators =
                 List.of(new GCEventAggregator(new GCEventRecorder(logFile.getPath().toString())));
+    }
+
+    @VisibleForTesting
+    void loadAggregators(List<Aggregator<? extends Aggregation>> aggregators) {
+        this.aggregators = Objects.requireNonNull(aggregators);
     }
 
     private void loadDataSourceParsers() throws IOException {
