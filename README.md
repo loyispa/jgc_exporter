@@ -8,13 +8,12 @@ JDK require: 11+
 
 Run the exporter as standalone HTTP server:
 ```shell
-java -jar jgc_exporter.jar /path/to/config.yaml
+java -jar jgc_exporter.jar /path/to/config.yml
 ```
 
-A simple `config.yaml` looks like below:
+A simple `config.yml` looks like below:
 ```yaml
-hostPort: 0.0.0.0:5898
-fileRegexPattern: /path/to/serviceA/gc.*.log,/path/to/serviceB/gc.*.log
+fileRegexPattern: /path/to/serviceA/gc.*.log
 ```
 
 Fetch the metrics:
