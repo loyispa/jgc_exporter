@@ -17,6 +17,17 @@ hostPort: 0.0.0.0:5898
 fileRegexPattern: /path/to/serviceA/gc.*.log,/path/to/serviceB/gc.*.log
 ```
 
+Fetch the metrics:
+```agsl
+http://0.0.0.0:5898/metrics
+```
+
+# Configuration
+| Name    | Description                                                   |
+|---------|---------------------------------------------------------------|
+| hostPort | Host and port that http server binds, default is 0.0.0.0:5898 |
+| fileRegexPattern  | Regex pattern of gc log file path                             |
+
 # Building
 ```
 ./mvnw clean package
