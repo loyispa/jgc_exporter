@@ -230,8 +230,10 @@ public class GCEventRecorder extends GCEventAggregation {
     }
 
     private void recordGCEvent(String category, double durationMS) {
-        PROCESS_GC_EVENT.labels(path, category).inc();
-        GC_EVENT_DURATION.labels(path, category).observe(durationMS);
+        GC_EVENT.labels(path, category).inc();
+        if (durationMS > 0d) {
+            GC_EVENT_DURATION.labels(path, category).observe(durationMS);
+        }
     }
 
     private void recordCMSConcurrentEvent(CMSConcurrentEvent event) {
