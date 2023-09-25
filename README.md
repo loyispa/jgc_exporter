@@ -2,7 +2,7 @@
 [![Build Status][maven-build-image]][maven-build-url]
 [![CodeCov][codecov-image]][codecov-url]
 
-JGC_exporter is an exporter that can continuous analysis hotspot jvm garbage collection log files, and automatically detect garbage collectors. The ability of parsing depends on the [gctoolkit](https://github.com/microsoft/gctoolkit), supports most mainstream garbage collections, such as ParNew、CMS、G1、ZGC, etc.
+An exporter that can continuously analyze hotspot garbage collection log and automatically detect Garbage collection algorithms. The parsing ability mainly relies on the [gctoolkit](https://github.com/microsoft/gctoolkit), which supports most mainstream garbage collections, such as CMS, G1, ZGC, etc.
 # Running the exporter
 JDK require: 11+
 
@@ -23,10 +23,13 @@ http://0.0.0.0:5898/metrics
 ```
 
 # Configuration
-| Name    | Description                                                   |
-|---------|---------------------------------------------------------------|
-| hostPort | Host and port that http server binds, default is 0.0.0.0:5898 |
-| fileRegexPattern  | Regex pattern of gc log file path                             |
+| Name             | Description                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| hostPort         | Host and port that http server binds, default is 0.0.0.0:5898               |
+| fileRegexPattern | Regex pattern of gc log file path                                           |
+| idleTimeout      | Time (ms) to close idle files, default is 10 minutes(600,000ms)             |
+| batchSize        | Maximum number of lines per log read, default is 128                        |   
+| analysePeriod    | Minimum time interval between two analyses, default is 10 seconds(10,000ms) |   
 
 # Building
 ```
