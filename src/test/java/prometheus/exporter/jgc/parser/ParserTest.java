@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import prometheus.exporter.jgc.tool.Metrics;
 
 public class ParserTest {
     @Mock private GCEventRecorder eventRecorder;
@@ -60,6 +59,7 @@ public class ParserTest {
                         new SingleGCLogFile(Path.of("src/test/resources/parser/cms.log")));
         analyser.loadAggregators(List.of(new GCEventAggregator(eventRecorder)));
         Assert.assertEquals(true, analyser.analyze());
-        Mockito.verify(eventRecorder, Mockito.times(20)).collectGenerationalGCEvent(Mockito.isNotNull());
+        Mockito.verify(eventRecorder, Mockito.times(20))
+                .collectGenerationalGCEvent(Mockito.isNotNull());
     }
 }
