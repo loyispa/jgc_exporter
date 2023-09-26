@@ -161,9 +161,9 @@ public class TailerManager {
         if (started.compareAndSet(true, false)) {
             LOG.info("TailerManager is closing.");
             watcher.shutdown();
-            LOG.info("TailerManager closed.");
+            LOG.info("TailerManager is closed.");
         } else {
-            LOG.warn("TailerManager already closed.");
+            LOG.warn("TailerManager is already closed.");
         }
     }
 

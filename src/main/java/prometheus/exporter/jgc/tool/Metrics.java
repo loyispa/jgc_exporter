@@ -22,6 +22,9 @@ import io.prometheus.client.Summary;
 public class Metrics {
     private Metrics() {}
 
+    public static final Gauge STARTUP =
+            Gauge.build().name("jgc_startup").help("Timestamp of exporter startup").register();
+
     public static final Counter GC_LOG_LINE =
             Counter.build()
                     .labelNames("path")
