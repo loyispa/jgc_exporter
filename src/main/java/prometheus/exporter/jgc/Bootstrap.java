@@ -79,7 +79,7 @@ public class Bootstrap {
 
         @Override
         public void onRead(File file, String line) {
-            GC_LOG_LINE.labels(file.getPath()).inc();
+            GC_LOG_LINES.labels(file.getPath()).inc();
             registry.computeIfPresent(
                     file,
                     (f, log) -> {
@@ -100,7 +100,7 @@ public class Bootstrap {
 
         checkConfig(config);
 
-        STARTUP.set(System.currentTimeMillis());
+        STARTUP_TIMESTAMP.set(System.currentTimeMillis() / 1000d);
 
         Bootstrap eventLoop = new Bootstrap(config);
         while (true) {
