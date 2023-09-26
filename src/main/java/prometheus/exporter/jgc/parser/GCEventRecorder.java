@@ -410,39 +410,41 @@ public class GCEventRecorder extends GCEventAggregation {
 
         MemoryPoolSummary eden = event.getEden();
         if (eden != null) {
-            G1_EDEN_OCCUPANCY_AFTER_COLLECTION.labels(path).set(eden.getOccupancyAfterCollection());
+            G1_EDEN_OCCUPANCY_AFTER_COLLECTION
+                    .labels(path)
+                    .set(eden.getOccupancyAfterCollection() * 1024);
             G1_EDEN_OCCUPANCY_BEFORE_COLLECTION
                     .labels(path)
-                    .set(eden.getOccupancyBeforeCollection());
-            G1_EDEN_SIZE_BEFORE_COLLECTION.labels(path).set(eden.getSizeBeforeCollection());
-            G1_EDEN_SIZE_AFTER_COLLECTION.labels(path).set(eden.getSizeAfterCollection());
+                    .set(eden.getOccupancyBeforeCollection() * 1024);
+            G1_EDEN_SIZE_BEFORE_COLLECTION.labels(path).set(eden.getSizeBeforeCollection() * 1024);
+            G1_EDEN_SIZE_AFTER_COLLECTION.labels(path).set(eden.getSizeAfterCollection() * 1024);
         }
 
         SurvivorMemoryPoolSummary survivor = event.getSurvivor();
         if (survivor != null) {
             G1_SURVIVOR_HEAP_OCCUPANCY_AFTER_COLLECTION
                     .labels(path)
-                    .set(survivor.getOccupancyAfterCollection());
+                    .set(survivor.getOccupancyAfterCollection() * 1024);
             G1_SURVIVOR_HEAP_OCCUPANCY_BEFORE_COLLECTION
                     .labels(path)
-                    .set(survivor.getOccupancyBeforeCollection());
-            G1_SURVIVOR_SIZE.labels(path).set(survivor.getSize());
+                    .set(survivor.getOccupancyBeforeCollection() * 1024);
+            G1_SURVIVOR_SIZE.labels(path).set(survivor.getSize() * 1024);
         }
 
         MemoryPoolSummary metaspace = event.getPermOrMetaspace();
         if (metaspace != null) {
             G1_META_SPACE_SIZE_AFTER_COLLECTION
                     .labels(path)
-                    .set(metaspace.getOccupancyAfterCollection());
+                    .set(metaspace.getOccupancyAfterCollection() * 1024);
             G1_META_SPACE_OCCUPANCY_BEFORE_COLLECTION
                     .labels(path)
-                    .set(metaspace.getOccupancyBeforeCollection());
+                    .set(metaspace.getOccupancyBeforeCollection() * 1024);
             G1_META_SPACE_SIZE_BEFORE_COLLECTION
                     .labels(path)
-                    .set(metaspace.getSizeBeforeCollection());
+                    .set(metaspace.getSizeBeforeCollection() * 1024);
             G1_META_SPACE_SIZE_AFTER_COLLECTION
                     .labels(path)
-                    .set(metaspace.getSizeAfterCollection());
+                    .set(metaspace.getSizeAfterCollection() * 1024);
         }
 
         ReferenceGCSummary referenceGCSummary = event.getReferenceGCSummary();
