@@ -28,18 +28,11 @@ public class Metrics {
                     .name("jgc_log_line")
                     .help("Number of process log lines")
                     .register();
-
-    public static final Counter GC_EVENT =
-            Counter.build()
-                    .labelNames("path", "category")
-                    .name("jgc_event")
-                    .help("Number of total gc event")
-                    .register();
     public static final Summary GC_EVENT_DURATION =
             Summary.build()
                     .labelNames("path", "category")
                     .name("jgc_event_duration")
-                    .help("Milliseconds of gc event")
+                    .help("Duration(ms) of gc event")
                     .register();
 
     public static final Summary USER_CPU_TIME =
