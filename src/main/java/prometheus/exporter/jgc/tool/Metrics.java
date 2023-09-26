@@ -338,149 +338,145 @@ public class Metrics {
     public static final Gauge G1_EDEN_OCCUPANCY_AFTER_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_eden_occupancy_after_collection")
+                    .name("jgc_g1_eden_occupancy_after_collection_bytes")
                     .help("help")
                     .register();
 
     public static final Gauge G1_EDEN_OCCUPANCY_BEFORE_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_eden_heap_occupancy_before_collection")
+                    .name("jgc_g1_eden_heap_occupancy_before_collection_bytes")
                     .help("help")
                     .register();
 
     public static final Gauge G1_EDEN_SIZE_AFTER_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_eden_size_after_collection")
+                    .name("jgc_g1_eden_size_after_collection_bytes")
                     .help("help")
                     .register();
 
     public static final Gauge G1_EDEN_SIZE_BEFORE_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_eden_size_before_collection")
+                    .name("jgc_g1_eden_size_before_collection_bytes")
                     .help("help")
                     .register();
     public static final Gauge G1_SURVIVOR_HEAP_OCCUPANCY_AFTER_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_survivor_heap_occupancy_after_collection")
+                    .name("jgc_g1_survivor_heap_occupancy_after_collection_bytes")
                     .help("help")
                     .register();
 
     public static final Gauge G1_SURVIVOR_HEAP_OCCUPANCY_BEFORE_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_survivor_heap_occupancy_before_collection")
+                    .name("jgc_g1_survivor_heap_occupancy_before_collection_bytes")
                     .help("help")
                     .register();
 
     public static final Gauge G1_SURVIVOR_SIZE =
-            Gauge.build().labelNames("path").name("jgc_g1_survivor_size").help("help").register();
+            Gauge.build()
+                    .labelNames("path")
+                    .name("jgc_g1_survivor_size_bytes")
+                    .help("help")
+                    .register();
 
     public static final Gauge G1_META_SPACE_OCCUPANCY_AFTER_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_meta_space_occupancy_after_collection")
+                    .name("jgc_g1_meta_space_occupancy_after_collection_bytes")
                     .help("help")
                     .register();
 
     public static final Gauge G1_META_SPACE_OCCUPANCY_BEFORE_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_meta_space_heap_occupancy_before_collection")
+                    .name("jgc_g1_meta_space_heap_occupancy_before_collection_bytes")
                     .help("help")
                     .register();
 
     public static final Gauge G1_META_SPACE_SIZE_AFTER_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_meta_space_size_after_collection")
+                    .name("jgc_g1_meta_space_size_after_collection_bytes")
                     .help("help")
                     .register();
 
     public static final Gauge G1_META_SPACE_SIZE_BEFORE_COLLECTION =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_meta_space_size_before_collection")
+                    .name("jgc_g1_meta_space_size_before_collection_bytes")
                     .help("help")
                     .register();
 
     public static final Gauge G1_SOFT_REFERENCE_COUNT =
-            Gauge.build()
-                    .labelNames("path")
-                    .name("jgc_g1_soft_reference_count")
-                    .help("help")
-                    .register();
+            Gauge.build().labelNames("path").name("jgc_g1_soft_references").help("help").register();
 
     public static final Summary G1_SOFT_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_soft_reference_pause_time")
+                    .name("jgc_g1_soft_reference_pause_duration_second")
                     .help("help")
                     .register();
 
     public static final Gauge G1_WEAK_REFERENCE_COUNT =
-            Gauge.build()
-                    .labelNames("path")
-                    .name("jgc_g1_weak_reference_count")
-                    .help("help")
-                    .register();
+            Gauge.build().labelNames("path").name("jgc_g1_weak_references").help("help").register();
 
     public static final Summary G1_WEAK_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_weak_reference_pause_time")
+                    .name("jgc_g1_weak_reference_pause_duration_second")
                     .help("help")
                     .register();
 
     public static final Gauge G1_FINAL_REFERENCE_COUNT =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_final_reference_count")
+                    .name("jgc_g1_final_references")
                     .help("help")
                     .register();
 
     public static final Summary G1_FINAL_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_final_reference_pause_time")
+                    .name("jgc_g1_final_reference_pause_duration_second")
                     .help("help")
                     .register();
 
     public static final Gauge G1_PHANTOM_REFERENCE_COUNT =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_phantom_reference_count")
+                    .name("jgc_g1_phantom_references")
                     .help("help")
                     .register();
 
     public static final Gauge G1_PHANTOM_REFERENCE_FREE_COUNT =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_phantom_reference_free_count")
+                    .name("jgc_g1_phantom_free_references")
                     .help("help")
                     .register();
 
     public static final Summary G1_PHANTOM_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_phantom_reference_pause_time")
+                    .name("jgc_g1_phantom_reference_pause_duration_second")
                     .help("help")
                     .register();
 
     public static final Gauge G1_JNI_WEAK_REFERENCE_COUNT =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_jni_weak_reference_count")
+                    .name("jgc_g1_jni_weak_references")
                     .help("help")
                     .register();
 
     public static final Summary G1_JNI_WEAK_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_jni_weak_reference_pause_time")
+                    .name("jgc_g1_jni_weak_reference_pause_duration_second")
                     .help("help")
                     .register();
 
