@@ -211,8 +211,6 @@ public class GCEventRecorder extends GCEventAggregation {
         SAFEPOINT_CLEANUP_DURATION.labels(path).observe(cleanupDuration);
         int vmopDuration = safepoint.getVmopDuration();
         SAFEPOINT_VMOP_DURATION.labels(path).observe(vmopDuration);
-        int pageTrapCount = safepoint.getPageTrapCount();
-        SAFEPOINT_PAGE_TRAP_COUNT.labels(path).set(pageTrapCount);
     }
 
     @Override
