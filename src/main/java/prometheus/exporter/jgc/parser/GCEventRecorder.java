@@ -50,7 +50,7 @@ public class GCEventRecorder extends GCEventAggregation {
     public void collectGenerationalGCEvent(GenerationalGCEvent event) {
         String category = GcEventTool.parseGCEventCategory(event);
         LOG.debug("{} Collect GenerationalGCEvent {} {}", path, event.getClass(), category);
-        recordGCEvent(category, event.getDuration() * 1000);
+        recordGCEvent(category, event.getDuration());
         if (event instanceof GenerationalGCPauseEvent) {
             recordGenerationalGCPauseEvent((GenerationalGCPauseEvent) event);
         } else if (event instanceof CMSConcurrentEvent) {
@@ -62,7 +62,7 @@ public class GCEventRecorder extends GCEventAggregation {
     public void collectG1GCEvent(G1GCEvent event) {
         final String category = GcEventTool.parseGCEventCategory(event);
         LOG.debug("{} Collect G1GCEvent {} {}", path, event.getClass(), category);
-        recordGCEvent(category, event.getDuration() * 1000);
+        recordGCEvent(category, event.getDuration());
         if (event instanceof G1GCPauseEvent) {
             recordG1GCPauseEvent((G1GCPauseEvent) event);
         }
@@ -74,40 +74,40 @@ public class GCEventRecorder extends GCEventAggregation {
         final String category = GcEventTool.parseGCEventCategory(event);
 
         double duration = 0;
-        double pauseMarkStartDuration = event.getPauseMarkStartDuration();
+        double pauseMarkStartDuration = event.getPauseMarkStartDuration() / 1000;
         duration += pauseMarkStartDuration;
         ZGC_PAUSE_MARK_START_DURATION.labels(path).observe(pauseMarkStartDuration);
-        double concurrentMarkDuration = event.getConcurrentMarkDuration();
+        double concurrentMarkDuration = event.getConcurrentMarkDuration() / 1000;
         duration += concurrentMarkDuration;
         ZGC_CONCURRENT_MARK_DURATION.labels(path).observe(concurrentMarkDuration);
-        double concurrentMarkFreeDuration = event.getConcurrentMarkFreeDuration();
+        double concurrentMarkFreeDuration = event.getConcurrentMarkFreeDuration() / 1000;
         duration += concurrentMarkFreeDuration;
         ZGC_CONCURRENT_MARK_FREE_DURATION.labels(path).observe(concurrentMarkFreeDuration);
-        double pauseMarkEndDuration = event.getPauseMarkEndDuration();
+        double pauseMarkEndDuration = event.getPauseMarkEndDuration() / 1000;
         duration += pauseMarkEndDuration;
         ZGC_PAUSE_MARK_END_DURATION.labels(path).observe(pauseMarkEndDuration);
         double concurrentProcessNonStrongReferencesDuration =
-                event.getConcurrentProcessNonStrongReferencesDuration();
+                event.getConcurrentProcessNonStrongReferencesDuration() / 1000;
         duration += concurrentProcessNonStrongReferencesDuration;
         ZGC_PROCESS_NON_STRONG_REFERENCES_DURATION
                 .labels(path)
                 .observe(concurrentProcessNonStrongReferencesDuration);
         double concurrentResetRelocationSetDuration =
-                event.getConcurrentResetRelocationSetDuration();
+                event.getConcurrentResetRelocationSetDuration() / 1000;
         duration += concurrentResetRelocationSetDuration;
         ZGC_CONCURRENT_RESET_RELOCATIONSET_DURATION
                 .labels(path)
                 .observe(concurrentResetRelocationSetDuration);
         double concurrentSelectRelocationSetDuration =
-                event.getConcurrentSelectRelocationSetDuration();
+                event.getConcurrentSelectRelocationSetDuration() / 1000;
         duration += concurrentSelectRelocationSetDuration;
         ZGC_CONCURRENT_SELECT_RELOCATIONSET_DURATION
                 .labels(path)
                 .observe(concurrentSelectRelocationSetDuration);
-        double pauseRelocateStartDuration = event.getPauseRelocateStartDuration();
+        double pauseRelocateStartDuration = event.getPauseRelocateStartDuration() / 1000;
         duration += pauseRelocateStartDuration;
         ZGC_PAUSE_RELOCATE_START_DURATION.labels(path).observe(pauseRelocateStartDuration);
-        double concurrentRelocateDuration = event.getConcurrentRelocateDuration();
+        double concurrentRelocateDuration = event.getConcurrentRelocateDuration() / 1000;
         duration += concurrentRelocateDuration;
         ZGC_CONCURRENT_RELOCATE_DURATION.labels(path).observe(concurrentRelocateDuration);
 
@@ -135,57 +135,57 @@ public class GCEventRecorder extends GCEventAggregation {
 
         ZGCMemoryPoolSummary markStart = event.getMarkStart();
         if (markStart != null) {
-            ZGC_MARK_START_USED.labels(path).set(markStart.getUsed());
-            ZGC_MARK_START_FREE.labels(path).set(markStart.getFree());
+            ZGC_MARK_START_USED.labels(path).set(markStart.getUsed() * 1024);
+            ZGC_MARK_START_FREE.labels(path).set(markStart.getFree() * 1024);
         }
         ZGCMemoryPoolSummary markEnd = event.getMarkEnd();
         if (markEnd != null) {
-            ZGC_MARK_END_USED.labels(path).set(markEnd.getUsed());
-            ZGC_MARK_END_FREE.labels(path).set(markEnd.getFree());
+            ZGC_MARK_END_USED.labels(path).set(markEnd.getUsed() * 1024);
+            ZGC_MARK_END_FREE.labels(path).set(markEnd.getFree() * 1024);
         }
         ZGCMemoryPoolSummary relocateStart = event.getRelocateStart();
         if (relocateStart != null) {
-            ZGC_RELOCATE_START_USED.labels(path).set(relocateStart.getUsed());
-            ZGC_RELOCATE_START_FREE.labels(path).set(relocateStart.getFree());
+            ZGC_RELOCATE_START_USED.labels(path).set(relocateStart.getUsed() * 1024);
+            ZGC_RELOCATE_START_FREE.labels(path).set(relocateStart.getFree() * 1024);
         }
         ZGCMemoryPoolSummary relocateEnd = event.getRelocateStart();
         if (relocateEnd != null) {
-            ZGC_RELOCATE_END_USED.labels(path).set(relocateEnd.getUsed());
-            ZGC_RELOCATE_END_FREE.labels(path).set(relocateEnd.getFree());
+            ZGC_RELOCATE_END_USED.labels(path).set(relocateEnd.getUsed() * 1024);
+            ZGC_RELOCATE_END_FREE.labels(path).set(relocateEnd.getFree() * 1024);
         }
         OccupancySummary live = event.getLive();
         if (live != null) {
             ZGC_LIVE_MARK_END.labels(path).set(live.getMarkEnd());
-            ZGC_LIVE_RECLAIM_START.labels(path).set(live.getReclaimStart());
-            ZGC_LIVE_RECLAIM_END.labels(path).set(live.getReclaimEnd());
+            ZGC_LIVE_RECLAIM_START.labels(path).set(live.getReclaimStart() * 1024);
+            ZGC_LIVE_RECLAIM_END.labels(path).set(live.getReclaimEnd() * 1024);
         }
         OccupancySummary allocated = event.getAllocated();
         if (allocated != null) {
-            ZGC_ALLOCATED_MARK_END.labels(path).set(allocated.getMarkEnd());
-            ZGC_ALLOCATED_RECLAIM_START.labels(path).set(allocated.getReclaimStart());
-            ZGC_ALLOCATED_RECLAIM_END.labels(path).set(allocated.getReclaimEnd());
+            ZGC_ALLOCATED_MARK_END.labels(path).set(allocated.getMarkEnd() * 1024);
+            ZGC_ALLOCATED_RECLAIM_START.labels(path).set(allocated.getReclaimStart() * 1024);
+            ZGC_ALLOCATED_RECLAIM_END.labels(path).set(allocated.getReclaimEnd() * 1024);
         }
         OccupancySummary garbage = event.getGarbage();
         if (garbage != null) {
-            ZGC_GARBAGE_MARK_END.labels(path).set(garbage.getMarkEnd());
-            ZGC_GARBAGE_RECLAIM_START.labels(path).set(garbage.getReclaimStart());
-            ZGC_GARBAGE_RECLAIM_END.labels(path).set(garbage.getReclaimEnd());
+            ZGC_GARBAGE_MARK_END.labels(path).set(garbage.getMarkEnd() * 1024);
+            ZGC_GARBAGE_RECLAIM_START.labels(path).set(garbage.getReclaimStart() * 1024);
+            ZGC_GARBAGE_RECLAIM_END.labels(path).set(garbage.getReclaimEnd() * 1024);
         }
         ReclaimSummary reclaimed = event.getReclaimed();
         if (reclaimed != null) {
-            ZGC_RECLAIMED_RECLAIM_START.labels(path).set(reclaimed.getReclaimStart());
-            ZGC_RECLAIMED_RECLAIM_END.labels(path).set(reclaimed.getReclaimEnd());
+            ZGC_RECLAIMED_RECLAIM_START.labels(path).set(reclaimed.getReclaimStart() * 1024);
+            ZGC_RECLAIMED_RECLAIM_END.labels(path).set(reclaimed.getReclaimEnd() * 1024);
         }
         ReclaimSummary memorySummary = event.getMemorySummary();
         if (memorySummary != null) {
-            ZGC_MEMORY_RECLAIM_START.labels(path).set(memorySummary.getReclaimStart());
-            ZGC_MEMORY_RECLAIM_END.labels(path).set(memorySummary.getReclaimEnd());
+            ZGC_MEMORY_RECLAIM_START.labels(path).set(memorySummary.getReclaimStart() * 1024);
+            ZGC_MEMORY_RECLAIM_END.labels(path).set(memorySummary.getReclaimEnd() * 1024);
         }
         ZGCMetaspaceSummary metaspace = event.getMetaspace();
         if (metaspace != null) {
-            ZGC_METASPACE_USED.labels(path).set(metaspace.getUsed());
-            ZGC_METASPACE_COMMITTED.labels(path).set(metaspace.getCommitted());
-            ZGC_METASPACE_RESERVED.labels(path).set(metaspace.getReserved());
+            ZGC_METASPACE_USED.labels(path).set(metaspace.getUsed() * 1024);
+            ZGC_METASPACE_COMMITTED.labels(path).set(metaspace.getCommitted() * 1024);
+            ZGC_METASPACE_RESERVED.labels(path).set(metaspace.getReserved() * 1024);
         }
     }
 
@@ -229,8 +229,8 @@ public class GCEventRecorder extends GCEventAggregation {
         SURVIVOR_MAX_TENURING_THRESHOLD.labels(path).set(maxTenuringThreshold);
     }
 
-    private void recordGCEvent(String category, double durationMS) {
-        GC_EVENT_DURATION.labels(path, category).observe(durationMS);
+    private void recordGCEvent(String category, double duration) {
+        GC_EVENT_DURATION.labels(path, category).observe(duration);
     }
 
     private void recordCMSConcurrentEvent(CMSConcurrentEvent event) {
@@ -251,96 +251,96 @@ public class GCEventRecorder extends GCEventAggregation {
         if (heapSummary != null) {
             GENERATIONAL_HEAP_OCCUPANCY_AFTER_COLLECTION
                     .labels(path)
-                    .set(heapSummary.getOccupancyAfterCollection());
+                    .set(heapSummary.getOccupancyAfterCollection() * 1024);
             GENERATIONAL_HEAP_SIZE_AFTER_COLLECTION
                     .labels(path)
-                    .set(heapSummary.getSizeAfterCollection());
+                    .set(heapSummary.getSizeAfterCollection() * 1024);
             GENERATIONAL_HEAP_SIZE_BEFORE_COLLECTION
                     .labels(path)
-                    .set(heapSummary.getSizeBeforeCollection());
+                    .set(heapSummary.getSizeBeforeCollection() * 1024);
             GENERATIONAL_HEAP_OCCUPANCY_BEFORE_COLLECTION
                     .labels(path)
-                    .set(heapSummary.getOccupancyBeforeCollection());
+                    .set(heapSummary.getOccupancyBeforeCollection() * 1024);
         }
 
         MemoryPoolSummary tenuredSummary = event.getTenured();
         if (tenuredSummary != null) {
             GENERATIONAL_TENURED_OCCUPANCY_AFTER_COLLECTION
                     .labels(path)
-                    .set(tenuredSummary.getOccupancyAfterCollection());
+                    .set(tenuredSummary.getOccupancyAfterCollection() * 1024);
             GENERATIONAL_TENURED_SIZE_AFTER_COLLECTION
                     .labels(path)
-                    .set(tenuredSummary.getSizeAfterCollection());
+                    .set(tenuredSummary.getSizeAfterCollection() * 1024);
             GENERATIONAL_TENURED_SIZE_BEFORE_COLLECTION
                     .labels(path)
-                    .set(tenuredSummary.getSizeBeforeCollection());
+                    .set(tenuredSummary.getSizeBeforeCollection() * 1024);
             GENERATIONAL_TENURED_OCCUPANCY_BEFORE_COLLECTION
                     .labels(path)
-                    .set(tenuredSummary.getOccupancyBeforeCollection());
+                    .set(tenuredSummary.getOccupancyBeforeCollection() * 1024);
         }
 
         MemoryPoolSummary youngSummary = event.getYoung();
         if (youngSummary != null) {
             GENERATIONAL_YOUNG_OCCUPANCY_AFTER_COLLECTION
                     .labels(path)
-                    .set(youngSummary.getOccupancyAfterCollection());
+                    .set(youngSummary.getOccupancyAfterCollection() * 1024);
             GENERATIONAL_YOUNG_SIZE_AFTER_COLLECTION
                     .labels(path)
-                    .set(youngSummary.getSizeAfterCollection());
+                    .set(youngSummary.getSizeAfterCollection() * 1024);
             GENERATIONAL_YOUNG_SIZE_BEFORE_COLLECTION
                     .labels(path)
-                    .set(youngSummary.getSizeBeforeCollection());
+                    .set(youngSummary.getSizeBeforeCollection() * 1024);
             GENERATIONAL_YOUNG_OCCUPANCY_BEFORE_COLLECTION
                     .labels(path)
-                    .set(youngSummary.getOccupancyBeforeCollection());
+                    .set(youngSummary.getOccupancyBeforeCollection() * 1024);
         }
 
         MemoryPoolSummary classSummary = event.getClassspace();
         if (classSummary != null) {
             GENERATIONAL_CLASSSPACE_OCCUPANCY_AFTER_COLLECTION
                     .labels(path)
-                    .set(classSummary.getOccupancyAfterCollection());
+                    .set(classSummary.getOccupancyAfterCollection() * 1024);
             GENERATIONAL_CLASSSPACE_SIZE_AFTER_COLLECTION
                     .labels(path)
-                    .set(classSummary.getSizeAfterCollection());
+                    .set(classSummary.getSizeAfterCollection() * 1024);
             GENERATIONAL_CLASSSPACE_SIZE_BEFORE_COLLECTION
                     .labels(path)
-                    .set(classSummary.getSizeBeforeCollection());
+                    .set(classSummary.getSizeBeforeCollection() * 1024);
             GENERATIONAL_CLASSSPACE_OCCUPANCY_BEFORE_COLLECTION
                     .labels(path)
-                    .set(classSummary.getOccupancyBeforeCollection());
+                    .set(classSummary.getOccupancyBeforeCollection() * 1024);
         }
 
         MemoryPoolSummary nonClassSummary = event.getNonClassspace();
         if (nonClassSummary != null) {
             GENERATIONAL_NONCLASSSPACE_OCCUPANCY_AFTER_COLLECTION
                     .labels(path)
-                    .set(nonClassSummary.getOccupancyAfterCollection());
+                    .set(nonClassSummary.getOccupancyAfterCollection() * 1024);
             GENERATIONAL_NONCLASSSPACE_SIZE_AFTER_COLLECTION
                     .labels(path)
-                    .set(nonClassSummary.getSizeAfterCollection());
+                    .set(nonClassSummary.getSizeAfterCollection() * 1024);
             GENERATIONAL_NONCLASSSPACE_SIZE_BEFORE_COLLECTION
                     .labels(path)
-                    .set(nonClassSummary.getSizeBeforeCollection());
+                    .set(nonClassSummary.getSizeBeforeCollection() * 1024);
             GENERATIONAL_NONCLASSSPACE_OCCUPANCY_BEFORE_COLLECTION
                     .labels(path)
-                    .set(nonClassSummary.getOccupancyBeforeCollection());
+                    .set(nonClassSummary.getOccupancyBeforeCollection() * 1024);
         }
 
         MemoryPoolSummary permOrMetaspace = event.getPermOrMetaspace();
         if (permOrMetaspace != null) {
             GENERATIONAL_METASPACE_OCCUPANCY_AFTER_COLLECTION
                     .labels(path)
-                    .set(permOrMetaspace.getOccupancyAfterCollection());
+                    .set(permOrMetaspace.getOccupancyAfterCollection() * 1024);
             GENERATIONAL_METASPACE_SIZE_AFTER_COLLECTION
                     .labels(path)
-                    .set(permOrMetaspace.getSizeAfterCollection());
+                    .set(permOrMetaspace.getSizeAfterCollection() * 1024);
             GENERATIONAL_METASPACE_SIZE_BEFORE_COLLECTION
                     .labels(path)
-                    .set(permOrMetaspace.getSizeBeforeCollection());
+                    .set(permOrMetaspace.getSizeBeforeCollection() * 1024);
             GENERATIONAL_METASPACE_OCCUPANCY_BEFORE_COLLECTION
                     .labels(path)
-                    .set(permOrMetaspace.getOccupancyBeforeCollection());
+                    .set(permOrMetaspace.getOccupancyBeforeCollection() * 1024);
         }
 
         double classUnloadingProcessingTime = event.getClassUnloadingProcessingTime();
