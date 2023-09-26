@@ -675,42 +675,42 @@ public class Metrics {
             Gauge.build()
                     .labelNames("path")
                     .name("jgc_zgc_2ms_mmu_ratio")
-                    .help("zgc 2ms mmu percent")
+                    .help("zgc 2ms mmu ratio")
                     .register();
 
     public static final Gauge ZGC_MMU_5MS =
             Gauge.build()
                     .labelNames("path")
                     .name("jgc_zgc_5ms_mmu_ratio")
-                    .help("zgc 5ms mmu percent")
+                    .help("zgc 5ms mmu ratio")
                     .register();
 
     public static final Gauge ZGC_MMU_10MS =
             Gauge.build()
                     .labelNames("path")
                     .name("jgc_zgc_10ms_mmu_ratio")
-                    .help("zgc 10ms mmu percent")
+                    .help("zgc 10ms mmu ratio")
                     .register();
 
     public static final Gauge ZGC_MMU_20MS =
             Gauge.build()
                     .labelNames("path")
                     .name("jgc_zgc_20ms_mmu_ratio")
-                    .help("zgc 20ms mmu percent")
+                    .help("zgc 20ms mmu ratio")
                     .register();
 
     public static final Gauge ZGC_MMU_50MS =
             Gauge.build()
                     .labelNames("path")
                     .name("jgc_zgc_50ms_mmu_ratio")
-                    .help("zgc 50ms mmu percent")
+                    .help("zgc 50ms mmu ratio")
                     .register();
 
     public static final Gauge ZGC_MMU_100MS =
             Gauge.build()
                     .labelNames("path")
                     .name("jgc_zgc_100ms_mmu_ratio")
-                    .help("zgc 100ms mmu percent")
+                    .help("zgc 100ms mmu ratio")
                     .register();
 
     public static final Gauge ZGC_MARK_START_USED =
