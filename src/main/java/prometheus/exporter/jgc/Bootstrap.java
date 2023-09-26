@@ -100,6 +100,8 @@ public class Bootstrap {
 
         checkConfig(config);
 
+        STARTUP.set(System.currentTimeMillis());
+
         Bootstrap eventLoop = new Bootstrap(config);
         while (true) {
             eventLoop.run();
