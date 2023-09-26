@@ -417,7 +417,7 @@ public class Metrics {
     public static final Summary G1_SOFT_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_soft_reference_pause_duration_second")
+                    .name("jgc_g1_soft_reference_pause_duration_seconds")
                     .help("help")
                     .register();
 
@@ -427,7 +427,7 @@ public class Metrics {
     public static final Summary G1_WEAK_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_weak_reference_pause_duration_second")
+                    .name("jgc_g1_weak_reference_pause_duration_seconds")
                     .help("help")
                     .register();
 
@@ -441,7 +441,7 @@ public class Metrics {
     public static final Summary G1_FINAL_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_final_reference_pause_duration_second")
+                    .name("jgc_g1_final_reference_pause_duration_seconds")
                     .help("help")
                     .register();
 
@@ -462,7 +462,7 @@ public class Metrics {
     public static final Summary G1_PHANTOM_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_phantom_reference_pause_duration_second")
+                    .name("jgc_g1_phantom_reference_pause_duration_seconds")
                     .help("help")
                     .register();
 
@@ -476,7 +476,7 @@ public class Metrics {
     public static final Summary G1_JNI_WEAK_REFERENCE_PAUSE_TIME =
             Summary.build()
                     .labelNames("path")
-                    .name("jgc_g1_jni_weak_reference_pause_duration_second")
+                    .name("jgc_g1_jni_weak_reference_pause_duration_seconds")
                     .help("help")
                     .register();
 
