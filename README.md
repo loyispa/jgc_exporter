@@ -30,6 +30,13 @@ http://0.0.0.0:5898/metrics
 | batchSize        | Maximum number of lines per log read, default is 128                        |   
 | analysePeriod    | Minimum time interval between two analyses, default is 10 seconds(10,000ms) |   
 
+# Metric
+| Name               | type    | labels         | Description                                 |
+|--------------------|---------|----------------|---------------------------------------------|
+| jgc_log_line       | counter | path           | Number of process log lines                 |
+| jgc_event_duration | summary | path, category | Duration(ms) of GC events for each category |
+More metrics related to specific garbage collection algorithms see [here](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/tool/Metrics.java).
+
 # Building
 ```
 ./mvnw clean package
