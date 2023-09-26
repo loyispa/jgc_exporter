@@ -36,7 +36,7 @@ http://0.0.0.0:5898/metrics
 | jgc_log_line       | counter | path           | Number of process log lines                 |
 | jgc_event_duration | summary | path, category | Duration(ms) of GC events for each category |
 
-More metrics related to specific garbage collection algorithms see [here](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/tool/Metrics.java).
+See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/tool/Metrics.java) related to specific garbage collection algorithms, cms, g1, zgc, etc.
 
 # Building
 ```
