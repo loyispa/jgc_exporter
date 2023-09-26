@@ -650,21 +650,21 @@ public class Metrics {
     public static final Gauge ZGC_LOAD_1m =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_zgc_1m_load")
+                    .name("jgc_zgc_1m_cpu_load")
                     .help("zgc latest 1 minute load")
                     .register();
 
     public static final Gauge ZGC_LOAD_5m =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_zgc_5m_load")
+                    .name("jgc_zgc_5m_cpu_load")
                     .help("zgc latest 5 minute load")
                     .register();
 
     public static final Gauge ZGC_LOAD_15m =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_zgc_15m_load")
+                    .name("jgc_zgc_15m_cpu_load")
                     .help("zgc latest 15 minute load")
                     .register();
 
