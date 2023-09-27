@@ -30,7 +30,7 @@ http://0.0.0.0:5898/metrics
 | fileRegexPattern | Regex pattern of gc log file path                                           |
 | idleTimeout      | Time (ms) to close idle files, default is 10 minutes(600,000ms)             |
 | batchSize        | Maximum number of lines per log read, default is 128                        |   
-| analysePeriod    | Minimum time interval between two analyses, default is 10 seconds(10,000ms) |   
+| analysePeriod    | Minimum interval (ms) between two analyses, default is 10 seconds(10,000ms) |   
 
 # Metric
 | Name                       | type    | labels         | Description                 |

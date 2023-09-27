@@ -100,7 +100,7 @@ public class Bootstrap {
 
         checkConfig(config);
 
-        STARTUP_TIMESTAMP.set(System.currentTimeMillis() / 1000d);
+        STARTUP_TIMESTAMP.setToCurrentTime();
 
         Bootstrap eventLoop = new Bootstrap(config);
         while (true) {
