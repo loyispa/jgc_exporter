@@ -431,7 +431,7 @@ public class GCEventRecorder extends GCEventAggregation {
 
         MemoryPoolSummary metaspace = event.getPermOrMetaspace();
         if (metaspace != null) {
-            G1_META_SPACE_SIZE_AFTER_COLLECTION
+            G1_META_SPACE_OCCUPANCY_AFTER_COLLECTION
                     .labels(path)
                     .set(metaspace.getOccupancyAfterCollection() * 1024);
             G1_META_SPACE_OCCUPANCY_BEFORE_COLLECTION

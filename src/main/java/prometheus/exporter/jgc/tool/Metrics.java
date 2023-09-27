@@ -339,21 +339,21 @@ public class Metrics {
             Gauge.build()
                     .labelNames("path")
                     .name("jgc_g1_eden_occupancy_after_collection_bytes")
-                    .help("help")
+                    .help("eden occupancy bytes after collection")
                     .register();
 
     public static final Gauge G1_EDEN_OCCUPANCY_BEFORE_COLLECTION =
             Gauge.build()
                     .labelNames("path")
                     .name("jgc_g1_eden_heap_occupancy_before_collection_bytes")
-                    .help("help")
+                    .help("eden occupancy bytes before collection")
                     .register();
 
     public static final Gauge G1_EDEN_SIZE_AFTER_COLLECTION =
             Gauge.build()
                     .labelNames("path")
                     .name("jgc_g1_eden_size_after_collection_bytes")
-                    .help("help")
+                    .help("eden size after collection")
                     .register();
 
     public static final Gauge G1_EDEN_SIZE_BEFORE_COLLECTION =
