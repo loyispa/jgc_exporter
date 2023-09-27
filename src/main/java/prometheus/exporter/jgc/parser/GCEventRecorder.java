@@ -120,12 +120,12 @@ public class GCEventRecorder extends GCEventAggregation {
         ZGC_LOAD_5m.labels(path).set(load5m);
         ZGC_LOAD_15m.labels(path).set(load15m);
 
-        double mmu_2ms = event.getMMU(2);
-        double mmu_5ms = event.getMMU(5);
-        double mmu_10ms = event.getMMU(10);
-        double mmu_20ms = event.getMMU(20);
-        double mmu_50ms = event.getMMU(50);
-        double mmu_100ms = event.getMMU(100);
+        double mmu_2ms = event.getMMU(2) / 100d;
+        double mmu_5ms = event.getMMU(5) / 100d;
+        double mmu_10ms = event.getMMU(10) / 100d;
+        double mmu_20ms = event.getMMU(20) / 100d;
+        double mmu_50ms = event.getMMU(50) / 100d;
+        double mmu_100ms = event.getMMU(100) / 100d;
         ZGC_MMU_2MS.labels(path).set(mmu_2ms);
         ZGC_MMU_5MS.labels(path).set(mmu_5ms);
         ZGC_MMU_10MS.labels(path).set(mmu_10ms);
