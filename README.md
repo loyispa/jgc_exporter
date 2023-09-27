@@ -2,9 +2,11 @@
 [![Build Status][maven-build-image]][maven-build-url]
 [![CodeCov][codecov-image]][codecov-url]
 
-An exporter that can continuously analyze hotspot garbage collection log and automatically detect Garbage collection algorithms. The parsing ability mainly relies on the [gctoolkit](https://github.com/microsoft/gctoolkit), which supports most mainstream garbage collections, such as CMS, G1, ZGC, etc.
+An exporter that can continuously analyze hotspot garbage collection log and automatically detect Garbage collection algorithms. The basic ability relies on the [gctoolkit](https://github.com/microsoft/gctoolkit) library, which supports most mainstream garbage collections, such as CMS, G1, ZGC, etc.
 # Running the exporter
 JDK require: 11+
+
+OS require: linux
 
 Run the exporter as standalone HTTP server:
 ```shell
@@ -13,7 +15,7 @@ java -jar jgc_exporter.jar /path/to/config.yml
 
 A simple `config.yml` looks like below:
 ```yaml
-fileRegexPattern: /path/to/serviceA/gc.*.log
+fileRegexPattern: /path/to/gc.*.log
 ```
 
 Fetch the metrics:
