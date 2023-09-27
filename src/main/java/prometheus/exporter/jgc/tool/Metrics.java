@@ -512,14 +512,14 @@ public class Metrics {
     public static final Gauge G1_SURVIVOR_REGION_BEFORE =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_survivor_before_collection_region")
+                    .name("jgc_g1_survivor_before_collection_regions")
                     .help("amount of g1 survivor region before collection")
                     .register();
 
     public static final Gauge G1_SURVIVOR_REGION_AFTER =
             Gauge.build()
                     .labelNames("path")
-                    .name("jgc_g1_survivor_after_collection_region")
+                    .name("jgc_g1_survivor_after_collection_regions")
                     .help("amount of g1 survivor region after collection")
                     .register();
 
