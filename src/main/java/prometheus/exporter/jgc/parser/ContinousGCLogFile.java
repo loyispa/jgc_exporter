@@ -17,6 +17,8 @@ package prometheus.exporter.jgc.parser;
 
 import com.microsoft.gctoolkit.io.GCLogFile;
 import com.microsoft.gctoolkit.io.LogFileMetadata;
+import com.microsoft.gctoolkit.io.SingleGCLogFile;
+import com.microsoft.gctoolkit.jvm.Diary;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -36,6 +38,7 @@ public class ContinousGCLogFile extends GCLogFile {
     private final long analysePeriod;
     private final int inflightRecordLength;
     private long lastAnalyzed;
+    private Diary diary;
 
     public ContinousGCLogFile(File file, Config config) {
         super(file.toPath());
@@ -45,6 +48,7 @@ public class ContinousGCLogFile extends GCLogFile {
         this.lastAnalyzed = System.currentTimeMillis();
         this.inflightRecordQueue = new LinkedBlockingQueue<>(inflightRecordLength);
         this.stream = new LinkedBlockingQueue<>();
+        initDiary();
     }
 
     public boolean analyze() {
@@ -85,7 +89,26 @@ public class ContinousGCLogFile extends GCLogFile {
     }
 
     @Override
-    public Stream<String> stream() throws IOException {
+    public Diary diary() {
+        return diary;
+    }
+
+    private void initDiary() {
+        try {
+            SingleGCLogFile logFile = new SingleGCLogFile(path);
+            this.diary = logFile.diary();
+            if (diary.isGenerationalKnown() || diary.isG1GCKnown() || diary.isZGCKnown()) {
+                LOG.info("gc diary: {}", diary);
+            } else {
+                throw new IllegalArgumentException("unsupported gc log file: " + path);
+            }
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("invalid gc log file: " + path, ex);
+        }
+    }
+
+    @Override
+    public Stream<String> stream() {
         return Stream.concat(
                 stream.stream()
                         .filter(Objects::nonNull)
