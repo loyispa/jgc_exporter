@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.parser.ContinousGCLogFile;
+import prometheus.exporter.jgc.tailer.TailerListener;
 import prometheus.exporter.jgc.tailer.TailerManager;
 import prometheus.exporter.jgc.tool.Config;
 
@@ -66,7 +67,7 @@ public class Bootstrap {
         }
     }
 
-    private class LogFileListener implements TailerManager.Listener {
+    private class LogFileListener implements TailerListener {
         @Override
         public void onOpen(File file) {
             LOG.info("Register file: {}", file);
