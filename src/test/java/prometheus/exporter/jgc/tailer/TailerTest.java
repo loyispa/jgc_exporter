@@ -114,7 +114,7 @@ public class TailerTest {
         TailerManager manager =
                 new TailerManager(
                         config,
-                        new TailerManager.Listener() {
+                        new TailerListener() {
                             @Override
                             public void onOpen(File file) {
                                 phaser.arriveAndDeregister();

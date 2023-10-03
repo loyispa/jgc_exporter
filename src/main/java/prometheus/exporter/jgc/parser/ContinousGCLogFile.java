@@ -98,7 +98,7 @@ public class ContinousGCLogFile extends GCLogFile {
             SingleGCLogFile logFile = new SingleGCLogFile(path);
             this.diary = logFile.diary();
             if (diary.isGenerationalKnown() || diary.isG1GCKnown() || diary.isZGCKnown()) {
-                LOG.info("gc diary: {}", diary);
+                LOG.info("{} details: {}", path, diary);
             } else {
                 throw new IllegalArgumentException("unsupported gc log file: " + path);
             }

@@ -34,13 +34,13 @@ public class TailerManager {
     private final Map<File, Tailer> registry = new HashMap<>();
     private final ScheduledExecutorService watcher;
     private final Lock lock;
-    private final Listener listener;
+    private final TailerListener listener;
     private final int batchSize;
     private final int bufferSize;
     private final long idleTimeout;
     private final AtomicBoolean started = new AtomicBoolean(true);
 
-    public TailerManager(Config config, Listener listener) {
+    public TailerManager(Config config, TailerListener listener) {
         this.tailerMatcher = new TailerMatcher(config.getFileRegexPattern());
         this.idleTimeout = config.getIdleTimeout();
         this.batchSize = config.getBatchSize();
@@ -165,13 +165,5 @@ public class TailerManager {
         } else {
             LOG.warn("TailerManager is already closed.");
         }
-    }
-
-    public interface Listener {
-        void onOpen(File file);
-
-        void onClose(File file);
-
-        void onRead(File file, String line);
     }
 }

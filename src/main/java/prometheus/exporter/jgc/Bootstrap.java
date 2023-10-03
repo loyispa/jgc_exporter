@@ -19,6 +19,7 @@ import static prometheus.exporter.jgc.tool.Metrics.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.github.lalyos.jfiglet.FigletFont;
 import io.prometheus.client.exporter.HTTPServer;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.parser.ContinousGCLogFile;
+import prometheus.exporter.jgc.tailer.TailerListener;
 import prometheus.exporter.jgc.tailer.TailerManager;
 import prometheus.exporter.jgc.tool.Config;
 
@@ -46,6 +48,7 @@ public class Bootstrap {
         int port = Integer.parseInt(hostPort.split(":")[1]);
         this.httpServer = new HTTPServer(host, port);
         this.tailerManager = new TailerManager(config, new LogFileListener());
+        STARTUP_TIMESTAMP.setToCurrentTime();
     }
 
     public void run() throws InterruptedException {
@@ -64,7 +67,7 @@ public class Bootstrap {
         }
     }
 
-    private class LogFileListener implements TailerManager.Listener {
+    private class LogFileListener implements TailerListener {
         @Override
         public void onOpen(File file) {
             LOG.info("Register file: {}", file);
@@ -95,12 +98,8 @@ public class Bootstrap {
             throw new IllegalArgumentException("config.yaml");
         }
 
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        Config config = mapper.readValue(new File(args[0]), Config.class);
-
-        checkConfig(config);
-
-        STARTUP_TIMESTAMP.setToCurrentTime();
+        Config config = loadConfig(args[0]);
+        printBanner();
 
         Bootstrap eventLoop = new Bootstrap(config);
         while (true) {
@@ -108,13 +107,25 @@ public class Bootstrap {
         }
     }
 
-    static void checkConfig(Config config) {
+    static void printBanner() throws IOException {
+        StringBuilder banner = new StringBuilder();
+        banner.append(FigletFont.convertOneLine("jgc_exporter"));
+        String version =
+                String.format(
+                        "%50s%s", "v", Bootstrap.class.getPackage().getImplementationVersion());
+        banner.append(version);
+        LOG.info("{}", banner);
+    }
+
+    static Config loadConfig(String configPath) throws IOException {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        Config config = mapper.readValue(new File(configPath), Config.class);
 
         String hostPort = config.getHostPort();
         String host = hostPort.split(":")[0];
         int port = Integer.parseInt(hostPort.split(":")[1]);
         if (host == null || port < 1000 || port > 65535) {
-            throw new IllegalArgumentException("port");
+            throw new IllegalArgumentException("hostPort");
         }
 
         if (config.getFileRegexPattern() == null) {
@@ -140,5 +151,7 @@ public class Bootstrap {
         if (config.getInflightRecordLength() <= 0) {
             throw new IllegalArgumentException("inflightRecordLength");
         }
+
+        return config;
     }
 }
