@@ -97,9 +97,16 @@ public class ContinousGCLogFile extends GCLogFile {
         try {
             SingleGCLogFile logFile = new SingleGCLogFile(path);
             this.diary = logFile.diary();
-            if (diary.isGenerationalKnown() || diary.isG1GCKnown() || diary.isZGCKnown()) {
-                LOG.info("{} details: {}", path, diary);
+            if (diary.isG1GC()
+                    || diary.isZGC()
+                    || diary.isCMS()
+                    || diary.isICMS()
+                    || diary.isDefNew()
+                    || diary.isSerialFull()
+                    || diary.isPSOldGen()) {
+                LOG.info("{} is supported: {}", path, diary);
             } else {
+                LOG.error("{} is unsupported: {}", path, diary);
                 throw new IllegalArgumentException("unsupported gc log file: " + path);
             }
         } catch (IOException ex) {

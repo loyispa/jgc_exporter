@@ -70,8 +70,8 @@ public class Bootstrap {
     private class LogFileListener implements TailerListener {
         @Override
         public void onOpen(File file) {
-            LOG.info("Register file: {}", file);
             registry.computeIfAbsent(file, f -> new ContinousGCLogFile(file, config));
+            LOG.info("Register file: {}", file);
         }
 
         @Override
