@@ -18,10 +18,10 @@ package prometheus.exporter.jgc.tool;
 public class Config {
     public static final String DEFAULT_HOST_PORT = "0.0.0.0:5898";
     public static final int DEFAULT_IDLE_TIMEOUT = 600_000;
-    public static final int DEFAULT_BATCH_SIZE = 128;
+    public static final int DEFAULT_BATCH_SIZE = 1024;
     public static final int DEFAULT_BUFFER_SIZE = 8192;
-    public static final int DEFAULT_ANALYSE_PERIOD = 10_000;
-    public static final int DEFAULT_INFLIGHT_RECORD_LENGTH = 1024;
+    public static final int DEFAULT_ANALYSE_PERIOD = 30_000;
+    public static final int DEFAULT_INFLIGHT_RECORD_LENGTH = 2048;
     private String fileRegexPattern;
     private String hostPort = DEFAULT_HOST_PORT;
     private int idleTimeout = DEFAULT_IDLE_TIMEOUT;

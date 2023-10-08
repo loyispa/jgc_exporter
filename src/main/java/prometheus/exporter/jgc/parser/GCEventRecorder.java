@@ -406,6 +406,22 @@ public class GCEventRecorder extends GCEventAggregation {
             REAL_CPU_TIME.labels(path).observe(cpuSummary.getWallClock());
         }
 
+        MemoryPoolSummary heapSummary = event.getHeap();
+        if (heapSummary != null) {
+            G1_HEAP_OCCUPANCY_AFTER_COLLECTION
+                    .labels(path)
+                    .set(heapSummary.getOccupancyAfterCollection() * 1024);
+            G1_HEAP_SIZE_AFTER_COLLECTION
+                    .labels(path)
+                    .set(heapSummary.getSizeAfterCollection() * 1024);
+            G1_HEAP_SIZE_BEFORE_COLLECTION
+                    .labels(path)
+                    .set(heapSummary.getSizeBeforeCollection() * 1024);
+            G1_HEAP_OCCUPANCY_BEFORE_COLLECTION
+                    .labels(path)
+                    .set(heapSummary.getOccupancyBeforeCollection() * 1024);
+        }
+
         MemoryPoolSummary eden = event.getEden();
         if (eden != null) {
             G1_EDEN_OCCUPANCY_AFTER_COLLECTION
@@ -477,33 +493,63 @@ public class GCEventRecorder extends GCEventAggregation {
 
         RegionSummary edenRegion = event.getEdenRegionSummary();
         if (edenRegion != null) {
-            G1_EDEN_REGION_BEFORE.labels(path).set(edenRegion.getBefore());
-            G1_EDEN_REGION_AFTER.labels(path).set(edenRegion.getAfter());
-            G1_EDEN_REGION_ASSIGN.labels(path).set(edenRegion.getAssigned());
+            if (edenRegion.getBefore() >= 0) {
+                G1_EDEN_REGION_BEFORE.labels(path).set(edenRegion.getBefore());
+            }
+            if (edenRegion.getAfter() >= 0) {
+                G1_EDEN_REGION_AFTER.labels(path).set(edenRegion.getAfter());
+            }
+            if (edenRegion.getAssigned() >= 0) {
+                G1_EDEN_REGION_ASSIGN.labels(path).set(edenRegion.getAssigned());
+            }
         }
         RegionSummary survivorRegion = event.getSurvivorRegionSummary();
         if (survivorRegion != null) {
-            G1_SURVIVOR_REGION_BEFORE.labels(path).set(survivorRegion.getBefore());
-            G1_SURVIVOR_REGION_AFTER.labels(path).set(survivorRegion.getAfter());
-            G1_SURVIVOR_REGION_ASSIGN.labels(path).set(survivorRegion.getAssigned());
+            if (survivorRegion.getBefore() >= 0) {
+                G1_SURVIVOR_REGION_BEFORE.labels(path).set(survivorRegion.getBefore());
+            }
+            if (survivorRegion.getAfter() >= 0) {
+                G1_SURVIVOR_REGION_AFTER.labels(path).set(survivorRegion.getAfter());
+            }
+            if (survivorRegion.getAssigned() >= 0) {
+                G1_SURVIVOR_REGION_ASSIGN.labels(path).set(survivorRegion.getAssigned());
+            }
         }
         RegionSummary oldRegion = event.getOldRegionSummary();
         if (oldRegion != null) {
-            G1_OLD_REGION_BEFORE.labels(path).set(oldRegion.getBefore());
-            G1_OLD_REGION_AFTER.labels(path).set(oldRegion.getAfter());
-            G1_OLD_REGION_ASSIGN.labels(path).set(oldRegion.getAssigned());
+            if (oldRegion.getBefore() >= 0) {
+                G1_OLD_REGION_BEFORE.labels(path).set(oldRegion.getBefore());
+            }
+            if (oldRegion.getAfter() >= 0) {
+                G1_OLD_REGION_AFTER.labels(path).set(oldRegion.getAfter());
+            }
+            if (oldRegion.getAssigned() >= 0) {
+                G1_OLD_REGION_ASSIGN.labels(path).set(oldRegion.getAssigned());
+            }
         }
         RegionSummary humongousRegion = event.getHumongousRegionSummary();
         if (humongousRegion != null) {
-            G1_HUMONGOUS_REGION_BEFORE.labels(path).set(humongousRegion.getBefore());
-            G1_HUMONGOUS_REGION_AFTER.labels(path).set(humongousRegion.getAfter());
-            G1_HUMONGOUS_REGION_ASSIGN.labels(path).set(humongousRegion.getAssigned());
+            if (humongousRegion.getBefore() >= 0) {
+                G1_HUMONGOUS_REGION_BEFORE.labels(path).set(humongousRegion.getBefore());
+            }
+            if (humongousRegion.getAfter() >= 0) {
+                G1_HUMONGOUS_REGION_AFTER.labels(path).set(humongousRegion.getAfter());
+            }
+            if (humongousRegion.getAssigned() >= 0) {
+                G1_HUMONGOUS_REGION_ASSIGN.labels(path).set(humongousRegion.getAssigned());
+            }
         }
         RegionSummary archiveRegion = event.getArchiveRegionSummary();
         if (archiveRegion != null) {
-            G1_ARCHIVE_REGION_BEFORE.labels(path).set(archiveRegion.getBefore());
-            G1_ARCHIVE_REGION_AFTER.labels(path).set(archiveRegion.getAfter());
-            G1_ARCHIVE_REGION_ASSIGN.labels(path).set(archiveRegion.getAssigned());
+            if (archiveRegion.getBefore() >= 0) {
+                G1_ARCHIVE_REGION_BEFORE.labels(path).set(archiveRegion.getBefore());
+            }
+            if (archiveRegion.getAfter() >= 0) {
+                G1_ARCHIVE_REGION_AFTER.labels(path).set(archiveRegion.getAfter());
+            }
+            if (archiveRegion.getAssigned() >= 0) {
+                G1_ARCHIVE_REGION_ASSIGN.labels(path).set(archiveRegion.getAssigned());
+            }
         }
     }
 }

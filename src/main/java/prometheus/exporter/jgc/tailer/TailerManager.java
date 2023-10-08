@@ -66,18 +66,18 @@ public class TailerManager {
                         tailerMatcher.findMatchingFiles(
                                 f -> f.lastModified() + idleTimeout > System.currentTimeMillis());
                 for (File file : matchingFiles) {
-                    registry.computeIfAbsent(
-                            file,
-                            f -> {
-                                Tailer tailer =
-                                        new Tailer(f, true, batchSize, bufferSize, idleTimeout);
-                                try {
+                    try {
+                        registry.computeIfAbsent(
+                                file,
+                                f -> {
+                                    Tailer tailer =
+                                            new Tailer(f, true, batchSize, bufferSize, idleTimeout);
                                     listener.onOpen(f);
-                                } catch (Throwable t) {
-                                    LOG.error("Open file failed: {}", f, t);
-                                }
-                                return tailer;
-                            });
+                                    return tailer;
+                                });
+                    } catch (Throwable t) {
+                        LOG.error("Ignore file: {}", file);
+                    }
                 }
 
                 final Iterator<Tailer> iterator = registry.values().iterator();

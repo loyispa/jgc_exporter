@@ -34,6 +34,7 @@ public class Metrics {
                     .name("jgc_log_lines")
                     .help("Number of process log lines")
                     .register();
+
     public static final Summary GC_EVENT_DURATION =
             Summary.build()
                     .labelNames("path", "category")
@@ -333,6 +334,34 @@ public class Metrics {
                     .labelNames("path")
                     .name("jgc_generational_jni_weak_reference_pause_duration_seconds")
                     .help("jni weak reference pause duration")
+                    .register();
+
+    public static final Gauge G1_HEAP_OCCUPANCY_BEFORE_COLLECTION =
+            Gauge.build()
+                    .labelNames("path")
+                    .name("jgc_g1_heap_occupancy_before_collection_bytes")
+                    .help("heap occupancy after collection")
+                    .register();
+
+    public static final Gauge G1_HEAP_SIZE_BEFORE_COLLECTION =
+            Gauge.build()
+                    .labelNames("path")
+                    .name("jgc_g1_heap_size_before_collection_bytes")
+                    .help("heap size after collection")
+                    .register();
+
+    public static final Gauge G1_HEAP_OCCUPANCY_AFTER_COLLECTION =
+            Gauge.build()
+                    .labelNames("path")
+                    .name("jgc_g1_heap_occupancy_after_collection_bytes")
+                    .help("heap occupancy after collection")
+                    .register();
+
+    public static final Gauge G1_HEAP_SIZE_AFTER_COLLECTION =
+            Gauge.build()
+                    .labelNames("path")
+                    .name("jgc_g1_heap_size_after_collection_bytes")
+                    .help("heap size after collection")
                     .register();
 
     public static final Gauge G1_EDEN_OCCUPANCY_AFTER_COLLECTION =
