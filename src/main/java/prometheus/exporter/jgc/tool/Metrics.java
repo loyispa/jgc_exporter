@@ -42,6 +42,13 @@ public class Metrics {
                     .help("Duration of gc event")
                     .register();
 
+    public static final Summary GC_EVENT_PAUSE_DURATION =
+            Summary.build()
+                    .labelNames("path", "category")
+                    .name("jgc_event_pause_duration_seconds")
+                    .help("Duration of gc pause event")
+                    .register();
+
     public static final Summary USER_CPU_TIME =
             Summary.build()
                     .labelNames("path")
