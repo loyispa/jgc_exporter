@@ -53,6 +53,7 @@ public class GCEventRecorder extends GCEventAggregation {
         recordGCEvent(category, event.getDuration());
         if (event instanceof GenerationalGCPauseEvent) {
             recordGenerationalGCPauseEvent((GenerationalGCPauseEvent) event);
+            recordGCPauseEvent(category, event.getDuration());
         } else if (event instanceof CMSConcurrentEvent) {
             recordCMSConcurrentEvent((CMSConcurrentEvent) event);
         }
@@ -65,6 +66,7 @@ public class GCEventRecorder extends GCEventAggregation {
         recordGCEvent(category, event.getDuration());
         if (event instanceof G1GCPauseEvent) {
             recordG1GCPauseEvent((G1GCPauseEvent) event);
+            recordGCPauseEvent(category, event.getDuration());
         }
     }
 
@@ -74,8 +76,10 @@ public class GCEventRecorder extends GCEventAggregation {
         final String category = GcEventTool.parseGCEventCategory(event);
 
         double duration = 0;
+        double pauseDuration = 0;
         double pauseMarkStartDuration = event.getPauseMarkStartDuration() / 1000;
         duration += pauseMarkStartDuration;
+        pauseDuration += pauseMarkStartDuration;
         ZGC_PAUSE_MARK_START_DURATION.labels(path).observe(pauseMarkStartDuration);
         double concurrentMarkDuration = event.getConcurrentMarkDuration() / 1000;
         duration += concurrentMarkDuration;
@@ -85,6 +89,7 @@ public class GCEventRecorder extends GCEventAggregation {
         ZGC_CONCURRENT_MARK_FREE_DURATION.labels(path).observe(concurrentMarkFreeDuration);
         double pauseMarkEndDuration = event.getPauseMarkEndDuration() / 1000;
         duration += pauseMarkEndDuration;
+        pauseDuration += pauseMarkEndDuration;
         ZGC_PAUSE_MARK_END_DURATION.labels(path).observe(pauseMarkEndDuration);
         double concurrentProcessNonStrongReferencesDuration =
                 event.getConcurrentProcessNonStrongReferencesDuration() / 1000;
@@ -106,12 +111,14 @@ public class GCEventRecorder extends GCEventAggregation {
                 .observe(concurrentSelectRelocationSetDuration);
         double pauseRelocateStartDuration = event.getPauseRelocateStartDuration() / 1000;
         duration += pauseRelocateStartDuration;
+        pauseDuration += pauseRelocateStartDuration;
         ZGC_PAUSE_RELOCATE_START_DURATION.labels(path).observe(pauseRelocateStartDuration);
         double concurrentRelocateDuration = event.getConcurrentRelocateDuration() / 1000;
         duration += concurrentRelocateDuration;
         ZGC_CONCURRENT_RELOCATE_DURATION.labels(path).observe(concurrentRelocateDuration);
 
         recordGCEvent(category, duration);
+        recordGCPauseEvent(category, pauseDuration);
 
         double load1m = event.getLoadAverageAt(1);
         double load5m = event.getLoadAverageAt(5);
@@ -229,6 +236,10 @@ public class GCEventRecorder extends GCEventAggregation {
 
     private void recordGCEvent(String category, double duration) {
         GC_EVENT_DURATION.labels(path, category).observe(duration);
+    }
+
+    private void recordGCPauseEvent(String category, double duration) {
+        GC_EVENT_PAUSE_DURATION.labels(path, category).observe(duration);
     }
 
     private void recordCMSConcurrentEvent(CMSConcurrentEvent event) {
@@ -424,25 +435,43 @@ public class GCEventRecorder extends GCEventAggregation {
 
         MemoryPoolSummary eden = event.getEden();
         if (eden != null) {
-            G1_EDEN_OCCUPANCY_AFTER_COLLECTION
-                    .labels(path)
-                    .set(eden.getOccupancyAfterCollection() * 1024);
-            G1_EDEN_OCCUPANCY_BEFORE_COLLECTION
-                    .labels(path)
-                    .set(eden.getOccupancyBeforeCollection() * 1024);
-            G1_EDEN_SIZE_BEFORE_COLLECTION.labels(path).set(eden.getSizeBeforeCollection() * 1024);
-            G1_EDEN_SIZE_AFTER_COLLECTION.labels(path).set(eden.getSizeAfterCollection() * 1024);
+            if (eden.getOccupancyAfterCollection() >= 0) {
+                G1_EDEN_OCCUPANCY_AFTER_COLLECTION
+                        .labels(path)
+                        .set(eden.getOccupancyAfterCollection() * 1024);
+            }
+            if (eden.getOccupancyBeforeCollection() >= 0) {
+                G1_EDEN_OCCUPANCY_BEFORE_COLLECTION
+                        .labels(path)
+                        .set(eden.getOccupancyBeforeCollection() * 1024);
+            }
+            if (eden.getSizeBeforeCollection() > 0) {
+                G1_EDEN_SIZE_BEFORE_COLLECTION
+                        .labels(path)
+                        .set(eden.getSizeBeforeCollection() * 1024);
+            }
+            if (eden.getSizeAfterCollection() > 0) {
+                G1_EDEN_SIZE_AFTER_COLLECTION
+                        .labels(path)
+                        .set(eden.getSizeAfterCollection() * 1024);
+            }
         }
 
         SurvivorMemoryPoolSummary survivor = event.getSurvivor();
         if (survivor != null) {
-            G1_SURVIVOR_HEAP_OCCUPANCY_AFTER_COLLECTION
-                    .labels(path)
-                    .set(survivor.getOccupancyAfterCollection() * 1024);
-            G1_SURVIVOR_HEAP_OCCUPANCY_BEFORE_COLLECTION
-                    .labels(path)
-                    .set(survivor.getOccupancyBeforeCollection() * 1024);
-            G1_SURVIVOR_SIZE.labels(path).set(survivor.getSize() * 1024);
+            if (survivor.getOccupancyAfterCollection() >= 0) {
+                G1_SURVIVOR_HEAP_OCCUPANCY_AFTER_COLLECTION
+                        .labels(path)
+                        .set(survivor.getOccupancyAfterCollection() * 1024);
+            }
+            if (survivor.getOccupancyBeforeCollection() >= 0) {
+                G1_SURVIVOR_HEAP_OCCUPANCY_BEFORE_COLLECTION
+                        .labels(path)
+                        .set(survivor.getOccupancyBeforeCollection() * 1024);
+            }
+            if (survivor.getSize() > 0) {
+                G1_SURVIVOR_SIZE.labels(path).set(survivor.getSize() * 1024);
+            }
         }
 
         MemoryPoolSummary metaspace = event.getPermOrMetaspace();
