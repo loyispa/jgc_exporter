@@ -82,7 +82,49 @@
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.graalvm.sdk</groupId>
+            <artifactId>graal-sdk</artifactId>
+            <version>23.1.1</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>0.9.22</version>
+                        <configuration>
+                            <imageName>${project.artifactId}</imageName>
+                            <mainClass>prometheus.exporter.jgc.Bootstrap</mainClass>
+                            <buildArgs>
+                                <buildArg>--verbose --allow-incomplete-classpath --no-fallback</buildArg>
+                                <buildArg>-H:ConfigurationFileDirectories=src/main/resources/native-image</buildArg>
+                                <buildArg>--initialize-at-run-time=io.netty.handler.ssl.BouncyCastleAlpnSslUtils
+                                </buildArg>
+                                <buildArg>
+                                    --initialize-at-build-time=org.slf4j.LoggerFactory,org.slf4j.reload4j.Reload4jLoggerAdapter,java.beans.Introspector,org.slf4j.reload4j.Reload4jLoggerFactory,org.apache.log4j.LogManager,org.apache.log4j.helpers.LogLog,org.apache.log4j.PatternLayout,org.apache.log4j.spi.LocationInfo,org.apache.log4j.Category,org.apache.log4j.spi.RootLogger,com.sun.beans.introspect.ClassInfo,org.apache.log4j.Logger,org.apache.log4j.Layout,org.apache.log4j.helpers.Loader,org.apache.log4j.spi.LoggingEvent
+                                </buildArg>
+                            </buildArgs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <build>
         <plugins>
             <plugin>
