@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus.exporter.jgc.tool;
+package prometheus.exporter.jgc;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Config {
     public static final String DEFAULT_HOST_PORT = "0.0.0.0:5898";
     public static final int DEFAULT_IDLE_TIMEOUT = 600_000;
     public static final int DEFAULT_BATCH_SIZE = 1024;
     public static final int DEFAULT_BUFFER_SIZE = 8192;
-    public static final int DEFAULT_ANALYSE_PERIOD = 30_000;
-    public static final int DEFAULT_INFLIGHT_RECORD_LENGTH = 2048;
     private String fileRegexPattern;
     private String hostPort = DEFAULT_HOST_PORT;
     private int idleTimeout = DEFAULT_IDLE_TIMEOUT;
     private int batchSize = DEFAULT_BATCH_SIZE;
     private int bufferSize = DEFAULT_BUFFER_SIZE;
-    private int analysePeriod = DEFAULT_ANALYSE_PERIOD;
-    private int inflightRecordLength = DEFAULT_INFLIGHT_RECORD_LENGTH;
 
     public String getFileRegexPattern() {
         return fileRegexPattern;
@@ -70,22 +69,6 @@ public class Config {
         this.bufferSize = bufferSize;
     }
 
-    public int getAnalysePeriod() {
-        return analysePeriod;
-    }
-
-    public void setAnalysePeriod(int analysePeriod) {
-        this.analysePeriod = analysePeriod;
-    }
-
-    public int getInflightRecordLength() {
-        return inflightRecordLength;
-    }
-
-    public void setInflightRecordLength(int inflightRecordLength) {
-        this.inflightRecordLength = inflightRecordLength;
-    }
-
     @Override
     public String toString() {
         return "Config{"
@@ -100,10 +83,6 @@ public class Config {
                 + batchSize
                 + ", bufferSize="
                 + bufferSize
-                + ", analysePeriod="
-                + analysePeriod
-                + ", inflightRecordLength="
-                + inflightRecordLength
                 + '}';
     }
 }

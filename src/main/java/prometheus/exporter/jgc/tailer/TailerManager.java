@@ -26,7 +26,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.tool.Config;
+import prometheus.exporter.jgc.Config;
 
 public class TailerManager {
     private static final Logger LOG = LoggerFactory.getLogger(TailerManager.class);
@@ -76,7 +76,7 @@ public class TailerManager {
                                     return tailer;
                                 });
                     } catch (Throwable t) {
-                        LOG.error("Ignore file: {}", file);
+                        LOG.error("Ignore file: {}", file, t);
                     }
                 }
 
