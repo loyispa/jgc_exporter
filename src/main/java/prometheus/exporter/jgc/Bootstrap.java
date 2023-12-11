@@ -15,109 +15,66 @@
  */
 package prometheus.exporter.jgc;
 
-import static prometheus.exporter.jgc.tool.Metrics.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.lalyos.jfiglet.FigletFont;
 import io.prometheus.client.exporter.HTTPServer;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
+import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.parser.ContinousGCLogFile;
-import prometheus.exporter.jgc.tailer.TailerListener;
+import prometheus.exporter.jgc.collector.CleanableCollectorRegistry;
+import prometheus.exporter.jgc.collector.GCCollector;
+import prometheus.exporter.jgc.collector.SystemCollector;
 import prometheus.exporter.jgc.tailer.TailerManager;
-import prometheus.exporter.jgc.tool.Config;
 
 public class Bootstrap {
     private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
-    private final Config config;
-    private final Map<File, ContinousGCLogFile> registry;
     private final HTTPServer httpServer;
     private final TailerManager tailerManager;
+    private final SystemCollector systemCollector;
+    private final GCCollector gcCollector;
 
     public Bootstrap(Config config) throws IOException {
-        this.config = config;
-        this.registry = new ConcurrentHashMap<>();
         String hostPort = config.getHostPort();
         String host = hostPort.split(":")[0];
         int port = Integer.parseInt(hostPort.split(":")[1]);
-        this.httpServer = new HTTPServer(host, port);
-        this.tailerManager = new TailerManager(config, new LogFileListener());
-        STARTUP_TIMESTAMP.setToCurrentTime();
-    }
-
-    public void run() throws InterruptedException {
-        boolean needSleep = false;
-        try {
-            int analyzed =
-                    registry.values().stream().mapToInt(file -> file.analyze() ? 1 : 0).sum();
-            needSleep = analyzed == 0;
-        } catch (Exception ex) {
-            needSleep = true;
-            LOG.error("Collect fail.", ex);
-        } finally {
-            if (needSleep) {
-                TimeUnit.SECONDS.sleep(1);
-            }
-        }
-    }
-
-    private class LogFileListener implements TailerListener {
-        @Override
-        public void onOpen(File file) {
-            registry.computeIfAbsent(file, f -> new ContinousGCLogFile(file, config));
-            LOG.info("Register file: {}", file);
-        }
-
-        @Override
-        public void onClose(File file) {
-            LOG.info("Unregister file: {}", file);
-            registry.remove(file);
-        }
-
-        @Override
-        public void onRead(File file, String line) {
-            GC_LOG_LINES.labels(file.getPath()).inc();
-            registry.computeIfPresent(
-                    file,
-                    (f, log) -> {
-                        log.append(line);
-                        return log;
-                    });
-        }
+        this.httpServer =
+                new HTTPServer(
+                        new InetSocketAddress(host, port),
+                        CleanableCollectorRegistry.DEFAULT,
+                        false);
+        this.systemCollector = new SystemCollector().register(CleanableCollectorRegistry.DEFAULT);
+        this.gcCollector = new GCCollector().register(CleanableCollectorRegistry.DEFAULT);
+        this.tailerManager = new TailerManager(config, gcCollector);
     }
 
     public static void main(String[] args) throws Exception {
 
-        if (args.length < 1) {
-            throw new IllegalArgumentException("config.yaml");
-        }
-
-        Config config = loadConfig(args[0]);
         printBanner();
 
-        Bootstrap eventLoop = new Bootstrap(config);
-        while (true) {
-            eventLoop.run();
-        }
+        Config config = loadConfig(args);
+
+        new Bootstrap(config);
     }
 
     static void printBanner() throws IOException {
         StringBuilder banner = new StringBuilder();
         banner.append(FigletFont.convertOneLine("jgc_exporter"));
-        String version =
-                String.format(
-                        "%50s%s", "v", Bootstrap.class.getPackage().getImplementationVersion());
+        String v = Bootstrap.class.getPackage().getImplementationVersion();
+        String version = String.format("%55s", v == null ? "unknown" : v);
         banner.append(version);
         LOG.info("{}", banner);
     }
 
-    static Config loadConfig(String configPath) throws IOException {
+    static Config loadConfig(String[] args) throws IOException {
+
+        if (args.length < 1) {
+            throw new IllegalArgumentException("config.yaml");
+        }
+
+        String configPath = args[0];
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         Config config = mapper.readValue(new File(configPath), Config.class);
 
@@ -142,14 +99,6 @@ public class Bootstrap {
 
         if (config.getBatchSize() <= 0) {
             throw new IllegalArgumentException("batchSize");
-        }
-
-        if (config.getAnalysePeriod() <= 0) {
-            throw new IllegalArgumentException("analysePeriod");
-        }
-
-        if (config.getInflightRecordLength() <= 0) {
-            throw new IllegalArgumentException("inflightRecordLength");
         }
 
         return config;

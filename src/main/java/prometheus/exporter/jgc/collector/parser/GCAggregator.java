@@ -13,43 +13,106 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus.exporter.jgc.parser;
+package prometheus.exporter.jgc.collector.parser;
 
-import static prometheus.exporter.jgc.tool.Metrics.*;
+import static java.lang.Class.forName;
+import static prometheus.exporter.jgc.collector.parser.Metrics.*;
 
 import com.microsoft.gctoolkit.event.*;
 import com.microsoft.gctoolkit.event.g1gc.*;
 import com.microsoft.gctoolkit.event.generational.*;
+import com.microsoft.gctoolkit.event.jvm.JVMEvent;
 import com.microsoft.gctoolkit.event.jvm.Safepoint;
 import com.microsoft.gctoolkit.event.jvm.SurvivorRecord;
 import com.microsoft.gctoolkit.event.zgc.*;
+import com.microsoft.gctoolkit.io.SingleGCLogFile;
+import com.microsoft.gctoolkit.jvm.Diary;
+import com.microsoft.gctoolkit.message.ChannelName;
+import com.microsoft.gctoolkit.message.DataSourceParser;
+import com.microsoft.gctoolkit.message.JVMEventChannel;
+import com.microsoft.gctoolkit.message.JVMEventChannelListener;
+import io.prometheus.client.*;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.Bootstrap;
-import prometheus.exporter.jgc.tool.GcEventTool;
+import prometheus.exporter.jgc.collector.CleanableCollectorRegistry;
 
-public class GCEventRecorder extends GCEventAggregation {
-    private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
+public class GCAggregator implements JVMEventChannel {
+    private static final Logger LOG = LoggerFactory.getLogger(GCAggregator.class);
+
+    private static final String[] DEFAULT_PARSERS = {
+        "com.microsoft.gctoolkit.parser.CMSTenuredPoolParser",
+        "com.microsoft.gctoolkit.parser.GenerationalHeapParser",
+        "com.microsoft.gctoolkit.parser.JVMEventParser",
+        "com.microsoft.gctoolkit.parser.PreUnifiedG1GCParser",
+        "com.microsoft.gctoolkit.parser.ShenandoahParser",
+        "com.microsoft.gctoolkit.parser.SurvivorMemoryPoolParser",
+        "com.microsoft.gctoolkit.parser.UnifiedG1GCParser",
+        "com.microsoft.gctoolkit.parser.UnifiedGenerationalParser",
+        "com.microsoft.gctoolkit.parser.UnifiedJVMEventParser",
+        "com.microsoft.gctoolkit.parser.UnifiedSurvivorMemoryPoolParser",
+        "com.microsoft.gctoolkit.parser.ZGCParser"
+    };
+
     private final String path;
+    private final List<DataSourceParser> parsers;
 
-    public GCEventRecorder(String path) {
-        this.path = path;
+    public GCAggregator(File file) {
+        this.path = file.getPath();
+        this.parsers = loadParsers(file);
+        this.parsers.forEach(parser -> parser.publishTo(this));
+    }
+
+    public void receive(String message) {
+        GC_LOG_LINES.labels(path).inc();
+        for (DataSourceParser parser : parsers) {
+            try {
+                parser.receive(message);
+            } catch (Exception ex) {
+                LOG.error("parse error: {}", message, ex);
+            }
+        }
+    }
+
+    public void publish(ChannelName channel, JVMEvent event) {
+        LOG.debug("{} occurs {}", path, event.getClass().getSimpleName());
+        if (event instanceof GenerationalGCEvent) {
+            recordGenerationalGCEvent((GenerationalGCEvent) event);
+        } else if (event instanceof G1GCEvent) {
+            recordG1GCEvent((G1GCEvent) event);
+        } else if (event instanceof ZGCCycle) {
+            recordZGCEvent((ZGCCycle) event);
+        } else if (event instanceof Safepoint) {
+            recordSafePoint((Safepoint) event);
+        } else if (event instanceof SurvivorRecord) {
+            recordSurvivorRecord((SurvivorRecord) event);
+        } else {
+            LOG.warn("unsupported JvmEvent: {} ", event);
+        }
     }
 
     @Override
-    public boolean hasWarning() {
-        return false;
+    public void close() {
+        CleanableCollectorRegistry.DEFAULT.clean(
+                sample -> {
+                    int index = sample.labelNames.indexOf("path");
+                    if (index == -1) {
+                        return false;
+                    }
+                    return path.equals(sample.labelValues.get(index));
+                });
+        LOG.info("clean {} metrics", path);
     }
 
     @Override
-    public boolean isEmpty() {
-        return false;
-    }
+    public void registerListener(JVMEventChannelListener listener) {}
 
-    @Override
-    public void collectGenerationalGCEvent(GenerationalGCEvent event) {
-        String category = GcEventTool.parseGCEventCategory(event);
-        LOG.debug("{} Collect GenerationalGCEvent {} {}", path, event.getClass(), category);
+    public void recordGenerationalGCEvent(GenerationalGCEvent event) {
+        String category = parseGCEventCategory(event);
+        LOG.debug("{} Collect GenerationalGCEvent {}", event.getClass(), category);
         recordGCEvent(category, event.getDuration());
         if (event instanceof GenerationalGCPauseEvent) {
             recordGenerationalGCPauseEvent((GenerationalGCPauseEvent) event);
@@ -59,10 +122,9 @@ public class GCEventRecorder extends GCEventAggregation {
         }
     }
 
-    @Override
-    public void collectG1GCEvent(G1GCEvent event) {
-        final String category = GcEventTool.parseGCEventCategory(event);
-        LOG.debug("{} Collect G1GCEvent {} {}", path, event.getClass(), category);
+    public void recordG1GCEvent(G1GCEvent event) {
+        final String category = parseGCEventCategory(event);
+        LOG.debug("{} Collect G1GCEvent {} ", event.getClass(), category);
         recordGCEvent(category, event.getDuration());
         if (event instanceof G1GCPauseEvent) {
             recordG1GCPauseEvent((G1GCPauseEvent) event);
@@ -70,10 +132,9 @@ public class GCEventRecorder extends GCEventAggregation {
         }
     }
 
-    @Override
-    public void collectZGCEvent(ZGCCycle event) {
-        LOG.debug("{} Collect ZGCEvent", path);
-        final String category = GcEventTool.parseGCEventCategory(event);
+    public void recordZGCEvent(ZGCCycle event) {
+        LOG.debug("Collect ZGCEvent");
+        final String category = parseGCEventCategory(event);
 
         double duration = 0;
         double pauseDuration = 0;
@@ -196,8 +257,7 @@ public class GCEventRecorder extends GCEventAggregation {
         }
     }
 
-    @Override
-    public void collectSafePoint(Safepoint safepoint) {
+    private void recordSafePoint(Safepoint safepoint) {
         LOG.debug("{} Collect Safepoint", path);
         recordGCEvent("safepoint", 0d);
         int totalNumberOfApplicationThreads = safepoint.getTotalNumberOfApplicationThreads();
@@ -220,8 +280,7 @@ public class GCEventRecorder extends GCEventAggregation {
         SAFEPOINT_VMOP_DURATION.labels(path).observe(vmopDuration);
     }
 
-    @Override
-    public void collectSurvivorRecord(SurvivorRecord record) {
+    private void recordSurvivorRecord(SurvivorRecord record) {
         LOG.debug("{} Collect SurvivorRecord", path);
         recordGCEvent("survivor", 0d);
         long desiredOccupancyAfterCollection = record.getDesiredOccupancyAfterCollection();
@@ -580,5 +639,116 @@ public class GCEventRecorder extends GCEventAggregation {
                 G1_ARCHIVE_REGION_ASSIGN.labels(path).set(archiveRegion.getAssigned());
             }
         }
+    }
+
+    private String parseGCEventCategory(GenerationalGCEvent event) {
+
+        if (event instanceof GenerationalGCPauseEvent) {
+
+            if (event instanceof FullGC) {
+                return "FullGC";
+            } else if (event instanceof InitialMark) {
+                return "CMSInitialMark";
+            } else if (event instanceof CMSRemark) {
+                return "CMSRemark";
+            } else if (event instanceof DefNew
+                    || event instanceof ParNew
+                    || event instanceof PSYoungGen
+                    || event instanceof YoungGC) {
+                return "YoungGC";
+            }
+
+        } else if (event instanceof CMSConcurrentEvent) {
+            if (event instanceof AbortablePreClean) {
+                return "CMSAbortablePreClean";
+            } else if (event instanceof ConcurrentMark) {
+                return "CMSConcurrentMark";
+            } else if (event instanceof ConcurrentSweep) {
+                return "CMSConcurrentSweep";
+            } else if (event instanceof ConcurrentPreClean) {
+                return "CMSConcurrentPreClean";
+            } else if (event instanceof ConcurrentReset) {
+                return "CMSConcurrentReset";
+            }
+        }
+
+        return Collector.sanitizeMetricName(event.getGarbageCollectionType().name());
+    }
+
+    private String parseGCEventCategory(G1GCEvent event) {
+        if (event instanceof G1GCPauseEvent) {
+            if (event instanceof G1Young) {
+                if (event instanceof G1YoungInitialMark) {
+                    return "G1InitialMark";
+                } else if (event instanceof G1Mixed) {
+                    return "G1MixedGC";
+                }
+                return "YoungGC";
+            } else if (event instanceof G1Cleanup) {
+                return "G1Cleanup";
+            } else if (event instanceof G1Remark) {
+                return "G1Cleanup";
+            } else if (event instanceof G1FullGC) {
+                return "FullGC";
+            }
+        } else if (event instanceof G1GCConcurrentEvent) {
+            String category = event.getClass().getSimpleName();
+            if (!category.startsWith("G1")) {
+                category = "G1" + category;
+            }
+            return category;
+        }
+        return Collector.sanitizeMetricName(event.getGarbageCollectionType().name());
+    }
+
+    private String parseGCEventCategory(ZGCCycle event) {
+        return "zgc";
+    }
+
+    // load suitable log parsers for the gc log
+    private List<DataSourceParser> loadParsers(File file) {
+        try {
+            SingleGCLogFile logFile = new SingleGCLogFile(file.toPath());
+            Diary diary = logFile.diary();
+            if (diary.isG1GC()
+                    || diary.isZGC()
+                    || diary.isCMS()
+                    || diary.isICMS()
+                    || diary.isDefNew()
+                    || diary.isSerialFull()
+                    || diary.isPSOldGen()) {
+
+                List<DataSourceParser> parsers =
+                        Arrays.stream(DEFAULT_PARSERS)
+                                .map(
+                                        parserName -> {
+                                            try {
+                                                Class<?> clazz =
+                                                        forName(
+                                                                parserName,
+                                                                true,
+                                                                Thread.currentThread()
+                                                                        .getContextClassLoader());
+                                                return Optional.of(
+                                                        clazz.getConstructors()[0].newInstance());
+                                            } catch (ClassNotFoundException
+                                                    | InstantiationException
+                                                    | IllegalAccessException
+                                                    | InvocationTargetException e) {
+                                                return Optional.empty();
+                                            }
+                                        })
+                                .filter(Optional::isPresent)
+                                .map(optional -> (DataSourceParser) optional.get())
+                                .filter(dataSourceParser -> dataSourceParser.accepts(diary))
+                                .collect(Collectors.toList());
+
+                if (!parsers.isEmpty()) {
+                    return parsers;
+                }
+            }
+        } catch (Exception ex) {
+        }
+        throw new UnsupportedOperationException(file.getPath());
     }
 }

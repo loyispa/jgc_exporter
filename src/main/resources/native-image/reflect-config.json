@@ -54,48 +54,18 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "name":"com.microsoft.gctoolkit.parser.ZGCParser",
+  "queryAllPublicConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"com.microsoft.gctoolkit.parser.jvm.UnifiedDiarizer",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"io.netty.resolver.dns.Cache$Entries",
-  "fields":[{"name":"expirationFuture"}]
-},
-{
-  "name":"io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider"
-},
-{
-  "name":"io.netty.util.concurrent.DefaultPromise",
-  "fields":[{"name":"result"}]
-},
-{
-  "name":"io.netty.util.concurrent.SingleThreadEventExecutor",
-  "fields":[{"name":"state"}, {"name":"threadProperties"}]
-},
-{
-  "name":"io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueColdProducerFields",
-  "fields":[{"name":"producerLimit"}]
-},
-{
-  "name":"io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueConsumerFields",
-  "fields":[{"name":"consumerIndex"}]
-},
-{
-  "name":"io.netty.util.internal.shaded.org.jctools.queues.BaseMpscLinkedArrayQueueProducerFields",
-  "fields":[{"name":"producerIndex"}]
-},
-{
   "name":"io.prometheus.client.Striped64",
   "fields":[{"name":"base"}, {"name":"busy"}]
-},
-{
-  "name":"io.vertx.core.eventbus.impl.EventBusImpl",
-  "fields":[{"name":"inboundInterceptors"}, {"name":"outboundInterceptors"}]
-},
-{
-  "name":"io.vertx.core.logging.SLF4JLogDelegateFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"java.beans.PropertyVetoException"
@@ -115,33 +85,6 @@
   "methods":[{"name":"getContextClassLoader","parameterTypes":[] }]
 },
 {
-  "name":"java.lang.management.ManagementFactory",
-  "methods":[{"name":"getRuntimeMXBean","parameterTypes":[] }]
-},
-{
-  "name":"java.lang.management.RuntimeMXBean",
-  "methods":[{"name":"getInputArguments","parameterTypes":[] }]
-},
-{
-  "name":"java.nio.Bits",
-  "fields":[{"name":"UNALIGNED"}]
-},
-{
-  "name":"java.nio.Buffer",
-  "fields":[{"name":"address"}]
-},
-{
-  "name":"java.nio.ByteBuffer",
-  "methods":[{"name":"alignedSlice","parameterTypes":["int"] }]
-},
-{
-  "name":"java.nio.DirectByteBuffer",
-  "methods":[{"name":"<init>","parameterTypes":["long","int"] }]
-},
-{
-  "name":"java.security.SecureRandomParameters"
-},
-{
   "name":"java.sql.Date"
 },
 {
@@ -158,10 +101,6 @@
 {
   "name":"java.util.concurrent.atomic.AtomicReference",
   "fields":[{"name":"value"}]
-},
-{
-  "name":"jdk.internal.misc.Unsafe",
-  "methods":[{"name":"getUnsafe","parameterTypes":[] }]
 },
 {
   "name":"org.apache.log4j.ConsoleAppender",
@@ -192,35 +131,10 @@
   "name":"org.apache.log4j.PatternLayoutCustomizer"
 },
 {
-  "name":"prometheus.exporter.jgc.parser.zgc.ContinousZGCParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"prometheus.exporter.jgc.tool.Config",
+  "name":"prometheus.exporter.jgc.Config",
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setFileRegexPattern","parameterTypes":["java.lang.String"] }, {"name":"setHostPort","parameterTypes":["java.lang.String"] }, {"name":"setIdleTimeout","parameterTypes":["int"] }, {"name":"setInflightRecordLength","parameterTypes":["int"] }]
-},
-{
-  "name":"sun.misc.Unsafe",
-  "fields":[{"name":"theUnsafe"}],
-  "methods":[{"name":"copyMemory","parameterTypes":["java.lang.Object","long","java.lang.Object","long","long"] }, {"name":"getAndAddLong","parameterTypes":["java.lang.Object","long","long"] }, {"name":"getAndSetObject","parameterTypes":["java.lang.Object","long","java.lang.Object"] }, {"name":"invokeCleaner","parameterTypes":["java.nio.ByteBuffer"] }, {"name":"storeFence","parameterTypes":[] }]
-},
-{
-  "name":"sun.misc.VM"
-},
-{
-  "name":"sun.nio.ch.SelectorImpl",
-  "fields":[{"name":"publicSelectedKeys"}, {"name":"selectedKeys"}]
-},
-{
-  "name":"sun.security.provider.NativePRNG",
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["java.security.SecureRandomParameters"] }]
-},
-{
-  "name":"sun.security.provider.SHA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setFileRegexPattern","parameterTypes":["java.lang.String"] }, {"name":"setHostPort","parameterTypes":["java.lang.String"] }, {"name":"setIdleTimeout","parameterTypes":["int"] }]
 }
 ]

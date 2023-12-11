@@ -30,7 +30,6 @@ http://0.0.0.0:5898/metrics
 | fileRegexPattern | Regex pattern of gc log file path                                           |
 | idleTimeout      | Time (ms) to close idle files, default is 10 minutes(600,000ms)             |
 | batchSize        | Maximum number of lines per log read, default is 1024                       |   
-| analysePeriod    | Minimum interval (ms) between two analyses, default is 30 seconds(30,000ms) |   
 
 # Metric
 | Name                             | type    | labels         | Description                 |
@@ -39,7 +38,7 @@ http://0.0.0.0:5898/metrics
 | jgc_event_duration_seconds       | summary | path, category | Duration of GC events       |
 | jgc_event_pause_duration_seconds | summary | path, category | Duration of GC pause events |
 
-See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/tool/Metrics.java) related to specific garbage collection algorithms, cms, g1, zgc, etc.
+See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/collector/parser/Metrics.java) related to specific garbage-collection algorithms.
 
 # Build
 ```
