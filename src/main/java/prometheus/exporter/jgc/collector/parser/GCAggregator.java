@@ -38,7 +38,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.collector.LocalCollectorRegistry;
+import prometheus.exporter.jgc.collector.CleanableCollectorRegistry;
 
 public class GCAggregator implements JVMEventChannel {
     private static final Logger LOG = LoggerFactory.getLogger(GCAggregator.class);
@@ -96,7 +96,7 @@ public class GCAggregator implements JVMEventChannel {
 
     @Override
     public void close() {
-        LocalCollectorRegistry.DEFAULT.clean(
+        CleanableCollectorRegistry.DEFAULT.clean(
                 sample -> {
                     int index = sample.labelNames.indexOf("path");
                     if (index == -1) {

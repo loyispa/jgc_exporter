@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
-public class LocalCollectorRegistry extends CollectorRegistry {
-    public static final LocalCollectorRegistry DEFAULT = new LocalCollectorRegistry();
+public class CleanableCollectorRegistry extends CollectorRegistry {
+    public static final CleanableCollectorRegistry DEFAULT = new CleanableCollectorRegistry();
 
     private final List<SimpleCollector> collectors;
 
-    private LocalCollectorRegistry() {
+    private CleanableCollectorRegistry() {
         super(true);
         this.collectors = new CopyOnWriteArrayList<>();
     }

@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import prometheus.exporter.jgc.collector.CleanableCollectorRegistry;
 import prometheus.exporter.jgc.collector.GCCollector;
-import prometheus.exporter.jgc.collector.LocalCollectorRegistry;
 import prometheus.exporter.jgc.collector.SystemCollector;
 import prometheus.exporter.jgc.tailer.TailerManager;
 
@@ -42,9 +42,11 @@ public class Bootstrap {
         int port = Integer.parseInt(hostPort.split(":")[1]);
         this.httpServer =
                 new HTTPServer(
-                        new InetSocketAddress(host, port), LocalCollectorRegistry.DEFAULT, false);
-        this.systemCollector = new SystemCollector().register(LocalCollectorRegistry.DEFAULT);
-        this.gcCollector = new GCCollector().register(LocalCollectorRegistry.DEFAULT);
+                        new InetSocketAddress(host, port),
+                        CleanableCollectorRegistry.DEFAULT,
+                        false);
+        this.systemCollector = new SystemCollector().register(CleanableCollectorRegistry.DEFAULT);
+        this.gcCollector = new GCCollector().register(CleanableCollectorRegistry.DEFAULT);
         this.tailerManager = new TailerManager(config, gcCollector);
     }
 
