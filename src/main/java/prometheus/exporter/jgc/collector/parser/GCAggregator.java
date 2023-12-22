@@ -18,6 +18,7 @@ package prometheus.exporter.jgc.collector.parser;
 import static java.lang.Class.forName;
 import static prometheus.exporter.jgc.collector.parser.Metrics.*;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.microsoft.gctoolkit.event.*;
 import com.microsoft.gctoolkit.event.g1gc.*;
 import com.microsoft.gctoolkit.event.generational.*;
@@ -77,6 +78,7 @@ public class GCAggregator implements JVMEventChannel {
         }
     }
 
+    @Override
     public void publish(ChannelName channel, JVMEvent event) {
         LOG.debug("{} occurs {}", path, event.getClass().getSimpleName());
         if (event instanceof GenerationalGCEvent) {
@@ -110,6 +112,7 @@ public class GCAggregator implements JVMEventChannel {
     @Override
     public void registerListener(JVMEventChannelListener listener) {}
 
+    @VisibleForTesting
     public void recordGenerationalGCEvent(GenerationalGCEvent event) {
         String category = parseGCEventCategory(event);
         LOG.debug("{} Collect GenerationalGCEvent {}", event.getClass(), category);
@@ -122,6 +125,7 @@ public class GCAggregator implements JVMEventChannel {
         }
     }
 
+    @VisibleForTesting
     public void recordG1GCEvent(G1GCEvent event) {
         final String category = parseGCEventCategory(event);
         LOG.debug("{} Collect G1GCEvent {} ", event.getClass(), category);
@@ -132,6 +136,7 @@ public class GCAggregator implements JVMEventChannel {
         }
     }
 
+    @VisibleForTesting
     public void recordZGCEvent(ZGCCycle event) {
         LOG.debug("Collect ZGCEvent");
         final String category = parseGCEventCategory(event);
