@@ -688,14 +688,15 @@ public class GCAggregator implements JVMEventChannel {
                 } else if (event instanceof G1Mixed) {
                     return "G1MixedGC";
                 }
-                return "YoungGC";
+                return "G1YoungGC";
             } else if (event instanceof G1Cleanup) {
                 return "G1Cleanup";
             } else if (event instanceof G1Remark) {
                 return "G1Cleanup";
             } else if (event instanceof G1FullGC) {
-                return "FullGC";
+                return "G1FullGC";
             }
+            return "G1" + sanitizeMetricName(event.getGCCause().getLabel());
         } else if (event instanceof G1GCConcurrentEvent) {
             String category = event.getClass().getSimpleName();
             if (!category.startsWith("G1")) {
@@ -703,11 +704,26 @@ public class GCAggregator implements JVMEventChannel {
             }
             return category;
         }
-        return Collector.sanitizeMetricName(event.getGarbageCollectionType().name());
+        return sanitizeMetricName(event.getGarbageCollectionType().name());
     }
 
     private String parseGCEventCategory(ZGCCycle event) {
-        return "zgc";
+        return "ZGC" + sanitizeMetricName(event.getGCCause().getLabel());
+    }
+
+    private static String sanitizeMetricName(String metricName) {
+        int length = metricName.length();
+        StringBuilder sanitized = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            char ch = metricName.charAt(i);
+            if (ch == ':'
+                    || (ch >= 'a' && ch <= 'z')
+                    || (ch >= 'A' && ch <= 'Z')
+                    || (i > 0 && ch >= '0' && ch <= '9')) {
+                sanitized.append(ch);
+            }
+        }
+        return sanitized.toString();
     }
 
     // load suitable log parsers for the gc log
