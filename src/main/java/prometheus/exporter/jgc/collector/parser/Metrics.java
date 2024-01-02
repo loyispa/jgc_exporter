@@ -33,6 +33,19 @@ public class Metrics {
                     .help("Duration of gc event")
                     .register(CleanableCollectorRegistry.DEFAULT);
 
+    public static final Summary GC_EVENT_LAST_MINUTE_DURATION =
+            Summary.build()
+                    .ageBuckets(6)
+                    .maxAgeSeconds(60)
+                    .quantile(0, 0.05)
+                    .quantile(0.5, 0.05)
+                    .quantile(0.75, 0.05)
+                    .quantile(1.0, 0.05)
+                    .labelNames("path")
+                    .name("jgc_event_last_minute_duration_seconds")
+                    .help("Last minute duration of gc event")
+                    .register(CleanableCollectorRegistry.DEFAULT);
+
     public static final Summary GC_EVENT_PAUSE_DURATION =
             Summary.build()
                     .labelNames("path", "category")

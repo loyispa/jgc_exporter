@@ -300,6 +300,7 @@ public class GCAggregator implements JVMEventChannel {
 
     private void recordGCEvent(String category, double duration) {
         GC_EVENT_DURATION.labels(path, category).observe(duration);
+        GC_EVENT_LAST_MINUTE_DURATION.labels(path).observe(duration);
     }
 
     private void recordGCPauseEvent(String category, double duration) {
@@ -730,6 +731,12 @@ public class GCAggregator implements JVMEventChannel {
     private List<DataSourceParser> loadParsers(File file) {
         try {
             SingleGCLogFile logFile = new SingleGCLogFile(file.toPath());
+
+            boolean hasEnoughLogs = logFile.stream().skip(10).findAny().isPresent();
+            if (!hasEnoughLogs) {
+                throw new IllegalStateException();
+            }
+
             Diary diary = logFile.diary();
             if (diary.isG1GC()
                     || diary.isZGC()
@@ -764,6 +771,7 @@ public class GCAggregator implements JVMEventChannel {
                                 .filter(dataSourceParser -> dataSourceParser.accepts(diary))
                                 .collect(Collectors.toList());
 
+                parsers.forEach(parser -> parser.diary(diary));
                 if (!parsers.isEmpty()) {
                     return parsers;
                 }

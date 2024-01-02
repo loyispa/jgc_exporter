@@ -1,0 +1,23 @@
+[0.079s][info][gc] Using Concurrent Mark Sweep
+[0.079s][info][gc,heap,coops] Heap address: 0x00000006c0000000, size: 4096 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+[0.965s][info][gc,start     ] GC(0) Pause Young (Allocation Failure)
+[0.966s][info][gc,task      ] GC(0) Using 5 workers of 8 for evacuation
+[0.967s][info][gc,heap      ] GC(0) ParNew: 69866K->988K(78656K)
+[0.967s][info][gc,heap      ] GC(0) CMS: 0K->0K(174784K)
+[0.967s][info][gc,metaspace ] GC(0) Metaspace: 6322K(6528K)->6322K(6528K) NonClass: 5767K(5888K)->5767K(5888K) Class: 554K(640K)->554K(640K)
+[0.967s][info][gc           ] GC(0) Pause Young (Allocation Failure) 68M->0M(247M) 1.609ms
+[0.967s][info][gc,cpu       ] GC(0) User=0.00s Sys=0.00s Real=0.00s
+[5.142s][info][gc,start     ] GC(5) Pause Full (System.gc())
+[5.142s][info][gc,phases,start] GC(5) Phase 1: Mark live objects
+[5.146s][info][gc,phases      ] GC(5) Phase 1: Mark live objects 3.478ms
+[5.146s][info][gc,phases,start] GC(5) Phase 2: Compute new object addresses
+[5.147s][info][gc,phases      ] GC(5) Phase 2: Compute new object addresses 0.585ms
+[5.147s][info][gc,phases,start] GC(5) Phase 3: Adjust pointers
+[5.148s][info][gc,phases      ] GC(5) Phase 3: Adjust pointers 1.448ms
+[5.148s][info][gc,phases,start] GC(5) Phase 4: Move objects
+[5.149s][info][gc,phases      ] GC(5) Phase 4: Move objects 0.848ms
+[5.162s][info][gc,heap        ] GC(5) ParNew: 40131K->0K(78656K)
+[5.162s][info][gc,heap        ] GC(5) CMS: 0K->1073K(174784K)
+[5.163s][info][gc,metaspace   ] GC(5) Metaspace: 6322K(6528K)->6322K(6528K) NonClass: 5768K(5888K)->5768K(5888K) Class: 554K(640K)->554K(640K)
+[5.163s][info][gc             ] GC(5) Pause Full (System.gc()) 39M->1M(247M) 20.787ms
+[5.164s][info][gc,cpu         ] GC(5) User=0.00s Sys=0.01s Real=0.02s

@@ -33,7 +33,6 @@ public class Tailer {
     private long inode;
     private int bufferPos;
     private int bufferCap;
-    private long lastUpdated;
     private final boolean seekToEnd;
     private final int batchSize;
     private final int bufferSize;
@@ -73,32 +72,41 @@ public class Tailer {
         return lines;
     }
 
-    public boolean rotate() {
-        try {
-            this.lastUpdated = this.file.lastModified();
-            long currInode = getInode(this.file);
-            if (currInode != inode) {
-                refresh();
-                return true;
-            }
-        } catch (IOException ex) {
-            LOG.error("Rotate fail.", ex);
-        }
-        return false;
-    }
-
     public boolean needTail() {
         try {
             if (isIdle()) {
                 return this.raf != null && this.raf.getFilePointer() < this.raf.length();
             }
+            return !rotate();
         } catch (IOException ignore) {
         }
         return true;
     }
 
     private boolean isIdle() {
-        return lastUpdated + idleTimeout < System.currentTimeMillis();
+        return this.file.lastModified() + idleTimeout < System.currentTimeMillis();
+    }
+
+    private boolean rotate() {
+        try {
+            // inode changes
+            long currInode = getInode(this.file);
+            if (currInode != inode) {
+                LOG.info("{} changed", this.file);
+                return true;
+            }
+
+            // truncate occurs
+            long fp = raf.getFilePointer();
+            long len = raf.length();
+            if (fp > len) {
+                LOG.info("{} truncated", this.file);
+                return true;
+            }
+        } catch (IOException ex) {
+            LOG.error("Rotate fail.", ex);
+        }
+        return false;
     }
 
     public File getFile() {
@@ -121,7 +129,6 @@ public class Tailer {
             this.close();
             this.raf = new RandomAccessFile(file, "r");
             this.inode = getInode(this.file);
-            this.lastUpdated = this.file.lastModified();
             if (seekToEnd) {
                 this.raf.seek(this.raf.length());
             } else {
@@ -211,7 +218,7 @@ public class Tailer {
                 + ", inode="
                 + inode
                 + ", lastUpdated="
-                + lastUpdated
+                + file.lastModified()
                 + '}';
     }
 }
