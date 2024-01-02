@@ -60,27 +60,6 @@ public class TailerTest {
     }
 
     @Test
-    public void testRotate() throws Exception {
-
-        File temp = File.createTempFile("temp", "log");
-
-        Tailer tailer =
-                new Tailer(
-                        temp,
-                        true,
-                        Config.DEFAULT_BATCH_SIZE,
-                        Config.DEFAULT_BUFFER_SIZE,
-                        Config.DEFAULT_IDLE_TIMEOUT);
-
-        Assert.assertEquals(tailer.rotate(), false);
-
-        temp.delete();
-        temp.createNewFile();
-
-        Assert.assertEquals(tailer.rotate(), true);
-    }
-
-    @Test
     public void testFind() throws Exception {
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");

@@ -1,0 +1,19 @@
+Java HotSpot(TM) 64-Bit Server VM (25.192-b12) for linux-amd64 JRE (1.8.0_192-b12), built on Oct  6 2018 06:46:09 by "java_re" with gcc 7.3.0
+Memory: 4k page, physical 98947364k(11432988k free), swap 16383996k(15611232k free)
+CommandLine flags: -XX:CMSInitiatingOccupancyFraction=70 -XX:+DisableExplicitGC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/home/logs/hubble-web-v4/ -XX:InitialHeapSize=4294967296 -XX:MaxHeapSize=4294967296 -XX:MaxTenuringThreshold=10 -XX:NewRatio=2 -XX:OldPLABSize=16 -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:SurvivorRatio=3 -XX:-UseAdaptiveSizePolicy -XX:+UseCMSCompactAtFullCollection -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseConcMarkSweepGC -XX:+UseParNewGC
+2023-12-28T15:57:13.020+0800: 3.151: [GC (Allocation Failure)
+2023-12-28T15:57:13.021+0800: 3.151: [ParNew: 838848K->33776K(1118464K), 0.0530041 secs] 838848K->33776K(3914688K), 0.0531491 secs] [Times: user=0.75 sys=0.05, real=0.05 secs]
+2023-12-28T15:57:13.074+0800: 3.205: [GC (CMS Initial Mark) [1 CMS-initial-mark: 0K(2796224K)] 53575K(3914688K), 0.0045636 secs] [Times: user=0.04 sys=0.00, real=0.01 secs]
+2023-12-28T15:57:13.079+0800: 3.209: [CMS-concurrent-mark-start]
+2023-12-28T15:57:13.079+0800: 3.210: [CMS-concurrent-mark: 0.001/0.001 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+2023-12-28T15:57:13.079+0800: 3.210: [CMS-concurrent-preclean-start]
+2023-12-28T15:57:13.085+0800: 3.215: [CMS-concurrent-preclean: 0.006/0.006 secs] [Times: user=0.06 sys=0.01, real=0.01 secs]
+2023-12-28T15:57:13.085+0800: 3.216: [CMS-concurrent-abortable-preclean-start]
+2023-12-28T15:57:13.809+0800: 3.940: [CMS-concurrent-abortable-preclean: 0.443/0.724 secs] [Times: user=3.94 sys=0.14, real=0.72 secs]
+2023-12-28T15:57:13.809+0800: 3.940: [GC (CMS Final Remark) [YG occupancy: 560011 K (1118464 K)]
+2023-12-28T15:57:13.809+0800: 3.940: [Rescan (parallel) , 0.0197664 secs]
+2023-12-28T15:57:13.829+0800: 3.960: [weak refs processing, 0.0000455 secs]
+2023-12-28T15:57:13.829+0800: 3.960: [class unloading, 0.0066301 secs]
+2023-12-28T15:57:13.836+0800: 3.967: [scrub symbol table, 0.0046419 secs]
+2023-12-28T15:57:13.841+0800: 3.971: [scrub string table, 0.0006346 secs][1 CMS-remark: 0K(2796224K)] 560011K(3914688K), 0.0328288 secs] [Times: user=0.45 sys=0.01, real=0.03 secs]
+2024-01-02T14:39:57.247+0800: 5.080: [Full GC (System.gc()) 2024-01-02T14:39:57.247+0800: 5.080: [CMS: 690K->770K(174784K), 0.0109894 secs] 48253K->770K(253504K), [Metaspace: 4175K->4175K(1056768K)], 0.0111033 secs] [Times: user=0.01 sys=0.00, real=0.01 secs]

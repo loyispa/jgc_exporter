@@ -83,9 +83,7 @@ public class TailerManager {
                 final Iterator<Tailer> iterator = registry.values().iterator();
                 while (iterator.hasNext()) {
                     Tailer tailer = iterator.next();
-                    if (tailer.rotate()) {
-                        LOG.info("Rotate file {}", tailer);
-                    } else if (!tailer.needTail()) {
+                    if (!tailer.needTail()) {
                         try {
                             close(tailer);
                         } finally {

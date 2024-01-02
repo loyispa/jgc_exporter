@@ -27,35 +27,68 @@ import prometheus.exporter.jgc.collector.parser.GCAggregator;
 public class ParserTest {
 
     @Test
-    public void test1() throws Exception {
-        File log = new File("src/test/resources/parser/g1.log");
+    public void testJdk8G1() throws Exception {
+        File log = new File("src/test/resources/parser/jdk8-g1.log");
         GCAggregator aggregator =
                 Mockito.mock(
                         GCAggregator.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
-        Mockito.verify(aggregator, Mockito.times(1)).recordG1GCEvent(notNull());
+        Mockito.verify(aggregator, Mockito.times(2)).recordG1GCEvent(notNull());
     }
 
     @Test
-    public void test2() throws Exception {
-        File log = new File("src/test/resources/parser/zgc.log");
+    public void testJdk11G1() throws Exception {
+        File log = new File("src/test/resources/parser/jdk11-g1.log");
         GCAggregator aggregator =
                 Mockito.mock(
                         GCAggregator.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
-        Mockito.verify(aggregator, Mockito.times(1)).recordZGCEvent(notNull());
+        Mockito.verify(aggregator, Mockito.times(2)).recordG1GCEvent(notNull());
     }
 
     @Test
-    public void test3() throws Exception {
-        File log = new File("src/test/resources/parser/cms.log");
+    public void testZGC() throws Exception {
+        File log = new File("src/test/resources/parser/jdk11-zgc.log");
         GCAggregator aggregator =
                 Mockito.mock(
                         GCAggregator.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
-        Mockito.verify(aggregator, Mockito.times(20)).recordGenerationalGCEvent(notNull());
+        Mockito.verify(aggregator, Mockito.times(4)).recordZGCEvent(notNull());
+    }
+
+    @Test
+    public void testJdk8CMS() throws Exception {
+        File log = new File("src/test/resources/parser/jdk8-cms-and-parnew.log");
+        GCAggregator aggregator =
+                Mockito.mock(
+                        GCAggregator.class,
+                        withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
+        Files.lines(log.toPath()).forEach(aggregator::receive);
+        Mockito.verify(aggregator, Mockito.times(7)).recordGenerationalGCEvent(isNotNull());
+    }
+
+    @Test
+    public void testJdk11CMS() throws Exception {
+        File log = new File("src/test/resources/parser/jdk11-cms-and-parnew.log");
+        GCAggregator aggregator =
+                Mockito.mock(
+                        GCAggregator.class,
+                        withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
+        Files.lines(log.toPath()).forEach(aggregator::receive);
+        Mockito.verify(aggregator, Mockito.times(6)).recordGenerationalGCEvent(isNotNull());
+    }
+
+    @Test
+    public void testJdk8ParallelOld() throws Exception {
+        File log = new File("src/test/resources/parser/jdk8-parallel-old.log");
+        GCAggregator aggregator =
+                Mockito.mock(
+                        GCAggregator.class,
+                        withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
+        Files.lines(log.toPath()).forEach(aggregator::receive);
+        Mockito.verify(aggregator, Mockito.times(6)).recordGenerationalGCEvent(isNotNull());
     }
 }
