@@ -1,0 +1,12 @@
+OpenJDK 64-Bit Server VM (25.322-b06) for bsd-aarch64 JRE (1.8.0_322-b06), built on Jan 19 2022 05:50:08 by "re" with gcc Apple LLVM 12.0.0 (clang-1200.0.32.28)
+Memory: 16k page, physical 16777216k(64512k free)
+
+/proc/meminfo:
+
+CommandLine flags: -XX:InitialHeapSize=268435456 -XX:MaxHeapSize=4294967296 -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseParallelGC -XX:+UseParallelOldGC
+2024-01-03T15:40:10.318+0800: 0.111: [GC (Allocation Failure) [PSYoungGen: 65479K->10720K(76288K)] 65479K->59697K(251392K), 0.0130883 secs] [Times: user=0.01 sys=0.01, real=0.02 secs]
+2024-01-03T15:40:10.334+0800: 0.127: [GC (Allocation Failure) [PSYoungGen: 76177K->10722K(141824K)] 125154K->125011K(316928K), 0.0153835 secs] [Times: user=0.01 sys=0.02, real=0.01 secs]
+2024-01-03T15:40:10.349+0800: 0.142: [Full GC (Ergonomics) [PSYoungGen: 10722K->0K(141824K)] [ParOldGen: 114288K->124911K(276992K)] 125011K->124911K(418816K), [Metaspace: 4163K->4163K(1056768K)], 0.0246981 secs] [Times: user=0.05 sys=0.02, real=0.03 secs]
+2024-01-03T15:40:10.386+0800: 0.179: [GC (Allocation Failure) [PSYoungGen: 131017K->10703K(141824K)] 255929K->255550K(418816K), 0.0248615 secs] [Times: user=0.02 sys=0.03, real=0.03 secs]
+2024-01-03T15:40:10.411+0800: 0.204: [Full GC (Ergonomics) [PSYoungGen: 10703K->0K(141824K)] [ParOldGen: 244846K->253179K(488960K)] 255550K->253179K(630784K), [Metaspace: 4164K->4164K(1056768K)], 0.0123946 secs] [Times: user=0.02 sys=0.01, real=0.01 secs]
+2024-01-03T15:40:13.223+0800: 3.016: [Full GC (Allocation Failure) [PSYoungGen: 611805K->611805K(741888K)] [ParOldGen: 2796515K->2796515K(2796544K)] 3408320K->3408320K(3538432K), [Metaspace: 4157K->4157K(1056768K)], 0.0133834 secs] [Times: user=0.06 sys=0.00, real=0.01 secs]

@@ -725,6 +725,7 @@ public class GCAggregator implements JVMEventChannel {
 
             boolean hasEnoughLogs = logFile.stream().skip(10).findAny().isPresent();
             if (!hasEnoughLogs) {
+                LOG.warn("skip logs: {}", path);
                 throw new IllegalStateException();
             }
 
