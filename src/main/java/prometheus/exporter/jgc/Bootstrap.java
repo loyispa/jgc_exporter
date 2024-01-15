@@ -85,8 +85,8 @@ public class Bootstrap {
             throw new IllegalArgumentException("hostPort");
         }
 
-        if (config.getFileRegexPattern() == null) {
-            throw new IllegalArgumentException("fileRegexPattern");
+        if (config.getFileRegexPattern() == null && config.getFileGlobPattern() == null) {
+            throw new IllegalArgumentException("must specify fileRegexPattern or fileGlobPattern");
         }
 
         if (config.getIdleTimeout() <= 0) {
