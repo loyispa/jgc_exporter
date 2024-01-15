@@ -1,0 +1,34 @@
+[0.006s][info][gc,heap] Heap region size: 1M
+[0.007s][info][gc     ] Using G1
+[0.007s][info][gc,heap,coops] Heap address: 0x00000006c0000000, size: 4096 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+[2.078s][info][gc,start     ] GC(87) Pause Young (Normal) (G1 Evacuation Pause)
+[2.078s][info][gc,task      ] GC(87) Using 8 workers of 8 for evacuation
+[2.079s][info][gc,phases    ] GC(87)   Pre Evacuate Collection Set: 0.0ms
+[2.079s][info][gc,phases    ] GC(87)   Evacuate Collection Set: 0.3ms
+[2.079s][info][gc,phases    ] GC(87)   Post Evacuate Collection Set: 0.3ms
+[2.079s][info][gc,phases    ] GC(87)   Other: 0.1ms
+[2.079s][info][gc,heap      ] GC(87) Eden regions: 776->0(776)
+[2.079s][info][gc,heap      ] GC(87) Survivor regions: 0->0(97)
+[2.079s][info][gc,heap      ] GC(87) Old regions: 2->2
+[2.079s][info][gc,heap      ] GC(87) Humongous regions: 0->0
+[2.079s][info][gc,metaspace ] GC(87) Metaspace: 6320K(6784K)->6320K(6784K) NonClass: 5766K(6144K)->5766K(6144K) Class: 554K(640K)->554K(640K)
+[2.079s][info][gc           ] GC(87) Pause Young (Normal) (G1 Evacuation Pause) 777M->1M(1294M) 0.814ms
+[2.079s][info][gc,cpu       ] GC(87) User=0.00s Sys=0.00s Real=0.00s
+[2.085s][info][gc,task      ] GC(88) Using 8 workers of 8 for full compaction
+[2.085s][info][gc,start     ] GC(88) Pause Full (System.gc())
+[2.085s][info][gc,phases,start] GC(88) Phase 1: Mark live objects
+[2.090s][info][gc,stringtable ] GC(88) Cleaned string and symbol table, strings: 2668 processed, 11 removed, symbols: 26892 processed, 0 removed
+[2.090s][info][gc,phases      ] GC(88) Phase 1: Mark live objects 5.064ms
+[2.090s][info][gc,phases,start] GC(88) Phase 2: Prepare for compaction
+[2.091s][info][gc,phases      ] GC(88) Phase 2: Prepare for compaction 1.017ms
+[2.091s][info][gc,phases,start] GC(88) Phase 3: Adjust pointers
+[2.091s][info][gc,phases      ] GC(88) Phase 3: Adjust pointers 0.504ms
+[2.091s][info][gc,phases,start] GC(88) Phase 4: Compact heap
+[2.092s][info][gc,phases      ] GC(88) Phase 4: Compact heap 0.453ms
+[2.108s][info][gc,heap        ] GC(88) Eden regions: 203->0(4)
+[2.108s][info][gc,heap        ] GC(88) Survivor regions: 0->0(97)
+[2.108s][info][gc,heap        ] GC(88) Old regions: 2->1
+[2.108s][info][gc,heap        ] GC(88) Humongous regions: 0->0
+[2.108s][info][gc,metaspace   ] GC(88) Metaspace: 6320K(6784K)->6320K(6784K) NonClass: 5766K(6144K)->5766K(6144K) Class: 554K(640K)->554K(640K)
+[2.108s][info][gc             ] GC(88) Pause Full (System.gc()) 204M->0M(8M) 22.950ms
+[2.108s][info][gc,cpu         ] GC(88) User=0.00s Sys=0.02s Real=0.02s

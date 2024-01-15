@@ -39,7 +39,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.collector.CleanableCollectorRegistry;
 
 public class GCAggregator implements JVMEventChannel {
     private static final Logger LOG = LoggerFactory.getLogger(GCAggregator.class);
@@ -81,6 +80,9 @@ public class GCAggregator implements JVMEventChannel {
     @Override
     public void publish(ChannelName channel, JVMEvent event) {
         LOG.debug("{} occurs {}", path, event.getClass().getSimpleName());
+        if (shouldIgnore(channel, event)) {
+            return;
+        }
         if (event instanceof GenerationalGCEvent) {
             recordGenerationalGCEvent((GenerationalGCEvent) event);
         } else if (event instanceof G1GCEvent) {
@@ -98,14 +100,6 @@ public class GCAggregator implements JVMEventChannel {
 
     @Override
     public void close() {
-        CleanableCollectorRegistry.DEFAULT.clean(
-                sample -> {
-                    int index = sample.labelNames.indexOf("path");
-                    if (index == -1) {
-                        return false;
-                    }
-                    return path.equals(sample.labelValues.get(index));
-                });
         LOG.info("clean {} metrics", path);
     }
 
@@ -298,8 +292,18 @@ public class GCAggregator implements JVMEventChannel {
         SURVIVOR_MAX_TENURING_THRESHOLD.labels(path).set(maxTenuringThreshold);
     }
 
+    private boolean shouldIgnore(ChannelName channel, JVMEvent event) {
+        if (channel == ChannelName.GENERATIONAL_HEAP_PARSER_OUTBOX
+                && event instanceof InitialMark) {
+            LOG.debug("Ignore CMS InitialMark event due to GcToolkit bug");
+            return true;
+        }
+        return false;
+    }
+
     private void recordGCEvent(String category, double duration) {
         GC_EVENT_DURATION.labels(path, category).observe(duration);
+        GC_EVENT_LAST_MINUTE_DURATION.labels(path).observe(duration);
     }
 
     private void recordGCPauseEvent(String category, double duration) {
@@ -660,7 +664,7 @@ public class GCAggregator implements JVMEventChannel {
                     || event instanceof ParNew
                     || event instanceof PSYoungGen
                     || event instanceof YoungGC) {
-                return "YoungGC";
+                return event.getClass().getSimpleName();
             }
 
         } else if (event instanceof CMSConcurrentEvent) {
@@ -730,6 +734,13 @@ public class GCAggregator implements JVMEventChannel {
     private List<DataSourceParser> loadParsers(File file) {
         try {
             SingleGCLogFile logFile = new SingleGCLogFile(file.toPath());
+
+            boolean hasEnoughLogs = logFile.stream().skip(10).findAny().isPresent();
+            if (!hasEnoughLogs) {
+                LOG.warn("skip logs: {}", path);
+                throw new IllegalStateException();
+            }
+
             Diary diary = logFile.diary();
             if (diary.isG1GC()
                     || diary.isZGC()
@@ -764,6 +775,7 @@ public class GCAggregator implements JVMEventChannel {
                                 .filter(dataSourceParser -> dataSourceParser.accepts(diary))
                                 .collect(Collectors.toList());
 
+                parsers.forEach(parser -> parser.diary(diary));
                 if (!parsers.isEmpty()) {
                     return parsers;
                 }
