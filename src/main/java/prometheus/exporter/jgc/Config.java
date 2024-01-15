@@ -24,6 +24,7 @@ public class Config {
     public static final int DEFAULT_BATCH_SIZE = 1024;
     public static final int DEFAULT_BUFFER_SIZE = 8192;
     private String fileRegexPattern;
+    private String fileGlobPattern;
     private String hostPort = DEFAULT_HOST_PORT;
     private int idleTimeout = DEFAULT_IDLE_TIMEOUT;
     private int batchSize = DEFAULT_BATCH_SIZE;
@@ -35,6 +36,14 @@ public class Config {
 
     public void setFileRegexPattern(String fileRegexPattern) {
         this.fileRegexPattern = fileRegexPattern;
+    }
+
+    public String getFileGlobPattern() {
+        return fileGlobPattern;
+    }
+
+    public void setFileGlobPattern(String fileGlobPattern) {
+        this.fileGlobPattern = fileGlobPattern;
     }
 
     public String getHostPort() {
@@ -75,8 +84,12 @@ public class Config {
                 + "fileRegexPattern='"
                 + fileRegexPattern
                 + '\''
-                + ", hostPort="
+                + ", fileGlobPattern='"
+                + fileGlobPattern
+                + '\''
+                + ", hostPort='"
                 + hostPort
+                + '\''
                 + ", idleTimeout="
                 + idleTimeout
                 + ", batchSize="

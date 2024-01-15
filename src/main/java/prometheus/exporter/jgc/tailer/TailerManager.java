@@ -41,7 +41,8 @@ public class TailerManager {
     private final AtomicBoolean started = new AtomicBoolean(true);
 
     public TailerManager(Config config, TailerListener listener) {
-        this.tailerMatcher = new TailerMatcher(config.getFileRegexPattern());
+        this.tailerMatcher =
+                new TailerMatcher(config.getFileRegexPattern(), config.getFileGlobPattern());
         this.idleTimeout = config.getIdleTimeout();
         this.batchSize = config.getBatchSize();
         this.bufferSize = config.getBufferSize();

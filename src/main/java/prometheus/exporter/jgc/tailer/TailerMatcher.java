@@ -15,27 +15,29 @@
  */
 package prometheus.exporter.jgc.tailer;
 
-import com.google.common.collect.Lists;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TailerMatcher {
-    private static final Logger LOG = LoggerFactory.getLogger(TailerMatcher.class);
     private final List<TailerSource> sources = new ArrayList<>();
 
-    public TailerMatcher(String filePattern) {
-        String[] filePatterns = Objects.requireNonNull(filePattern).split(",");
-        for (String pattern : filePatterns) {
-            sources.add(new TailerSource(pattern));
+    public TailerMatcher(String regexPattern, String globPattern) {
+        if (regexPattern != null) {
+            String[] regexPatterns = regexPattern.split(",");
+            for (String pattern : regexPatterns) {
+                sources.add(new RegexTailerSource(pattern));
+            }
+        }
+
+        if (globPattern != null) {
+            String[] globPatterns = globPattern.split(",");
+            for (String pattern : globPatterns) {
+                sources.add(new GlobTailerSource(pattern));
+            }
         }
     }
 
@@ -45,45 +47,6 @@ public class TailerMatcher {
                 .flatMap(Collection::stream)
                 .filter(predicate)
                 .collect(Collectors.toList());
-    }
-
-    static class TailerSource {
-        private final String filePattern;
-        private final File parentDir;
-        private final DirectoryStream.Filter<Path> fileFilter;
-
-        TailerSource(String filePattern) {
-            this.filePattern = filePattern;
-            File f = new File(filePattern);
-            this.parentDir = f.getParentFile();
-            String regex = f.getName();
-            final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:" + regex);
-            this.fileFilter =
-                    entry -> matcher.matches(entry.getFileName()) && !Files.isDirectory(entry);
-        }
-
-        List<File> findMatchingFiles() {
-            List<File> result = Lists.newArrayList();
-            if (!parentDir.exists()) {
-                return result;
-            }
-            try (DirectoryStream<Path> stream =
-                    Files.newDirectoryStream(parentDir.toPath(), fileFilter)) {
-                for (Path entry : stream) {
-                    File file = entry.toFile();
-                    result.add(file);
-                }
-            } catch (IOException e) {
-                LOG.error("Find matching files fail: {} ", parentDir.toPath(), e);
-            }
-            LOG.debug("Find matching files: {}", result);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "TailerSource{" + "filePattern='" + filePattern + '\'' + '}';
-        }
     }
 
     @Override

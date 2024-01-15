@@ -60,18 +60,35 @@ public class TailerTest {
     }
 
     @Test
-    public void testFind() throws Exception {
+    public void testRegexFind() throws Exception {
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
         tmpdir.delete();
         tmpdir.mkdir();
 
         for (int i = 0; i < 10; ++i) {
-            File temp = File.createTempFile("test", "log", tmpdir);
+            File temp = File.createTempFile("test-regex", ".log", tmpdir);
             temp.deleteOnExit();
         }
 
-        TailerMatcher matcher = new TailerMatcher(tmpdir.getPath() + "/.*.log");
+        TailerMatcher matcher = new TailerMatcher(tmpdir.getPath() + "/test-regex.*\\.log", null);
+        int files = matcher.findMatchingFiles(f -> true).size();
+        Assert.assertEquals(10, files);
+    }
+
+    @Test
+    public void testGlobFind() throws Exception {
+
+        File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
+        tmpdir.delete();
+        tmpdir.mkdir();
+
+        for (int i = 0; i < 10; ++i) {
+            File temp = File.createTempFile("test-glob", ".log", tmpdir);
+            temp.deleteOnExit();
+        }
+
+        TailerMatcher matcher = new TailerMatcher(null, tmpdir.getPath() + "/test-glob*.log");
         int files = matcher.findMatchingFiles(f -> true).size();
         Assert.assertEquals(10, files);
     }
