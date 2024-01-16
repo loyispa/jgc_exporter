@@ -15,8 +15,6 @@ java -jar jgc_exporter.jar /path/to/config.yml
 
 A simple `config.yml` looks like below:
 ```yaml
-# regex pattern is only allowed in last level of paths
-fileRegexPattern: /path/to/gc.*.log
 
 # glob pattern is allowed in any level of paths
 fileGlobPattern: /path/to/some*/*.log
@@ -31,7 +29,6 @@ http://0.0.0.0:5898/metrics
 | Name             | Description                                                            |
 |------------------|------------------------------------------------------------------------|
 | hostPort         | Host and port that http server binds, default is 0.0.0.0:5898          |
-| fileRegexPattern | Regex pattern of gc log file path, separate multiple paths with commas |
 | fileGlobPattern  | Glob pattern of gc log file path, separate multiple paths with commas  |
 | idleTimeout      | Time (ms) to close idle files, default is 10 minutes(600,000ms)        |
 
