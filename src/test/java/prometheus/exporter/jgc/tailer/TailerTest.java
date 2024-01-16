@@ -42,12 +42,7 @@ public class TailerTest {
         pw.close();
 
         Tailer tailer =
-                new Tailer(
-                        temp,
-                        false,
-                        Config.DEFAULT_BATCH_SIZE,
-                        Config.DEFAULT_BUFFER_SIZE,
-                        Config.DEFAULT_IDLE_TIMEOUT);
+                new Tailer(temp, false, Config.DEFAULT_BATCH_SIZE, Config.DEFAULT_BUFFER_SIZE);
         int total = 0;
         while (true) {
             List<String> lines = tailer.readLines();

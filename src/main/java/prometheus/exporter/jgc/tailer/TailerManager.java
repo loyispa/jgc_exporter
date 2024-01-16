@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.Config;
@@ -38,6 +39,7 @@ public class TailerManager {
     private final int batchSize;
     private final int bufferSize;
     private final long idleTimeout;
+    private final Predicate<File> idleChecker;
     private final AtomicBoolean started = new AtomicBoolean(true);
 
     public TailerManager(Config config, TailerListener listener) {
@@ -48,10 +50,11 @@ public class TailerManager {
         this.bufferSize = config.getBufferSize();
         this.listener = Objects.requireNonNull(listener);
         this.lock = new ReentrantLock();
+        this.idleChecker = f -> f.lastModified() + idleTimeout < System.currentTimeMillis();
         this.watcher =
                 Executors.newScheduledThreadPool(
                         2, new ThreadFactoryBuilder().setNameFormat("tail-watcher").build());
-        this.watcher.scheduleAtFixedRate(new WatchRunnable(), 0, 5, TimeUnit.SECONDS);
+        this.watcher.scheduleAtFixedRate(new WatchRunnable(), 0, 30, TimeUnit.SECONDS);
         this.watcher.submit(new TailerRunnable());
     }
 
@@ -64,27 +67,26 @@ public class TailerManager {
             lock.lock();
             try {
                 final List<File> matchingFiles =
-                        tailerMatcher.findMatchingFiles(
-                                f -> f.lastModified() + idleTimeout > System.currentTimeMillis());
+                        tailerMatcher.findMatchingFiles(idleChecker.negate());
                 for (File file : matchingFiles) {
                     try {
                         registry.computeIfAbsent(
                                 file,
                                 f -> {
-                                    Tailer tailer =
-                                            new Tailer(f, true, batchSize, bufferSize, idleTimeout);
-                                    listener.onOpen(f);
-                                    return tailer;
+                                    listener.onOpen(file);
+                                    return new Tailer(f, true, batchSize, bufferSize);
                                 });
+                    } catch (UnsupportedOperationException ignore) {
+                        LOG.error("Ignore file: {}", file);
                     } catch (Throwable t) {
-                        LOG.error("Ignore file: {}", file, t);
+                        LOG.error("Watch file error: {}", file, t);
                     }
                 }
 
                 final Iterator<Tailer> iterator = registry.values().iterator();
                 while (iterator.hasNext()) {
                     Tailer tailer = iterator.next();
-                    if (!tailer.needTail()) {
+                    if (idleChecker.test(tailer.getFile()) || tailer.rotated()) {
                         try {
                             close(tailer);
                         } finally {
@@ -104,7 +106,6 @@ public class TailerManager {
     private void close(Tailer tailer) {
         File file = tailer.getFile();
         try {
-            LOG.info("Remove file {}", file);
             tailer.close();
         } finally {
             try {

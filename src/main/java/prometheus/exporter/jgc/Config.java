@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Config {
     public static final String DEFAULT_HOST_PORT = "0.0.0.0:5898";
-    public static final int DEFAULT_IDLE_TIMEOUT = 600_000;
+    public static final int DEFAULT_IDLE_TIMEOUT = 3600_000;
     public static final int DEFAULT_BATCH_SIZE = 1024;
     public static final int DEFAULT_BUFFER_SIZE = 8192;
     private String fileRegexPattern;

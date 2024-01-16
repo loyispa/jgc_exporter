@@ -17,6 +17,7 @@ package prometheus.exporter.jgc.tailer;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -36,11 +37,10 @@ public class Tailer {
     private final boolean seekToEnd;
     private final int batchSize;
     private final int bufferSize;
-    private final long idleTimeout;
     private final byte[] readBuffer;
     private final LineBuffer lineBuffer;
 
-    public Tailer(File file, boolean seekToEnd, int batchSize, int bufferSize, long idleTimeout) {
+    public Tailer(File file, boolean seekToEnd, int batchSize, int bufferSize) {
         this.file = Objects.requireNonNull(file);
         this.seekToEnd = seekToEnd;
         if (batchSize <= 0) {
@@ -49,12 +49,8 @@ public class Tailer {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("bufferSize");
         }
-        if (idleTimeout <= 0) {
-            throw new IllegalArgumentException("idleTimeout");
-        }
         this.batchSize = batchSize;
         this.bufferSize = bufferSize;
-        this.idleTimeout = idleTimeout;
         this.readBuffer = new byte[bufferSize];
         this.lineBuffer = new LineBuffer();
         refresh();
@@ -72,22 +68,7 @@ public class Tailer {
         return lines;
     }
 
-    public boolean needTail() {
-        try {
-            if (isIdle()) {
-                return this.raf != null && this.raf.getFilePointer() < this.raf.length();
-            }
-            return !rotate();
-        } catch (IOException ignore) {
-        }
-        return true;
-    }
-
-    private boolean isIdle() {
-        return this.file.lastModified() + idleTimeout < System.currentTimeMillis();
-    }
-
-    private boolean rotate() {
+    public boolean rotated() {
         try {
             // inode changes
             long currInode = getInode(this.file);
@@ -103,6 +84,8 @@ public class Tailer {
                 LOG.info("{} truncated", this.file);
                 return true;
             }
+        } catch (NoSuchFileException nfe) {
+            return true;
         } catch (IOException ex) {
             LOG.error("Rotate fail.", ex);
         }
