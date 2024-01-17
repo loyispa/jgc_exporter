@@ -24,6 +24,7 @@ public class Config {
     public static final int DEFAULT_BATCH_SIZE = 1024;
     public static final int DEFAULT_BUFFER_SIZE = 8192;
     public static final int DEFAULT_LINES_PER_SECOND = Integer.MAX_VALUE;
+    public static final int DEFAULT_WATCH_INTERVAL = 30000;
     private String fileRegexPattern;
     private String fileGlobPattern;
     private String hostPort = DEFAULT_HOST_PORT;
@@ -31,6 +32,7 @@ public class Config {
     private int batchSize = DEFAULT_BATCH_SIZE;
     private int bufferSize = DEFAULT_BUFFER_SIZE;
     private int linesPerSecond = DEFAULT_LINES_PER_SECOND;
+    private int watchInterval = DEFAULT_WATCH_INTERVAL;
 
     public String getFileRegexPattern() {
         return fileRegexPattern;
@@ -88,6 +90,14 @@ public class Config {
         this.linesPerSecond = linesPerSecond;
     }
 
+    public int getWatchInterval() {
+        return watchInterval;
+    }
+
+    public void setWatchInterval(int watchInterval) {
+        this.watchInterval = watchInterval;
+    }
+
     @Override
     public String toString() {
         return "Config{"
@@ -108,6 +118,8 @@ public class Config {
                 + bufferSize
                 + ", linesPerSecond="
                 + linesPerSecond
+                + ", watchInterval="
+                + watchInterval
                 + '}';
     }
 }

@@ -109,7 +109,7 @@ public class TailerTest {
         }
 
         TailerMatcher matcher = new TailerMatcher(tmpdir.getPath() + "/test-regex.*\\.log", null);
-        List<File> actualFiles = matcher.findMatchingFiles(f -> true);
+        List<File> actualFiles = matcher.findMatchingFiles();
         expectFiles.sort(Comparator.comparing(File::getName));
         actualFiles.sort(Comparator.comparing(File::getName));
         Assert.assertEquals(expectFiles, actualFiles);
@@ -130,7 +130,7 @@ public class TailerTest {
         }
 
         TailerMatcher matcher = new TailerMatcher(null, tmpdir.getPath() + "/test-glob*.log");
-        List<File> actualFiles = matcher.findMatchingFiles(f -> true);
+        List<File> actualFiles = matcher.findMatchingFiles();
         expectFiles.sort(Comparator.comparing(File::getName));
         actualFiles.sort(Comparator.comparing(File::getName));
         Assert.assertEquals(expectFiles, actualFiles);
@@ -233,5 +233,45 @@ public class TailerTest {
         }
 
         Assert.assertEquals(tailer.rotated(), true);
+    }
+
+    @Test(timeout = 15000)
+    public void testIdle() throws Exception {
+
+        File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
+        tmpdir.delete();
+        tmpdir.mkdir();
+
+        File temp = File.createTempFile("test-idle", ".log", tmpdir);
+        temp.deleteOnExit();
+
+        Config config = new Config();
+        config.setFileGlobPattern(temp.getAbsolutePath());
+        config.setIdleTimeout(3000);
+        config.setWatchInterval(1000);
+
+        Phaser phaser = new Phaser(2);
+        TailerManager manager =
+                new TailerManager(
+                        config,
+                        new TailerListener() {
+                            @Override
+                            public void onOpen(File file) {
+                                phaser.arriveAndDeregister();
+                            }
+
+                            @Override
+                            public void onClose(File file) {
+                                phaser.arriveAndDeregister();
+                            }
+
+                            @Override
+                            public void onRead(File file, String line) {}
+                        });
+
+        phaser.awaitAdvance(1);
+        Thread.sleep(5000);
+        Assert.assertEquals(true, phaser.isTerminated());
+        manager.close();
     }
 }

@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.Config;
@@ -40,10 +41,11 @@ public class TailerManager {
     private final int bufferSize;
     private final long idleTimeout;
     private final int linesPerSecond;
-    private final Predicate<File> idleChecker;
-    private final AtomicBoolean started = new AtomicBoolean(true);
+    private final Predicate<Long> idleChecker;
+    private final AtomicBoolean started;
 
     public TailerManager(Config config, TailerListener listener) {
+        this.started = new AtomicBoolean(true);
         this.tailerMatcher =
                 new TailerMatcher(config.getFileRegexPattern(), config.getFileGlobPattern());
         this.idleTimeout = config.getIdleTimeout();
@@ -52,11 +54,12 @@ public class TailerManager {
         this.linesPerSecond = config.getLinesPerSecond();
         this.listener = Objects.requireNonNull(listener);
         this.lock = new ReentrantLock();
-        this.idleChecker = f -> f.lastModified() + idleTimeout < System.currentTimeMillis();
+        this.idleChecker = lastModified -> lastModified + idleTimeout < System.currentTimeMillis();
         this.watcher =
                 Executors.newScheduledThreadPool(
                         2, new ThreadFactoryBuilder().setNameFormat("tail-watcher").build());
-        this.watcher.scheduleAtFixedRate(new WatchRunnable(), 0, 30, TimeUnit.SECONDS);
+        this.watcher.scheduleAtFixedRate(
+                new WatchRunnable(), 0, config.getWatchInterval(), TimeUnit.MILLISECONDS);
         this.watcher.submit(new TailerRunnable());
     }
 
@@ -69,7 +72,9 @@ public class TailerManager {
             lock.lock();
             try {
                 final List<File> matchingFiles =
-                        tailerMatcher.findMatchingFiles(idleChecker.negate());
+                        tailerMatcher.findMatchingFiles().stream()
+                                .filter(f -> idleChecker.negate().test(f.lastModified()))
+                                .collect(Collectors.toList());
                 for (File file : matchingFiles) {
                     try {
                         registry.computeIfAbsent(
@@ -89,7 +94,7 @@ public class TailerManager {
                 final Iterator<Tailer> iterator = registry.values().iterator();
                 while (iterator.hasNext()) {
                     Tailer tailer = iterator.next();
-                    if (idleChecker.test(tailer.getFile()) || tailer.rotated()) {
+                    if (idleChecker.test(tailer.lastModified()) || tailer.rotated()) {
                         try {
                             close(tailer);
                         } finally {

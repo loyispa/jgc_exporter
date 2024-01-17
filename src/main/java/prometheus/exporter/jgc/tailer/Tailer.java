@@ -40,6 +40,7 @@ public class Tailer {
     private final byte[] readBuffer;
     private final LineBuffer lineBuffer;
     private final RateLimiter limiter;
+    private long lastModified;
 
     public Tailer(File file, boolean seekToEnd, int batchSize, int bufferSize, int linesPerSecond) {
         this.file = Objects.requireNonNull(file);
@@ -90,9 +91,14 @@ public class Tailer {
                 return true;
             }
         } catch (IOException ex) {
-            LOG.error("IO error: {}", this.file, ex);
+            LOG.error("IO error: {}", this.file, ex.getMessage());
         }
         return false;
+    }
+
+    public long lastModified() {
+        lastModified = Math.max(lastModified, file.lastModified());
+        return lastModified;
     }
 
     public File getFile() {
@@ -114,7 +120,7 @@ public class Tailer {
         try {
             this.close();
             this.raf = new RandomAccessFile(file, "r");
-            this.inode = getInode(this.file);
+            this.inode = getInode(file);
             if (seekToEnd) {
                 this.raf.seek(this.raf.length());
             } else {
@@ -122,6 +128,7 @@ public class Tailer {
             }
             this.bufferPos = NEED_READING;
             this.bufferCap = 0;
+            this.lastModified = file.lastModified();
         } catch (IOException ioe) {
             throw new RuntimeException("Failed init file: " + file);
         }
@@ -208,7 +215,7 @@ public class Tailer {
                 + ", inode="
                 + inode
                 + ", lastUpdated="
-                + file.lastModified()
+                + lastModified
                 + '}';
     }
 }

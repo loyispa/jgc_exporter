@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class TailerMatcher {
@@ -41,11 +40,10 @@ public class TailerMatcher {
         }
     }
 
-    public List<File> findMatchingFiles(Predicate<File> predicate) {
+    public List<File> findMatchingFiles() {
         return sources.stream()
                 .map(TailerSource::findMatchingFiles)
                 .flatMap(Collection::stream)
-                .filter(predicate)
                 .collect(Collectors.toList());
     }
 
