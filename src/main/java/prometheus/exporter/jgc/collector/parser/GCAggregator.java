@@ -15,7 +15,6 @@
  */
 package prometheus.exporter.jgc.collector.parser;
 
-import static java.lang.Class.forName;
 import static prometheus.exporter.jgc.collector.parser.Metrics.*;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -26,43 +25,29 @@ import com.microsoft.gctoolkit.event.jvm.JVMEvent;
 import com.microsoft.gctoolkit.event.jvm.Safepoint;
 import com.microsoft.gctoolkit.event.jvm.SurvivorRecord;
 import com.microsoft.gctoolkit.event.zgc.*;
-import com.microsoft.gctoolkit.io.SingleGCLogFile;
-import com.microsoft.gctoolkit.jvm.Diary;
 import com.microsoft.gctoolkit.message.ChannelName;
 import com.microsoft.gctoolkit.message.DataSourceParser;
 import com.microsoft.gctoolkit.message.JVMEventChannel;
 import com.microsoft.gctoolkit.message.JVMEventChannelListener;
-import io.prometheus.client.*;
+import io.prometheus.client.Collector;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GCAggregator implements JVMEventChannel {
     private static final Logger LOG = LoggerFactory.getLogger(GCAggregator.class);
 
-    private static final String[] DEFAULT_PARSERS = {
-        "com.microsoft.gctoolkit.parser.CMSTenuredPoolParser",
-        "com.microsoft.gctoolkit.parser.GenerationalHeapParser",
-        "com.microsoft.gctoolkit.parser.JVMEventParser",
-        "com.microsoft.gctoolkit.parser.PreUnifiedG1GCParser",
-        "com.microsoft.gctoolkit.parser.ShenandoahParser",
-        "com.microsoft.gctoolkit.parser.SurvivorMemoryPoolParser",
-        "com.microsoft.gctoolkit.parser.UnifiedG1GCParser",
-        "com.microsoft.gctoolkit.parser.UnifiedGenerationalParser",
-        "com.microsoft.gctoolkit.parser.UnifiedJVMEventParser",
-        "com.microsoft.gctoolkit.parser.UnifiedSurvivorMemoryPoolParser",
-        "com.microsoft.gctoolkit.parser.ZGCParser"
-    };
-
     private final String path;
     private final List<DataSourceParser> parsers;
 
     public GCAggregator(File file) {
+        List<DataSourceParser> parsers = Parsers.findParsers(file);
+        if (parsers.isEmpty()) {
+            throw new UnsupportedOperationException(file.getPath());
+        }
         this.path = file.getPath();
-        this.parsers = loadParsers(file);
+        this.parsers = parsers;
         this.parsers.forEach(parser -> parser.publishTo(this));
     }
 
@@ -99,9 +84,7 @@ public class GCAggregator implements JVMEventChannel {
     }
 
     @Override
-    public void close() {
-        LOG.info("clean {} metrics", path);
-    }
+    public void close() {}
 
     @Override
     public void registerListener(JVMEventChannelListener listener) {}
@@ -258,7 +241,6 @@ public class GCAggregator implements JVMEventChannel {
 
     private void recordSafePoint(Safepoint safepoint) {
         LOG.debug("{} Collect Safepoint", path);
-        recordGCEvent("safepoint", 0d);
         int totalNumberOfApplicationThreads = safepoint.getTotalNumberOfApplicationThreads();
         SAFEPOINT_TOTAL_NUMBER_OF_APPLICATION_THREADS
                 .labels(path)
@@ -281,7 +263,6 @@ public class GCAggregator implements JVMEventChannel {
 
     private void recordSurvivorRecord(SurvivorRecord record) {
         LOG.debug("{} Collect SurvivorRecord", path);
-        recordGCEvent("survivor", 0d);
         long desiredOccupancyAfterCollection = record.getDesiredOccupancyAfterCollection();
         SURVIVOR_DESIRED_OCCUPANCY_AFTER_COLLECTION
                 .labels(path)
@@ -728,60 +709,5 @@ public class GCAggregator implements JVMEventChannel {
             }
         }
         return sanitized.toString();
-    }
-
-    // load suitable log parsers for the gc log
-    private List<DataSourceParser> loadParsers(File file) {
-        try {
-            SingleGCLogFile logFile = new SingleGCLogFile(file.toPath());
-
-            boolean hasEnoughLogs = logFile.stream().skip(10).findAny().isPresent();
-            if (!hasEnoughLogs) {
-                LOG.warn("skip logs: {}", path);
-                throw new IllegalStateException();
-            }
-
-            Diary diary = logFile.diary();
-            if (diary.isG1GC()
-                    || diary.isZGC()
-                    || diary.isCMS()
-                    || diary.isICMS()
-                    || diary.isDefNew()
-                    || diary.isSerialFull()
-                    || diary.isPSOldGen()) {
-
-                List<DataSourceParser> parsers =
-                        Arrays.stream(DEFAULT_PARSERS)
-                                .map(
-                                        parserName -> {
-                                            try {
-                                                Class<?> clazz =
-                                                        forName(
-                                                                parserName,
-                                                                true,
-                                                                Thread.currentThread()
-                                                                        .getContextClassLoader());
-                                                return Optional.of(
-                                                        clazz.getConstructors()[0].newInstance());
-                                            } catch (ClassNotFoundException
-                                                    | InstantiationException
-                                                    | IllegalAccessException
-                                                    | InvocationTargetException e) {
-                                                return Optional.empty();
-                                            }
-                                        })
-                                .filter(Optional::isPresent)
-                                .map(optional -> (DataSourceParser) optional.get())
-                                .filter(dataSourceParser -> dataSourceParser.accepts(diary))
-                                .collect(Collectors.toList());
-
-                parsers.forEach(parser -> parser.diary(diary));
-                if (!parsers.isEmpty()) {
-                    return parsers;
-                }
-            }
-        } catch (Exception ex) {
-        }
-        throw new UnsupportedOperationException(file.getPath());
     }
 }

@@ -15,6 +15,7 @@
  */
 package prometheus.exporter.jgc.tailer;
 
+import com.google.common.util.concurrent.RateLimiter;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.LinkedList;
@@ -36,11 +37,11 @@ public class Tailer {
     private final boolean seekToEnd;
     private final int batchSize;
     private final int bufferSize;
-    private final long idleTimeout;
     private final byte[] readBuffer;
     private final LineBuffer lineBuffer;
+    private final RateLimiter limiter;
 
-    public Tailer(File file, boolean seekToEnd, int batchSize, int bufferSize, long idleTimeout) {
+    public Tailer(File file, boolean seekToEnd, int batchSize, int bufferSize, int linesPerSecond) {
         this.file = Objects.requireNonNull(file);
         this.seekToEnd = seekToEnd;
         if (batchSize <= 0) {
@@ -49,14 +50,14 @@ public class Tailer {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("bufferSize");
         }
-        if (idleTimeout <= 0) {
-            throw new IllegalArgumentException("idleTimeout");
+        if (linesPerSecond <= 0) {
+            throw new IllegalArgumentException("linesPerSecond");
         }
         this.batchSize = batchSize;
         this.bufferSize = bufferSize;
-        this.idleTimeout = idleTimeout;
         this.readBuffer = new byte[bufferSize];
         this.lineBuffer = new LineBuffer();
+        this.limiter = RateLimiter.create(linesPerSecond);
         refresh();
     }
 
@@ -72,22 +73,7 @@ public class Tailer {
         return lines;
     }
 
-    public boolean needTail() {
-        try {
-            if (isIdle()) {
-                return this.raf != null && this.raf.getFilePointer() < this.raf.length();
-            }
-            return !rotate();
-        } catch (IOException ignore) {
-        }
-        return true;
-    }
-
-    private boolean isIdle() {
-        return this.file.lastModified() + idleTimeout < System.currentTimeMillis();
-    }
-
-    private boolean rotate() {
+    public boolean rotated() {
         try {
             // inode changes
             long currInode = getInode(this.file);
@@ -104,7 +90,7 @@ public class Tailer {
                 return true;
             }
         } catch (IOException ex) {
-            LOG.error("Rotate fail.", ex);
+            LOG.error("IO error: {}", this.file, ex);
         }
         return false;
     }
@@ -142,6 +128,10 @@ public class Tailer {
     }
 
     private String readLine() throws IOException {
+        if (!limiter.tryAcquire()) {
+            LOG.warn("Read frequency limit: {}", file);
+            return null;
+        }
         while (true) {
             if (bufferPos == NEED_READING) {
                 if (raf.getFilePointer() < raf.length()) {
