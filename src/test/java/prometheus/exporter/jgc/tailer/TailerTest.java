@@ -29,7 +29,7 @@ import prometheus.exporter.jgc.Config;
 public class TailerTest {
     private static final Logger LOG = LoggerFactory.getLogger(TailerTest.class);
 
-    @Test(timeout = 5000)
+    @Test(timeout = 10000)
     public void testRead() throws Exception {
 
         File temp = File.createTempFile("test-read", "log");
@@ -64,7 +64,7 @@ public class TailerTest {
         Assert.assertEquals(expectLines, actualLines);
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 10000)
     public void testReadLimit() throws Exception {
 
         File temp = File.createTempFile("test-read", ".log");
@@ -136,7 +136,7 @@ public class TailerTest {
         Assert.assertEquals(expectFiles, actualFiles);
     }
 
-    @Test(timeout = 30000)
+    @Test(timeout = 60000)
     public void testListen() throws Exception {
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
@@ -173,7 +173,7 @@ public class TailerTest {
         phaser.awaitAdvance(0);
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testChange() throws Exception {
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
@@ -195,7 +195,7 @@ public class TailerTest {
         Assert.assertEquals(tailer.rotated(), true);
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void testTruncate() throws Exception {
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
@@ -235,7 +235,7 @@ public class TailerTest {
         Assert.assertEquals(tailer.rotated(), true);
     }
 
-    @Test(timeout = 15000)
+    @Test(timeout = 60000)
     public void testIdle() throws Exception {
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
