@@ -101,6 +101,14 @@ public class Bootstrap {
             throw new IllegalArgumentException("batchSize");
         }
 
+        if (config.getLinesPerSecond() <= 0) {
+            throw new IllegalArgumentException("linesPerSecond");
+        }
+
+        if (config.getWatchInterval() <= 0) {
+            throw new IllegalArgumentException("watchInterval");
+        }
+
         return config;
     }
 }
