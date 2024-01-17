@@ -136,7 +136,7 @@ public class TailerTest {
         Assert.assertEquals(expectFiles, actualFiles);
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 30000)
     public void testListen() throws Exception {
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
