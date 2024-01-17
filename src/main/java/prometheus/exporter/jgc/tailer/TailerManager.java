@@ -39,6 +39,7 @@ public class TailerManager {
     private final int batchSize;
     private final int bufferSize;
     private final long idleTimeout;
+    private final int linesPerSecond;
     private final Predicate<File> idleChecker;
     private final AtomicBoolean started = new AtomicBoolean(true);
 
@@ -48,6 +49,7 @@ public class TailerManager {
         this.idleTimeout = config.getIdleTimeout();
         this.batchSize = config.getBatchSize();
         this.bufferSize = config.getBufferSize();
+        this.linesPerSecond = config.getLinesPerSecond();
         this.listener = Objects.requireNonNull(listener);
         this.lock = new ReentrantLock();
         this.idleChecker = f -> f.lastModified() + idleTimeout < System.currentTimeMillis();
@@ -74,7 +76,8 @@ public class TailerManager {
                                 file,
                                 f -> {
                                     listener.onOpen(file);
-                                    return new Tailer(f, true, batchSize, bufferSize);
+                                    return new Tailer(
+                                            f, true, batchSize, bufferSize, linesPerSecond);
                                 });
                     } catch (UnsupportedOperationException ignore) {
                         LOG.error("Ignore file: {}", file);

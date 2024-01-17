@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus.exporter.jgc.util;
+package prometheus.exporter.jgc.collector.parser;
 
 import static java.lang.Class.forName;
 
@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParserUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(ParserUtils.class);
+public class Parsers {
+    private static final Logger LOG = LoggerFactory.getLogger(Parsers.class);
 
     private static final String[] DEFAULT_PARSERS = {
         "com.microsoft.gctoolkit.parser.CMSTenuredPoolParser",
@@ -47,7 +47,7 @@ public class ParserUtils {
         "com.microsoft.gctoolkit.parser.ZGCParser"
     };
 
-    private ParserUtils() {}
+    private Parsers() {}
 
     public static List<DataSourceParser> findParsers(File file) {
         try {

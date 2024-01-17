@@ -34,7 +34,6 @@ import java.io.File;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.util.ParserUtils;
 
 public class GCAggregator implements JVMEventChannel {
     private static final Logger LOG = LoggerFactory.getLogger(GCAggregator.class);
@@ -43,7 +42,7 @@ public class GCAggregator implements JVMEventChannel {
     private final List<DataSourceParser> parsers;
 
     public GCAggregator(File file) {
-        List<DataSourceParser> parsers = ParserUtils.findParsers(file);
+        List<DataSourceParser> parsers = Parsers.findParsers(file);
         if (parsers.isEmpty()) {
             throw new UnsupportedOperationException(file.getPath());
         }
@@ -242,7 +241,6 @@ public class GCAggregator implements JVMEventChannel {
 
     private void recordSafePoint(Safepoint safepoint) {
         LOG.debug("{} Collect Safepoint", path);
-        recordGCEvent("safepoint", 0d);
         int totalNumberOfApplicationThreads = safepoint.getTotalNumberOfApplicationThreads();
         SAFEPOINT_TOTAL_NUMBER_OF_APPLICATION_THREADS
                 .labels(path)
@@ -265,7 +263,6 @@ public class GCAggregator implements JVMEventChannel {
 
     private void recordSurvivorRecord(SurvivorRecord record) {
         LOG.debug("{} Collect SurvivorRecord", path);
-        recordGCEvent("survivor", 0d);
         long desiredOccupancyAfterCollection = record.getDesiredOccupancyAfterCollection();
         SURVIVOR_DESIRED_OCCUPANCY_AFTER_COLLECTION
                 .labels(path)

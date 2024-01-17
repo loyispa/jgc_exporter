@@ -15,9 +15,9 @@
  */
 package prometheus.exporter.jgc.tailer;
 
+import com.google.common.util.concurrent.RateLimiter;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -39,8 +39,9 @@ public class Tailer {
     private final int bufferSize;
     private final byte[] readBuffer;
     private final LineBuffer lineBuffer;
+    private final RateLimiter limiter;
 
-    public Tailer(File file, boolean seekToEnd, int batchSize, int bufferSize) {
+    public Tailer(File file, boolean seekToEnd, int batchSize, int bufferSize, int linesPerSecond) {
         this.file = Objects.requireNonNull(file);
         this.seekToEnd = seekToEnd;
         if (batchSize <= 0) {
@@ -49,10 +50,14 @@ public class Tailer {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("bufferSize");
         }
+        if (linesPerSecond <= 0) {
+            throw new IllegalArgumentException("linesPerSecond");
+        }
         this.batchSize = batchSize;
         this.bufferSize = bufferSize;
         this.readBuffer = new byte[bufferSize];
         this.lineBuffer = new LineBuffer();
+        this.limiter = RateLimiter.create(linesPerSecond);
         refresh();
     }
 
@@ -84,10 +89,8 @@ public class Tailer {
                 LOG.info("{} truncated", this.file);
                 return true;
             }
-        } catch (NoSuchFileException nfe) {
-            return true;
         } catch (IOException ex) {
-            LOG.error("Rotate fail.", ex);
+            LOG.error("IO error: {}", this.file, ex);
         }
         return false;
     }
@@ -125,6 +128,10 @@ public class Tailer {
     }
 
     private String readLine() throws IOException {
+        if (!limiter.tryAcquire()) {
+            LOG.warn("Read frequency limit: {}", file);
+            return null;
+        }
         while (true) {
             if (bufferPos == NEED_READING) {
                 if (raf.getFilePointer() < raf.length()) {
