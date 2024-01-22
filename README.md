@@ -39,7 +39,7 @@ http://0.0.0.0:5898/metrics
 | jgc_event_duration_seconds       | summary | path, category | Duration of GC events       |
 | jgc_event_pause_duration_seconds | summary | path, category | Duration of GC pause events |
 
-See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/collector/parser/Metrics.java) related to specific garbage-collection algorithms.
+See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/collector/metric/CollectorProxyRegistry.java) related to specific garbage-collection algorithms.
 
 # Build
 ```

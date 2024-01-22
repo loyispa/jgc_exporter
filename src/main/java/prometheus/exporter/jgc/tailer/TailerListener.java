@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The  jgc_exporter Authors
+ * Copyright (C) 2024 The  jgc_exporter Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ public interface TailerListener {
     void onOpen(File file);
 
     void onClose(File file);
+
+    void onRotate(File file);
 
     void onRead(File file, String line);
 }

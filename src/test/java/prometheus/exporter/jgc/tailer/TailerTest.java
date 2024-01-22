@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The  jgc_exporter Authors
+ * Copyright (C) 2024 The  jgc_exporter Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,6 +148,7 @@ public class TailerTest {
 
         Config config = new Config();
         config.setFileRegexPattern(temp.getAbsolutePath());
+        config.setWatchInterval(1000);
 
         Phaser phaser = new Phaser(2);
         TailerManager manager =
@@ -163,6 +164,9 @@ public class TailerTest {
                             public void onClose(File file) {
                                 phaser.arriveAndDeregister();
                             }
+
+                            @Override
+                            public void onRotate(File file) {}
 
                             @Override
                             public void onRead(File file, String line) {}
@@ -264,6 +268,9 @@ public class TailerTest {
                             public void onClose(File file) {
                                 phaser.arriveAndDeregister();
                             }
+
+                            @Override
+                            public void onRotate(File file) {}
 
                             @Override
                             public void onRead(File file, String line) {}
