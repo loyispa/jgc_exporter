@@ -41,14 +41,9 @@
             <version>33.0.0-jre</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>2.0.9</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.22.1</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.4.14</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -94,9 +89,6 @@
                             <buildArgs>
                                 <buildArg>--verbose --allow-incomplete-classpath --no-fallback</buildArg>
                                 <buildArg>-H:ConfigurationFileDirectories=src/main/resources/native-image</buildArg>
-                                <buildArg>
-                                    --initialize-at-build-time=org.slf4j.LoggerFactory,org.slf4j.reload4j.Reload4jLoggerAdapter,java.beans.Introspector,org.slf4j.reload4j.Reload4jLoggerFactory,org.apache.log4j.LogManager,org.apache.log4j.helpers.LogLog,org.apache.log4j.PatternLayout,org.apache.log4j.spi.LocationInfo,org.apache.log4j.Category,org.apache.log4j.spi.RootLogger,com.sun.beans.introspect.ClassInfo,org.apache.log4j.Logger,org.apache.log4j.Layout,org.apache.log4j.helpers.Loader,org.apache.log4j.spi.LoggingEvent
-                                </buildArg>
                             </buildArgs>
                         </configuration>
                         <executions>
