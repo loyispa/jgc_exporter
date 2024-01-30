@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The  jgc_exporter Authors
+ * Copyright (C) 2024 The  jgc_exporter Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ public class Tailer {
             // inode changes
             long currInode = getInode(this.file);
             if (currInode != inode) {
-                LOG.info("{} changed", this.file);
+                LOG.info("{} rotated: inode changed", this.file);
                 return true;
             }
 
@@ -87,7 +87,7 @@ public class Tailer {
             long fp = raf.getFilePointer();
             long len = raf.length();
             if (fp > len) {
-                LOG.info("{} truncated", this.file);
+                LOG.info("{} rotated: file truncated", this.file);
                 return true;
             }
         } catch (IOException ex) {

@@ -33,13 +33,15 @@ http://0.0.0.0:5898/metrics
 | idleTimeout      | Time (ms) to close idle files, default is 10 minutes(600,000ms)        |
 
 # Metric
-| Name                             | type    | labels         | Description                 |
-|----------------------------------|---------|----------------|-----------------------------|
-| jgc_log_lines_total              | counter | path           | Number of process log lines |
-| jgc_event_duration_seconds       | summary | path, category | Duration of GC events       |
-| jgc_event_pause_duration_seconds | summary | path, category | Duration of GC pause events |
+| Name                                       | type    | labels         | Description                     |
+|--------------------------------------------|---------|----------------|---------------------------------|
+| jgc_log_lines_total                        | counter | path           | Number of process log lines     |
+| jgc_event_duration_seconds                 | summary | path, category | Duration of GC events           |
+| jgc_event_pause_duration_seconds           | summary | path, category | Duration of GC pause events     |
+| jgc_heap_occupancy_before_collection_bytes | gauge   | path           | Heap occupancy after collection |
+| jgc_heap_occupancy_after_collection_bytes  | gauge   | path           | Heap occupancy after collection |
 
-See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/collector/parser/Metrics.java) related to specific garbage-collection algorithms.
+See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/collector/metric/CollectorProxyRegistry.java) related to specific garbage-collection algorithms.
 
 # Build
 ```
@@ -52,8 +54,22 @@ The exporter can be converted into native executables by installing [graalvm](ht
 ./mvnw -Pnative clean package
 ```
 
+# Suggestions
+
+*Note: The lack of essential jvm flags may miss some indicators, so we recommend that you set up your target java process as follows:*
+
+- jdk8 and previous versions
+```
+-verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps
+```
+
+- jdk9 and later versions
+```
+-verbose:gc -Xlog:gc*=info,gc+heap=debug,gc+phases=debug:file=xxx/gc.log:t,tags
+```
+
 # Contributing
-All contributions are welcome, docs, bugfixes or features.
+All contributions are welcome, docs, bugfixes and features.
 
 [maven-build-image]: https://github.com/loyispa/jgc_exporter/workflows/Java%20CI%20with%20Maven/badge.svg
 [maven-build-url]: https://github.com/loyispa/jgc_exporter/actions/workflows/maven.yaml

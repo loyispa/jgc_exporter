@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The  jgc_exporter Authors
+ * Copyright (C) 2024 The  jgc_exporter Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class TailerManager {
                                             f, true, batchSize, bufferSize, linesPerSecond);
                                 });
                     } catch (UnsupportedOperationException ignore) {
-                        LOG.error("Ignore file: {}", file);
+                        LOG.warn("Ignore file: {}", file, ignore);
                     } catch (Throwable t) {
                         LOG.error("Watch file error: {}", file, t);
                     }
@@ -94,9 +94,15 @@ public class TailerManager {
                 final Iterator<Tailer> iterator = registry.values().iterator();
                 while (iterator.hasNext()) {
                     Tailer tailer = iterator.next();
-                    if (idleChecker.test(tailer.lastModified()) || tailer.rotated()) {
+                    if (idleChecker.test(tailer.lastModified())) {
                         try {
                             close(tailer);
+                        } finally {
+                            iterator.remove();
+                        }
+                    } else if (tailer.rotated()) {
+                        try {
+                            rotate(tailer);
                         } finally {
                             iterator.remove();
                         }
@@ -112,14 +118,25 @@ public class TailerManager {
     }
 
     private void close(Tailer tailer) {
-        File file = tailer.getFile();
         try {
             tailer.close();
         } finally {
             try {
-                listener.onClose(file);
+                listener.onClose(tailer.getFile());
             } catch (Throwable t) {
-                LOG.error("Close file failed: {}", file, t);
+                LOG.error("Close file failed: {}", tailer, t);
+            }
+        }
+    }
+
+    private void rotate(Tailer tailer) {
+        try {
+            tailer.close();
+        } finally {
+            try {
+                listener.onRotate(tailer.getFile());
+            } catch (Throwable t) {
+                LOG.error("Rotate file failed: {}", tailer, t);
             }
         }
     }

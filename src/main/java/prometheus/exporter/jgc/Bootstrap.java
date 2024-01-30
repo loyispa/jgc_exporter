@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The  jgc_exporter Authors
+ * Copyright (C) 2024 The  jgc_exporter Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,39 +15,43 @@
  */
 package prometheus.exporter.jgc;
 
+import static prometheus.exporter.jgc.collector.metric.CollectorProxyRegistry.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.lalyos.jfiglet.FigletFont;
 import io.prometheus.client.exporter.HTTPServer;
+import io.prometheus.client.exporter.SampleNameFilterSupplier;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.collector.CleanableCollectorRegistry;
-import prometheus.exporter.jgc.collector.GCCollector;
-import prometheus.exporter.jgc.collector.SystemCollector;
+import prometheus.exporter.jgc.collector.GCCollectorManager;
+import prometheus.exporter.jgc.collector.metric.CollectorProxyRegistry;
 import prometheus.exporter.jgc.tailer.TailerManager;
 
 public class Bootstrap {
     private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
     private final HTTPServer httpServer;
     private final TailerManager tailerManager;
-    private final SystemCollector systemCollector;
-    private final GCCollector gcCollector;
+    private final GCCollectorManager collectorManager;
 
     public Bootstrap(Config config) throws IOException {
+        registerSystemMetrics();
         String hostPort = config.getHostPort();
         String host = hostPort.split(":")[0];
         int port = Integer.parseInt(hostPort.split(":")[1]);
         this.httpServer =
-                new HTTPServer(
-                        new InetSocketAddress(host, port),
-                        CleanableCollectorRegistry.DEFAULT,
-                        false);
-        this.systemCollector = new SystemCollector().register(CleanableCollectorRegistry.DEFAULT);
-        this.gcCollector = new GCCollector().register(CleanableCollectorRegistry.DEFAULT);
-        this.tailerManager = new TailerManager(config, gcCollector);
+                new HTTPServer.Builder()
+                        .withHostname(host)
+                        .withPort(port)
+                        .withRegistry(CollectorProxyRegistry.SINGLETON)
+                        .withSampleNameFilterSupplier(
+                                SampleNameFilterSupplier.of(this::filterSamples))
+                        .withDaemonThreads(false)
+                        .build();
+        this.collectorManager = new GCCollectorManager();
+        this.tailerManager = new TailerManager(config, collectorManager);
     }
 
     public static void main(String[] args) throws Exception {
@@ -110,5 +114,16 @@ public class Bootstrap {
         }
 
         return config;
+    }
+
+    private boolean filterSamples(String name) {
+        return !name.endsWith("_created");
+    }
+
+    private void registerSystemMetrics() {
+        EXPORTER_STARTUP_SECONDS.attach(this).setToCurrentTime();
+        Package pkg = this.getClass().getPackage();
+        String version = pkg.getImplementationVersion();
+        EXPORTER_VERSION_INFO.attach(this, version == null ? "unknown" : version).set(1);
     }
 }

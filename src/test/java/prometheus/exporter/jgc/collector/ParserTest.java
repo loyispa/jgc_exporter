@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 The  jgc_exporter Authors
+ * Copyright (C) 2024 The  jgc_exporter Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,15 @@ import java.io.File;
 import java.nio.file.Files;
 import org.junit.Test;
 import org.mockito.Mockito;
-import prometheus.exporter.jgc.collector.parser.GCAggregator;
 
 public class ParserTest {
 
     @Test
     public void testJdk8G1() throws Exception {
         File log = new File("src/test/resources/parser/jdk8-g1.log");
-        GCAggregator aggregator =
+        GCCollector aggregator =
                 Mockito.mock(
-                        GCAggregator.class,
+                        GCCollector.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
         Mockito.verify(aggregator, Mockito.times(2)).recordG1GCEvent(notNull());
@@ -40,9 +39,9 @@ public class ParserTest {
     @Test
     public void testJdk11G1() throws Exception {
         File log = new File("src/test/resources/parser/jdk11-g1.log");
-        GCAggregator aggregator =
+        GCCollector aggregator =
                 Mockito.mock(
-                        GCAggregator.class,
+                        GCCollector.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
         Mockito.verify(aggregator, Mockito.times(2)).recordG1GCEvent(notNull());
@@ -51,9 +50,9 @@ public class ParserTest {
     @Test
     public void testZGC() throws Exception {
         File log = new File("src/test/resources/parser/jdk11-zgc.log");
-        GCAggregator aggregator =
+        GCCollector aggregator =
                 Mockito.mock(
-                        GCAggregator.class,
+                        GCCollector.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
         Mockito.verify(aggregator, Mockito.times(4)).recordZGCEvent(notNull());
@@ -62,9 +61,9 @@ public class ParserTest {
     @Test
     public void testJdk8CMS() throws Exception {
         File log = new File("src/test/resources/parser/jdk8-cms-and-parnew.log");
-        GCAggregator aggregator =
+        GCCollector aggregator =
                 Mockito.mock(
-                        GCAggregator.class,
+                        GCCollector.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
         Mockito.verify(aggregator, Mockito.times(7)).recordGenerationalGCEvent(isNotNull());
@@ -73,9 +72,9 @@ public class ParserTest {
     @Test
     public void testJdk11CMS() throws Exception {
         File log = new File("src/test/resources/parser/jdk11-cms-and-parnew.log");
-        GCAggregator aggregator =
+        GCCollector aggregator =
                 Mockito.mock(
-                        GCAggregator.class,
+                        GCCollector.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
         Mockito.verify(aggregator, Mockito.times(6)).recordGenerationalGCEvent(isNotNull());
@@ -84,9 +83,9 @@ public class ParserTest {
     @Test
     public void testJdk8ParallelOld() throws Exception {
         File log = new File("src/test/resources/parser/jdk8-parallel-old.log");
-        GCAggregator aggregator =
+        GCCollector aggregator =
                 Mockito.mock(
-                        GCAggregator.class,
+                        GCCollector.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
         Mockito.verify(aggregator, Mockito.times(6)).recordGenerationalGCEvent(isNotNull());
