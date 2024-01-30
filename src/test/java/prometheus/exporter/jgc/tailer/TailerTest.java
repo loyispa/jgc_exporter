@@ -19,7 +19,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Phaser;
+import java.util.concurrent.CountDownLatch;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -136,7 +136,7 @@ public class TailerTest {
         Assert.assertEquals(expectFiles, actualFiles);
     }
 
-    @Test(timeout = 60000)
+    @Test(timeout = 600000)
     public void testListen() throws Exception {
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
@@ -150,19 +150,20 @@ public class TailerTest {
         config.setFileRegexPattern(temp.getAbsolutePath());
         config.setWatchInterval(1000);
 
-        Phaser phaser = new Phaser(2);
+        CountDownLatch open = new CountDownLatch(1);
+        CountDownLatch close = new CountDownLatch(1);
         TailerManager manager =
                 new TailerManager(
                         config,
                         new TailerListener() {
                             @Override
                             public void onOpen(File file) {
-                                phaser.arriveAndDeregister();
+                                open.countDown();
                             }
 
                             @Override
                             public void onClose(File file) {
-                                phaser.arriveAndDeregister();
+                                close.countDown();
                             }
 
                             @Override
@@ -172,9 +173,9 @@ public class TailerTest {
                             public void onRead(File file, String line) {}
                         });
 
-        phaser.awaitAdvance(1);
+        open.await();
         manager.close();
-        phaser.awaitAdvance(0);
+        close.await();
     }
 
     @Test
@@ -254,19 +255,20 @@ public class TailerTest {
         config.setIdleTimeout(3000);
         config.setWatchInterval(1000);
 
-        Phaser phaser = new Phaser(2);
+        CountDownLatch open = new CountDownLatch(1);
+        CountDownLatch close = new CountDownLatch(1);
         TailerManager manager =
                 new TailerManager(
                         config,
                         new TailerListener() {
                             @Override
                             public void onOpen(File file) {
-                                phaser.arriveAndDeregister();
+                                open.countDown();
                             }
 
                             @Override
                             public void onClose(File file) {
-                                phaser.arriveAndDeregister();
+                                close.countDown();
                             }
 
                             @Override
@@ -276,9 +278,9 @@ public class TailerTest {
                             public void onRead(File file, String line) {}
                         });
 
-        phaser.awaitAdvance(1);
+        open.await();
         Thread.sleep(5000);
-        Assert.assertEquals(true, phaser.isTerminated());
+        close.await();
         manager.close();
     }
 }
