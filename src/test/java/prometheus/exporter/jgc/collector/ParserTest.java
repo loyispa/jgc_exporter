@@ -66,7 +66,7 @@ public class ParserTest {
                         GCCollector.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
-        Mockito.verify(aggregator, Mockito.times(7)).recordGenerationalGCEvent(isNotNull());
+        Mockito.verify(aggregator, Mockito.times(8)).recordGenerationalGCEvent(isNotNull());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ParserTest {
                         GCCollector.class,
                         withSettings().useConstructor(log).defaultAnswer(CALLS_REAL_METHODS));
         Files.lines(log.toPath()).forEach(aggregator::receive);
-        Mockito.verify(aggregator, Mockito.times(6)).recordGenerationalGCEvent(isNotNull());
+        Mockito.verify(aggregator, Mockito.times(7)).recordGenerationalGCEvent(isNotNull());
     }
 
     @Test
