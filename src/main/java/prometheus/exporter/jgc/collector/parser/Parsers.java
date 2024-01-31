@@ -202,6 +202,9 @@ public class Parsers {
             } else if (event instanceof G1Remark) {
                 return "G1Remark";
             } else if (event instanceof G1FullGC) {
+                if (event instanceof G1SystemGC) {
+                    return "G1SystemGC";
+                }
                 return "G1FullGC";
             }
         } else if (event instanceof G1GCConcurrentEvent) {
