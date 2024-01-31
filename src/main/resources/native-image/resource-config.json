@@ -6,6 +6,8 @@
     "pattern":"\\Qlog4j.properties\\E"
   }, {
     "pattern":"\\Qstandard.flf\\E"
+  }, {
+    "pattern":"java.base:\\Qjdk/internal/icu/impl/data/icudt67b/nfc.nrm\\E"
   }]},
   "bundles":[]
 }
