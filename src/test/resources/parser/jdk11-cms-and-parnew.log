@@ -1,40 +1,91 @@
-[0.018s][info][gc] Using Concurrent Mark Sweep
-[0.018s][info][gc,heap,coops] Heap address: 0x00000007fc000000, size: 64 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
-[31.111s][info][gc,start     ] GC(0) Pause Young (Allocation Failure)
-[31.112s][info][gc,task      ] GC(0) Using 8 workers of 8 for evacuation
-[31.132s][debug][gc,age       ] GC(0) Desired survivor size 1114112 bytes, new threshold 1 (max threshold 6)
-[31.132s][trace][gc,age       ] GC(0) Age table with threshold 1 (max threshold 6)
-[31.132s][trace][gc,age       ] GC(0) - age   1:    2224680 bytes,    2224680 total
-[31.132s][info ][gc,heap      ] GC(0) ParNew: 17334K->2175K(19648K)
-[31.132s][info ][gc,heap      ] GC(0) CMS: 0K->4012K(43712K)
-[31.132s][info ][gc,metaspace ] GC(0) Metaspace: 15726K->15726K(1062912K)
-[31.132s][info ][gc           ] GC(0) Pause Young (Allocation Failure) 16M->6M(61M) 21.338ms
-[31.132s][info ][gc,cpu       ] GC(0) User=0.07s Sys=0.01s Real=0.02s
-[31.228s][info ][gc,start     ] GC(29) Pause Initial Mark
-[31.229s][info ][gc           ] GC(29) Pause Initial Mark 24M->24M(61M) 0.240ms
-[31.229s][info ][gc,cpu       ] GC(29) User=0.00s Sys=0.00s Real=0.00s
-[31.229s][info ][gc           ] GC(29) Concurrent Mark
-[31.230s][info ][gc,task      ] GC(29) Using 2 workers of 2 for marking
-[31.259s][info ][gc           ] GC(29) Concurrent Mark 30.285ms
-[31.259s][info ][gc,cpu       ] GC(29) User=0.16s Sys=0.01s Real=0.03s
-[31.259s][info ][gc           ] GC(29) Concurrent Preclean
-[31.262s][info ][gc           ] GC(29) Concurrent Preclean 2.368ms
-[31.262s][info ][gc,cpu       ] GC(29) User=0.01s Sys=0.00s Real=0.00s
-[31.262s][info ][gc           ] GC(29) Concurrent Abortable Preclean
-[31.264s][info ][gc           ] GC(29) Concurrent Abortable Preclean 2.394ms
-[31.264s][info ][gc,cpu       ] GC(29) User=0.01s Sys=0.00s Real=0.00s
-[31.264s][info ][gc,start     ] GC(29) Pause Remark
-[31.265s][debug][gc,phases    ] GC(29) Rescan (parallel) 0.862ms
-[31.265s][debug][gc,phases    ] GC(29) Reference Processing 0.082ms
-[31.265s][debug][gc,phases    ] GC(29) Weak Processing 0.014ms
-[31.265s][debug][gc,phases    ] GC(29) ClassLoaderData 0.080ms
-[31.265s][debug][gc,phases    ] GC(29) ProtectionDomainCacheTable 0.003ms
-[31.265s][debug][gc,phases    ] GC(29) ResolvedMethodTable 0.014ms
-[31.266s][debug][gc,phases    ] GC(29) Class Unloading 0.787ms
-[31.267s][debug][gc,phases    ] GC(29) Scrub Symbol Table 0.978ms
-[31.267s][debug][gc,phases    ] GC(29) Scrub String Table 0.065ms
-[31.267s][info ][gc           ] GC(29) Pause Remark 26M->26M(61M) 2.919ms
-[31.267s][info ][gc,cpu       ] GC(29) User=0.01s Sys=0.00s Real=0.00s
-[31.267s][info ][gc           ] GC(29) Concurrent Sweep
-[31.271s][info ][gc           ] GC(29) Concurrent Sweep 4.130ms
-[31.271s][info ][gc,cpu       ] GC(29) User=0.02s Sys=0.00s Real=0.01s
+[0.003s][trace][gc,heap]   Maximum heap size 4294967296
+[0.003s][trace][gc,heap]   Initial heap size 268435456
+[0.003s][trace][gc,heap]   Minimum heap size 6815736
+[0.003s][trace][gc,heap] CMS ergo set MaxNewSize: 697942016
+[0.003s][trace][gc,heap] CMS set min_heap_size: 6815736 initial_heap_size:  268435456 max_heap: 4294967296
+[0.006s][debug][gc,heap] Minimum heap 8388608  Initial heap 268435456  Maximum heap 4294967296
+[0.006s][trace][gc,heap] 1: Minimum young 196608  Initial young 89456640  Maximum young 697892864
+[0.006s][trace][gc,heap] Minimum old 65536  Initial old 178978816  Maximum old 3597074432
+[0.007s][info ][gc     ] Using Concurrent Mark Sweep
+[0.007s][info ][gc,heap,coops] Heap address: 0x00000006c0000000, size: 4096 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+[56.020s][info ][gc,start       ] GC(30) Pause Initial Mark
+[56.021s][trace][gc,heap        ] GC(30) eden 0x00000006c0000000-0x00000006e1490000-0x00000006e1490000(558432256)
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_index=25, _eden_chunk_capacity=38341
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[0]=0x00000006d1f23ec0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[1]=0x00000006d2994ac0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[2]=0x00000006d34056c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[3]=0x00000006d3e762c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[4]=0x00000006d48e6ec0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[5]=0x00000006d5357ac0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[6]=0x00000006d5dc86c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[7]=0x00000006d68392c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[8]=0x00000006d72a9ec0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[9]=0x00000006d7d1aac0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[10]=0x00000006d878b6c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[11]=0x00000006d91fc2c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[12]=0x00000006d9c6cec0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[13]=0x00000006da6ddac0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[14]=0x00000006db14e6c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[15]=0x00000006dbbbf2c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[16]=0x00000006dc62fec0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[17]=0x00000006dd0a0ac0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[18]=0x00000006ddb116c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[19]=0x00000006de5822c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[20]=0x00000006deff2ec0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[21]=0x00000006dfa63ac0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[22]=0x00000006e04d46c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[23]=0x00000006e0f452c0
+[56.021s][trace][gc,heap        ] GC(30) _eden_chunk_array[24]=0x00000006e1490000
+[56.021s][trace][gc,heap        ] GC(30) survivor 0x00000006e1490000-0x00000006e40d4a60-0x00000006e5710000(69730304)
+[56.021s][trace][gc,heap        ] GC(30) _survivor_chunk_index=0, _survivor_chunk_capacity=34048
+[56.023s][info ][gc             ] GC(30) Pause Initial Mark 4007M->4007M(4029M) 2.788ms
+[56.023s][info ][gc,cpu         ] GC(30) User=0.01s Sys=0.00s Real=0.00s
+[56.023s][info ][gc             ] GC(30) Concurrent Mark
+[56.023s][info ][gc,task        ] GC(30) Using 2 workers of 2 for marking
+[56.049s][info ][gc             ] GC(30) Concurrent Mark 25.595ms
+[56.049s][info ][gc,cpu         ] GC(30) User=0.04s Sys=0.01s Real=0.03s
+[56.049s][info ][gc             ] GC(30) Concurrent Preclean
+[56.057s][info ][gc             ] GC(30) Concurrent Preclean 7.541ms
+[56.057s][info ][gc,cpu         ] GC(30) User=0.00s Sys=0.00s Real=0.01s
+[56.057s][info ][gc             ] GC(30) Concurrent Abortable Preclean
+[56.057s][info ][gc             ] GC(30) Concurrent Abortable Preclean 0.015ms
+[56.057s][info ][gc,cpu         ] GC(30) User=0.00s Sys=0.00s Real=0.00s
+[56.057s][info ][gc,start       ] GC(30) Pause Remark
+[56.057s][trace][gc,heap        ] GC(30) eden 0x00000006c0000000-0x00000006e1490000-0x00000006e1490000(558432256)
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_index=25, _eden_chunk_capacity=38341
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[0]=0x00000006d1f23ec0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[1]=0x00000006d2994ac0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[2]=0x00000006d34056c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[3]=0x00000006d3e762c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[4]=0x00000006d48e6ec0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[5]=0x00000006d5357ac0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[6]=0x00000006d5dc86c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[7]=0x00000006d68392c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[8]=0x00000006d72a9ec0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[9]=0x00000006d7d1aac0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[10]=0x00000006d878b6c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[11]=0x00000006d91fc2c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[12]=0x00000006d9c6cec0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[13]=0x00000006da6ddac0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[14]=0x00000006db14e6c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[15]=0x00000006dbbbf2c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[16]=0x00000006dc62fec0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[17]=0x00000006dd0a0ac0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[18]=0x00000006ddb116c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[19]=0x00000006de5822c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[20]=0x00000006deff2ec0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[21]=0x00000006dfa63ac0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[22]=0x00000006e04d46c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[23]=0x00000006e0f452c0
+[56.057s][trace][gc,heap        ] GC(30) _eden_chunk_array[24]=0x00000006e1490000
+[56.057s][trace][gc,heap        ] GC(30) survivor 0x00000006e1490000-0x00000006e43510a0-0x00000006e5710000(69730304)
+[56.057s][trace][gc,heap        ] GC(30) _survivor_chunk_index=0, _survivor_chunk_capacity=34048
+[56.060s][info ][gc             ] GC(30) Pause Remark 4009M->4009M(4029M) 2.736ms
+[56.060s][info ][gc,cpu         ] GC(30) User=0.02s Sys=0.00s Real=0.00s
+[56.060s][info ][gc             ] GC(30) Concurrent Sweep
+[56.069s][info ][gc             ] GC(30) Concurrent Sweep 9.455ms
+[56.069s][info ][gc,cpu         ] GC(30) User=0.01s Sys=0.00s Real=0.01s
+[56.069s][info ][gc             ] GC(30) Concurrent Reset
+[56.070s][info ][gc             ] GC(30) Concurrent Reset 0.869ms
+[56.070s][info ][gc,cpu         ] GC(30) User=0.00s Sys=0.00s Real=0.00s
+[56.070s][info ][gc,heap        ] GC(30) Old: 3512764K->3512764K(3512768K)

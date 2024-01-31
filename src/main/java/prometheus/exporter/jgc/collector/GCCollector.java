@@ -257,10 +257,11 @@ public class GCCollector implements JVMEventChannel {
     }
 
     private boolean shouldIgnore(ChannelName channel, JVMEvent event) {
-        if (channel == ChannelName.GENERATIONAL_HEAP_PARSER_OUTBOX
-                && event instanceof InitialMark) {
-            LOG.debug("Ignore CMS InitialMark event due to GcToolkit bug");
-            return true;
+        if (channel == ChannelName.CMS_TENURED_POOL_PARSER_OUTBOX) {
+            if (event instanceof InitialMark || event instanceof CMSRemark) {
+                LOG.debug("Ignore CMS InitialMark or Remark due to GcToolkit bug");
+                return true;
+            }
         }
         return false;
     }
