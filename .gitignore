@@ -21,3 +21,4 @@ nb-configuration.xml
 /.mvn/wrapper/maven-wrapper.jar
 **/metastore_db
 dependency-reduced-pom.xml
+/logs/*
