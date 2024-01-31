@@ -4,57 +4,7 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"com.microsoft.gctoolkit.parser.CMSTenuredPoolParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.GenerationalHeapParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.JVMEventParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.PreUnifiedG1GCParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.ShenandoahParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.SurvivorMemoryPoolParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.UnifiedG1GCParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.UnifiedGenerationalParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.UnifiedJVMEventParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.UnifiedSurvivorMemoryPoolParser",
-  "queryAllPublicConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"com.microsoft.gctoolkit.parser.ZGCParser",
+  "name":"com.microsoft.gctoolkit.parser.jvm.PreUnifiedDiarizer",
   "queryAllPublicConstructors":true,
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -135,6 +85,6 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setFileRegexPattern","parameterTypes":["java.lang.String"] }, {"name":"setHostPort","parameterTypes":["java.lang.String"] }, {"name":"setIdleTimeout","parameterTypes":["int"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setFileGlobPattern","parameterTypes":["java.lang.String"] }, {"name":"setHostPort","parameterTypes":["java.lang.String"] }, {"name":"setIdleTimeout","parameterTypes":["int"] }, {"name":"setWatchInterval","parameterTypes":["int"] }]
 }
 ]
