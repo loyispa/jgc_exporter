@@ -65,6 +65,7 @@ public class Bootstrap {
 
     static void printBanner() throws IOException {
         StringBuilder banner = new StringBuilder();
+        banner.append("\n");
         banner.append(FigletFont.convertOneLine("jgc_exporter"));
         String v = Bootstrap.class.getPackage().getImplementationVersion();
         String version = String.format("%55s", v == null ? "unknown" : v);
