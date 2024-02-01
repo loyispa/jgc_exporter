@@ -41,7 +41,7 @@ http://0.0.0.0:5898/metrics
 | jgc_heap_occupancy_before_collection_bytes | gauge   | path           | Heap occupancy after collection |
 | jgc_heap_occupancy_after_collection_bytes  | gauge   | path           | Heap occupancy after collection |
 
-See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/collector/metric/CollectorProxyRegistry.java) related to specific garbage-collection algorithms.
+See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/metric/MetricRegistry.java) related to specific garbage-collection algorithms.
 
 # Build
 ```
