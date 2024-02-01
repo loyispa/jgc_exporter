@@ -15,7 +15,7 @@
  */
 package prometheus.exporter.jgc.collector;
 
-import static prometheus.exporter.jgc.collector.metric.CollectorProxyRegistry.*;
+import static prometheus.exporter.jgc.metric.MetricRegistry.*;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.microsoft.gctoolkit.event.*;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.collector.parser.Parsers;
+import prometheus.exporter.jgc.util.Parsers;
 
 public class GCCollector implements JVMEventChannel {
     private static final Logger LOG = LoggerFactory.getLogger(GCCollector.class);

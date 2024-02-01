@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus.exporter.jgc.collector.parser;
+package prometheus.exporter.jgc.util;
 
 import static com.microsoft.gctoolkit.event.GCCause.*;
 
