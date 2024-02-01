@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus.exporter.jgc.collector.parser;
+package prometheus.exporter.jgc.util;
 
 import static com.microsoft.gctoolkit.event.GCCause.*;
 
@@ -95,6 +95,7 @@ public class Parsers {
         return Collections.emptyList();
     }
 
+    // todo  remove me while gctoolkit release new version
     private static DataSourceParser workaroundForParsers(
             SingleGCLogFile logFile, DataSourceParser parser) {
         // dirty works for UnifiedG1GCParser must require heapRegionSize

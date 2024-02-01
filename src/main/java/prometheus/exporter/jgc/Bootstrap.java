@@ -15,7 +15,7 @@
  */
 package prometheus.exporter.jgc;
 
-import static prometheus.exporter.jgc.collector.metric.CollectorProxyRegistry.*;
+import static prometheus.exporter.jgc.metric.MetricRegistry.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -27,7 +27,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.collector.GCCollectorManager;
-import prometheus.exporter.jgc.collector.metric.CollectorProxyRegistry;
+import prometheus.exporter.jgc.metric.MetricRegistry;
 import prometheus.exporter.jgc.tailer.TailerManager;
 
 public class Bootstrap {
@@ -45,7 +45,7 @@ public class Bootstrap {
                 new HTTPServer.Builder()
                         .withHostname(host)
                         .withPort(port)
-                        .withRegistry(CollectorProxyRegistry.SINGLETON)
+                        .withRegistry(MetricRegistry.SINGLETON)
                         .withSampleNameFilterSupplier(
                                 SampleNameFilterSupplier.of(this::filterSamples))
                         .withDaemonThreads(false)

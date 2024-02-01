@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus.exporter.jgc.collector.metric;
+package prometheus.exporter.jgc.metric;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.SimpleCollector;
@@ -24,11 +24,11 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class CollectorProxy<C, T extends SimpleCollector<C>> extends Collector {
+public class Metric<C, T extends SimpleCollector<C>> extends Collector {
     private final Supplier<T> supplier;
     private final Map<Object, T> targets;
 
-    private CollectorProxy(Supplier<T> supplier) {
+    private Metric(Supplier<T> supplier) {
         this.supplier = Objects.requireNonNull(supplier);
         this.targets = new ConcurrentHashMap<>();
     }
@@ -50,7 +50,7 @@ public class CollectorProxy<C, T extends SimpleCollector<C>> extends Collector {
                 .collect(Collectors.toList());
     }
 
-    public static <C, T extends SimpleCollector<C>> CollectorProxy<C, T> of(Supplier<T> supplier) {
-        return new CollectorProxy<>(supplier).register(CollectorProxyRegistry.SINGLETON);
+    public static <C, T extends SimpleCollector<C>> Metric<C, T> of(Supplier<T> supplier) {
+        return new Metric<>(supplier).register(MetricRegistry.SINGLETON);
     }
 }

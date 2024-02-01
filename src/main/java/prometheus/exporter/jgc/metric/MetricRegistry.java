@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus.exporter.jgc.collector.metric;
+package prometheus.exporter.jgc.metric;
 
 import io.prometheus.client.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class CollectorProxyRegistry extends CollectorRegistry {
-    public static final CollectorProxyRegistry SINGLETON = new CollectorProxyRegistry();
+public class MetricRegistry extends CollectorRegistry {
+    public static final MetricRegistry SINGLETON = new MetricRegistry();
 
-    public static final CollectorProxy<Gauge.Child, Gauge> EXPORTER_STARTUP_SECONDS =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> EXPORTER_STARTUP_SECONDS =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .name("jgc_startup_timestamp_seconds")
                                     .help("Timestamp of exporter startup")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> EXPORTER_VERSION_INFO =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> EXPORTER_VERSION_INFO =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("version")
@@ -39,16 +39,16 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("The version of jgc_exporter")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> GC_COLLECT_FILES =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> GC_COLLECT_FILES =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
                                     .name("jgc_collect_files")
                                     .help("jgc exporter collect file list")
                                     .create());
-    public static final CollectorProxy<Counter.Child, Counter> GC_LOG_LINES =
-            CollectorProxy.of(
+    public static final Metric<Counter.Child, Counter> GC_LOG_LINES =
+            Metric.of(
                     () ->
                             Counter.build()
                                     .labelNames("path")
@@ -56,8 +56,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("Number of process log lines")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> GC_EVENT_DURATION =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> GC_EVENT_DURATION =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .name("jgc_event_duration_seconds")
@@ -65,8 +65,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .labelNames("path", "category")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> GC_EVENT_LAST_MINUTE_DURATION =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> GC_EVENT_LAST_MINUTE_DURATION =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .ageBuckets(6)
@@ -80,8 +80,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("Last minute duration of gc event")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> GC_EVENT_PAUSE_DURATION =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> GC_EVENT_PAUSE_DURATION =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path", "category")
@@ -89,8 +89,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("Duration of gc pause event")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> HEAP_OCCUPANCY_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> HEAP_OCCUPANCY_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -98,8 +98,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("heap occupancy before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> HEAP_SIZE_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> HEAP_SIZE_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -107,8 +107,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("heap size before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> HEAP_OCCUPANCY_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> HEAP_OCCUPANCY_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -116,8 +116,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("heap occupancy after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> HEAP_SIZE_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> HEAP_SIZE_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -125,8 +125,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("heap size after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> YOUNG_OCCUPANCY_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> YOUNG_OCCUPANCY_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -134,8 +134,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("young generation occupancy before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> YOUNG_SIZE_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> YOUNG_SIZE_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -143,8 +143,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("young generation size before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> YOUNG_OCCUPANCY_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> YOUNG_OCCUPANCY_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -152,8 +152,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("young generation occupancy after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> YOUNG_SIZE_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> YOUNG_SIZE_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -161,8 +161,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("young generation size after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> OLD_OCCUPANCY_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> OLD_OCCUPANCY_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -170,8 +170,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("old generation occupancy before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> OLD_SIZE_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> OLD_SIZE_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -179,8 +179,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("old generation size before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> OLD_OCCUPANCY_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> OLD_OCCUPANCY_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -188,8 +188,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("old generation occupancy after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> OLD_SIZE_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> OLD_SIZE_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -197,8 +197,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("old generation size after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> METASPACE_OCCUPANCY_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> METASPACE_OCCUPANCY_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -206,8 +206,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("metaspace occupancy before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> METASPACE_SIZE_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> METASPACE_SIZE_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -215,8 +215,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("metaspace size before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> METASPACE_OCCUPANCY_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> METASPACE_OCCUPANCY_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -224,8 +224,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("metaspace occupancy after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> METASPACE_SIZE_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> METASPACE_SIZE_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -233,8 +233,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("metaspace size after collection")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> CMS_CLASS_UNLOADING_PROCESS_TIME =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> CMS_CLASS_UNLOADING_PROCESS_TIME =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -242,8 +242,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("class unloading process time")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> CMS_SYMBOL_TABLE_PROCESS_TIME =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> CMS_SYMBOL_TABLE_PROCESS_TIME =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -251,8 +251,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("symbol table process time")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> CMS_STRING_TABLE_PROCESS_TIME =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> CMS_STRING_TABLE_PROCESS_TIME =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -260,18 +260,17 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("string table process duration")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary>
-            CMS_SYMBOL_AND_STRING_TABLE_PROCESS_TIME =
-                    CollectorProxy.of(
-                            () ->
-                                    Summary.build()
-                                            .labelNames("path")
-                                            .name("jgc_cms_symbol_and_string_table_process_seconds")
-                                            .help("symbol and string table process duration")
-                                            .create());
+    public static final Metric<Summary.Child, Summary> CMS_SYMBOL_AND_STRING_TABLE_PROCESS_TIME =
+            Metric.of(
+                    () ->
+                            Summary.build()
+                                    .labelNames("path")
+                                    .name("jgc_cms_symbol_and_string_table_process_seconds")
+                                    .help("symbol and string table process duration")
+                                    .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> SOFT_REFERENCE_COUNT =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> SOFT_REFERENCE_COUNT =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -279,8 +278,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of soft references")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> SOFT_REFERENCE_PAUSE_TIME =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> SOFT_REFERENCE_PAUSE_TIME =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -288,8 +287,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("soft reference pause duration")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> WEAK_REFERENCE_COUNT =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> WEAK_REFERENCE_COUNT =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -297,8 +296,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of weak references")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> WEAK_REFERENCE_PAUSE_TIME =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> WEAK_REFERENCE_PAUSE_TIME =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -306,8 +305,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("weak reference pause duration")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> FINAL_REFERENCE_COUNT =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> FINAL_REFERENCE_COUNT =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -315,8 +314,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of final references")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> FINAL_REFERENCE_PAUSE_TIME =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> FINAL_REFERENCE_PAUSE_TIME =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -324,8 +323,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("final reference pause duration")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> PHANTOM_REFERENCE_COUNT =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> PHANTOM_REFERENCE_COUNT =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -333,8 +332,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of phantom references")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> PHANTOM_REFERENCE_FREE_COUNT =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> PHANTOM_REFERENCE_FREE_COUNT =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -342,8 +341,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of free phantom references")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> PHANTOM_REFERENCE_PAUSE_TIME =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> PHANTOM_REFERENCE_PAUSE_TIME =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -351,8 +350,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("phantom reference pause duration")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> JNI_WEAK_REFERENCE_COUNT =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> JNI_WEAK_REFERENCE_COUNT =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -360,8 +359,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of jni weak references")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> JNI_WEAK_REFERENCE_PAUSE_TIME =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> JNI_WEAK_REFERENCE_PAUSE_TIME =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -369,8 +368,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("jni weak reference pause duration")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_EDEN_OCCUPANCY_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_EDEN_OCCUPANCY_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -378,8 +377,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("eden occupancy bytes after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_EDEN_OCCUPANCY_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_EDEN_OCCUPANCY_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -387,8 +386,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("eden heap occupancy bytes before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_EDEN_SIZE_AFTER_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_EDEN_SIZE_AFTER_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -396,38 +395,34 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("eden size after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_EDEN_SIZE_BEFORE_COLLECTION =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_EDEN_SIZE_BEFORE_COLLECTION =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
                                     .name("jgc_g1_eden_size_before_collection_bytes")
                                     .help("eden size before collection")
                                     .create());
-    public static final CollectorProxy<Gauge.Child, Gauge>
-            G1_SURVIVOR_HEAP_OCCUPANCY_AFTER_COLLECTION =
-                    CollectorProxy.of(
-                            () ->
-                                    Gauge.build()
-                                            .labelNames("path")
-                                            .name(
-                                                    "jgc_g1_survivor_heap_occupancy_after_collection_bytes")
-                                            .help("survivor heap occupancy bytes after collection")
-                                            .create());
+    public static final Metric<Gauge.Child, Gauge> G1_SURVIVOR_HEAP_OCCUPANCY_AFTER_COLLECTION =
+            Metric.of(
+                    () ->
+                            Gauge.build()
+                                    .labelNames("path")
+                                    .name("jgc_g1_survivor_heap_occupancy_after_collection_bytes")
+                                    .help("survivor heap occupancy bytes after collection")
+                                    .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge>
-            G1_SURVIVOR_HEAP_OCCUPANCY_BEFORE_COLLECTION =
-                    CollectorProxy.of(
-                            () ->
-                                    Gauge.build()
-                                            .labelNames("path")
-                                            .name(
-                                                    "jgc_g1_survivor_heap_occupancy_before_collection_bytes")
-                                            .help("survivor heap occupancy bytes before collection")
-                                            .create());
+    public static final Metric<Gauge.Child, Gauge> G1_SURVIVOR_HEAP_OCCUPANCY_BEFORE_COLLECTION =
+            Metric.of(
+                    () ->
+                            Gauge.build()
+                                    .labelNames("path")
+                                    .name("jgc_g1_survivor_heap_occupancy_before_collection_bytes")
+                                    .help("survivor heap occupancy bytes before collection")
+                                    .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_SURVIVOR_SIZE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_SURVIVOR_SIZE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -435,8 +430,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("survivor size")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_EDEN_REGION_BEFORE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_EDEN_REGION_BEFORE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -444,8 +439,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 eden region before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_EDEN_REGION_AFTER =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_EDEN_REGION_AFTER =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -453,8 +448,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 eden region after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_EDEN_REGION_ASSIGN =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_EDEN_REGION_ASSIGN =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -462,8 +457,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 eden assign regions")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_SURVIVOR_REGION_BEFORE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_SURVIVOR_REGION_BEFORE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -471,8 +466,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 survivor region before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_SURVIVOR_REGION_AFTER =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_SURVIVOR_REGION_AFTER =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -480,8 +475,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 survivor region after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_SURVIVOR_REGION_ASSIGN =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_SURVIVOR_REGION_ASSIGN =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -489,8 +484,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 survivor assign regions")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_OLD_REGION_BEFORE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_OLD_REGION_BEFORE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -498,8 +493,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 old regions before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_OLD_REGION_AFTER =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_OLD_REGION_AFTER =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -507,8 +502,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 old regions after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_OLD_REGION_ASSIGN =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_OLD_REGION_ASSIGN =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -516,8 +511,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 old assign regions")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_HUMONGOUS_REGION_BEFORE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_HUMONGOUS_REGION_BEFORE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -525,8 +520,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 humongous regions before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_HUMONGOUS_REGION_AFTER =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_HUMONGOUS_REGION_AFTER =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -534,8 +529,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 humongous regions after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_HUMONGOUS_REGION_ASSIGN =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_HUMONGOUS_REGION_ASSIGN =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -543,8 +538,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 humongous assign regions")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_ARCHIVE_REGION_BEFORE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_ARCHIVE_REGION_BEFORE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -552,8 +547,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 archive regions before collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_ARCHIVE_REGION_AFTER =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_ARCHIVE_REGION_AFTER =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -561,24 +556,24 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("amount of g1 archive regions after collection")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> G1_ARCHIVE_REGION_ASSIGN =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> G1_ARCHIVE_REGION_ASSIGN =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
                                     .name("jgc_g1_archive_assign_regions")
                                     .help("amount of g1 archive assign regions")
                                     .create());
-    public static final CollectorProxy<Summary.Child, Summary> ZGC_PAUSE_MARK_START_DURATION =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> ZGC_PAUSE_MARK_START_DURATION =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
                                     .name("jgc_zgc_pause_mark_start_duration_seconds")
                                     .help("zgc pause mark start duration")
                                     .create());
-    public static final CollectorProxy<Summary.Child, Summary> ZGC_CONCURRENT_MARK_DURATION =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> ZGC_CONCURRENT_MARK_DURATION =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -586,8 +581,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc concurrent mark duration")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> ZGC_CONCURRENT_MARK_FREE_DURATION =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> ZGC_CONCURRENT_MARK_FREE_DURATION =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -595,8 +590,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc concurrent mark free duration")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> ZGC_PAUSE_MARK_END_DURATION =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> ZGC_PAUSE_MARK_END_DURATION =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -604,31 +599,27 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc concurrent mark end duration")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary>
-            ZGC_PROCESS_NON_STRONG_REFERENCES_DURATION =
-                    CollectorProxy.of(
-                            () ->
-                                    Summary.build()
-                                            .labelNames("path")
-                                            .name(
-                                                    "jgc_zgc_process_non_strong_references_duration_seconds")
-                                            .help("zgc process non-strong references duration")
-                                            .create());
+    public static final Metric<Summary.Child, Summary> ZGC_PROCESS_NON_STRONG_REFERENCES_DURATION =
+            Metric.of(
+                    () ->
+                            Summary.build()
+                                    .labelNames("path")
+                                    .name("jgc_zgc_process_non_strong_references_duration_seconds")
+                                    .help("zgc process non-strong references duration")
+                                    .create());
 
-    public static final CollectorProxy<Summary.Child, Summary>
-            ZGC_CONCURRENT_RESET_RELOCATIONSET_DURATION =
-                    CollectorProxy.of(
-                            () ->
-                                    Summary.build()
-                                            .labelNames("path")
-                                            .name(
-                                                    "jgc_zgc_concurrent_reset_relocationset_duration_seconds")
-                                            .help("zgc concurrent reset relocationset duration")
-                                            .create());
+    public static final Metric<Summary.Child, Summary> ZGC_CONCURRENT_RESET_RELOCATIONSET_DURATION =
+            Metric.of(
+                    () ->
+                            Summary.build()
+                                    .labelNames("path")
+                                    .name("jgc_zgc_concurrent_reset_relocationset_duration_seconds")
+                                    .help("zgc concurrent reset relocationset duration")
+                                    .create());
 
-    public static final CollectorProxy<Summary.Child, Summary>
+    public static final Metric<Summary.Child, Summary>
             ZGC_CONCURRENT_SELECT_RELOCATIONSET_DURATION =
-                    CollectorProxy.of(
+                    Metric.of(
                             () ->
                                     Summary.build()
                                             .labelNames("path")
@@ -637,8 +628,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                             .help("zgc concurrent select relocationset duration")
                                             .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> ZGC_PAUSE_RELOCATE_START_DURATION =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> ZGC_PAUSE_RELOCATE_START_DURATION =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -646,8 +637,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc pause relocate start duration")
                                     .create());
 
-    public static final CollectorProxy<Summary.Child, Summary> ZGC_CONCURRENT_RELOCATE_DURATION =
-            CollectorProxy.of(
+    public static final Metric<Summary.Child, Summary> ZGC_CONCURRENT_RELOCATE_DURATION =
+            Metric.of(
                     () ->
                             Summary.build()
                                     .labelNames("path")
@@ -655,8 +646,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc concurrent relocate duration")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_LOAD_1m =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_LOAD_1m =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -664,8 +655,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc latest 1 minute cpu load average")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_LOAD_5m =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_LOAD_5m =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -673,8 +664,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc latest 5 minute cpu load average")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_LOAD_15m =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_LOAD_15m =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -682,8 +673,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc latest 15 minute cpu load average")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MMU_2MS =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MMU_2MS =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -691,8 +682,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc 2ms mmu ratio")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MMU_5MS =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MMU_5MS =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -700,8 +691,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc 5ms mmu ratio")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MMU_10MS =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MMU_10MS =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -709,8 +700,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc 10ms mmu ratio")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MMU_20MS =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MMU_20MS =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -718,8 +709,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc 20ms mmu ratio")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MMU_50MS =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MMU_50MS =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -727,8 +718,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc 50ms mmu ratio")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MMU_100MS =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MMU_100MS =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -736,8 +727,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc 100ms mmu ratio")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MARK_START_USED =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MARK_START_USED =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -745,8 +736,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc mark start used")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MARK_START_FREE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MARK_START_FREE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -754,8 +745,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc mark start free")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MARK_END_USED =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MARK_END_USED =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -763,8 +754,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc mark end used")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MARK_END_FREE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MARK_END_FREE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -772,8 +763,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc mark end free")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_RELOCATE_START_USED =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_RELOCATE_START_USED =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -781,8 +772,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc relocate start used")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_RELOCATE_START_FREE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_RELOCATE_START_FREE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -790,8 +781,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc relocate start free")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_RELOCATE_END_USED =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_RELOCATE_END_USED =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -799,8 +790,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc relocate end used")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_RELOCATE_END_FREE =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_RELOCATE_END_FREE =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -808,8 +799,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc relocate end free")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_LIVE_MARK_END =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_LIVE_MARK_END =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -817,8 +808,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc live mark end")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_LIVE_RECLAIM_START =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_LIVE_RECLAIM_START =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -826,8 +817,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc live reclaim start")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_LIVE_RECLAIM_END =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_LIVE_RECLAIM_END =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -835,8 +826,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc live reclaim end")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_ALLOCATED_MARK_END =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_ALLOCATED_MARK_END =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -844,8 +835,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc allocated mark end")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_ALLOCATED_RECLAIM_START =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_ALLOCATED_RECLAIM_START =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -853,8 +844,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc allocated reclaim start")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_ALLOCATED_RECLAIM_END =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_ALLOCATED_RECLAIM_END =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -862,8 +853,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc allocated reclaim end")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_GARBAGE_MARK_END =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_GARBAGE_MARK_END =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -871,8 +862,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc garbage mark end")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_GARBAGE_RECLAIM_START =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_GARBAGE_RECLAIM_START =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -880,8 +871,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc garbage reclaim start")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_GARBAGE_RECLAIM_END =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_GARBAGE_RECLAIM_END =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -889,8 +880,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc garbage reclaim end")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_RECLAIMED_RECLAIM_START =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_RECLAIMED_RECLAIM_START =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -898,8 +889,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc reclaim start")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_RECLAIMED_RECLAIM_END =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_RECLAIMED_RECLAIM_END =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -907,8 +898,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc reclaim end")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MEMORY_RECLAIM_START =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MEMORY_RECLAIM_START =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -916,8 +907,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc memory reclaim start")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_MEMORY_RECLAIM_END =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_MEMORY_RECLAIM_END =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -925,8 +916,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("zgc memory reclaim end")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_METASPACE_USED =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_METASPACE_USED =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -934,8 +925,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("metaspace used memory")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_METASPACE_COMMITTED =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_METASPACE_COMMITTED =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -943,8 +934,8 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("metaspace committed memory")
                                     .create());
 
-    public static final CollectorProxy<Gauge.Child, Gauge> ZGC_METASPACE_RESERVED =
-            CollectorProxy.of(
+    public static final Metric<Gauge.Child, Gauge> ZGC_METASPACE_RESERVED =
+            Metric.of(
                     () ->
                             Gauge.build()
                                     .labelNames("path")
@@ -952,9 +943,9 @@ public class CollectorProxyRegistry extends CollectorRegistry {
                                     .help("metaspace reserved memory")
                                     .create());
 
-    private final List<CollectorProxy> collectors;
+    private final List<Metric> collectors;
 
-    private CollectorProxyRegistry() {
+    private MetricRegistry() {
         super(true);
         this.collectors = new CopyOnWriteArrayList<>();
     }
@@ -962,15 +953,15 @@ public class CollectorProxyRegistry extends CollectorRegistry {
     @Override
     public void register(Collector m) {
         super.register(m);
-        if (m instanceof CollectorProxy) {
-            collectors.add((CollectorProxy) m);
+        if (m instanceof Metric) {
+            collectors.add((Metric) m);
         }
     }
 
     @Override
     public void unregister(Collector m) {
         super.unregister(m);
-        if (m instanceof CollectorProxy) {
+        if (m instanceof Metric) {
             collectors.remove(m);
         }
     }
