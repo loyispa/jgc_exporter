@@ -48,10 +48,17 @@ See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/ja
 ./mvnw clean package
 ```
 
-# Native build (experimental)
-The exporter can be converted into native executables by installing [graalvm](https://www.graalvm.org/downloads/).
+# Native build
+The exporter can be converted into native executables by installing [graalvm](https://www.graalvm.org/downloads/)(17 and 21).
+
+- macos:
 ```
 ./mvnw -Pnative clean package
+```
+
+- linux with [musl](https://musl.cc/):
+```
+./mvnw -Pnative-static-musl clean package
 ```
 
 # Suggestions
