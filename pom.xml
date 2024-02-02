@@ -180,6 +180,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <source>11</source>
                             <includeDependencySources>true</includeDependencySources>
                             <dependencySourceIncludes>
                                 <dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>

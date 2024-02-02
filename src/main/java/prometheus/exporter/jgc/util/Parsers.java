@@ -53,13 +53,14 @@ public class Parsers {
 
             Diary diary = logFile.diary();
             LOG.info(
-                    "{} diary: isG1GC={}, isZGC={}, isCMS={}, isGenerational={}, isSerial={}, "
-                            + "isPSOld={}, isPSYoung={}",
+                    "{} diary: isG1GC={}, isZGC={}, isCMS={}, isParNew={}, isDefNew={},"
+                            + " isSerial={}, isPSOld={}, isPSYoung={}",
                     file,
                     diary.isG1GC(),
                     diary.isZGC(),
                     diary.isCMS(),
-                    diary.isGenerational(),
+                    diary.isParNew(),
+                    diary.isDefNew(),
                     diary.isSerialFull(),
                     diary.isPSOldGen(),
                     diary.isPSYoung());
@@ -67,7 +68,8 @@ public class Parsers {
             if (diary.isG1GC()
                     || diary.isZGC()
                     || diary.isCMS()
-                    || diary.isGenerational()
+                    || diary.isParNew()
+                    || diary.isDefNew()
                     || diary.isSerialFull()
                     || diary.isPSOldGen()
                     || diary.isPSYoung()) {
