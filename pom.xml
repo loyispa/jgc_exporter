@@ -181,7 +181,6 @@
                         </goals>
                         <configuration>
                             <source>11</source>
-                            <taglet>11</taglet>
                             <includeDependencySources>true</includeDependencySources>
                             <dependencySourceIncludes>
                                 <dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
