@@ -33,13 +33,13 @@ http://0.0.0.0:5898/metrics
 | idleTimeout      | Time (ms) to close idle files, default is 10 minutes(600,000ms)        |
 
 # Metric
-| Name                                       | type    | labels         | Description                     |
-|--------------------------------------------|---------|----------------|---------------------------------|
-| jgc_log_lines_total                        | counter | path           | Number of process log lines     |
-| jgc_event_duration_seconds                 | summary | path, category | Duration of GC events           |
-| jgc_event_pause_duration_seconds           | summary | path, category | Duration of GC pause events     |
-| jgc_heap_occupancy_before_collection_bytes | gauge   | path           | Heap occupancy after collection |
-| jgc_heap_occupancy_after_collection_bytes  | gauge   | path           | Heap occupancy after collection |
+| Name                                       | type    | labels         | Description                      |
+|--------------------------------------------|---------|----------------|----------------------------------|
+| jgc_log_lines_total                        | counter | path           | Number of process log lines      |
+| jgc_event_duration_seconds                 | summary | path, category | Duration of GC events            |
+| jgc_event_pause_duration_seconds           | summary | path, category | Duration of GC pause events      |
+| jgc_heap_occupancy_before_collection_bytes | gauge   | path           | Heap occupancy before collection |
+| jgc_heap_occupancy_after_collection_bytes  | gauge   | path           | Heap occupancy after collection  |
 
 See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/metric/MetricRegistry.java) related to specific garbage-collection algorithms.
 
