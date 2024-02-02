@@ -53,8 +53,8 @@ public class Parsers {
 
             Diary diary = logFile.diary();
             LOG.info(
-                    "{} diary: isG1GC={}, isZGC={}, isCMS={}, isParNew={}, isDefNew={}, isSerial={}, "
-                            + "isPSOld={}, isPSYoung={}",
+                    "{} diary: isG1GC={}, isZGC={}, isCMS={}, isParNew={}, isDefNew={},"
+                            + " isSerial={}, isPSOld={}, isPSYoung={}",
                     file,
                     diary.isG1GC(),
                     diary.isZGC(),
