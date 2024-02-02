@@ -85,7 +85,7 @@ public class TailerManager {
                                             f, true, batchSize, bufferSize, linesPerSecond);
                                 });
                     } catch (UnsupportedOperationException ignore) {
-                        LOG.warn("Ignore file: {}", file, ignore);
+                        LOG.warn("Ignore unsupported file: {}", file);
                     } catch (Throwable t) {
                         LOG.error("Watch file error: {}", file, t);
                     }
