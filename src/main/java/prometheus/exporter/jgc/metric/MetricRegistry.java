@@ -26,6 +26,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
+                                    .labelNames("host")
                                     .name("jgc_startup_timestamp_seconds")
                                     .help("Timestamp of exporter startup")
                                     .create());
@@ -34,7 +35,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("version")
+                                    .labelNames("version", "host")
                                     .name("jgc_exporter_version_info")
                                     .help("The version of jgc_exporter")
                                     .create());
@@ -43,7 +44,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_collect_files")
                                     .help("jgc exporter collect file list")
                                     .create());
@@ -51,7 +52,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Counter.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_log_lines")
                                     .help("Number of process log lines")
                                     .create());
@@ -62,7 +63,7 @@ public class MetricRegistry extends CollectorRegistry {
                             Summary.build()
                                     .name("jgc_event_duration_seconds")
                                     .help("Duration of gc event")
-                                    .labelNames("path", "category")
+                                    .labelNames("path", "host", "category")
                                     .create());
 
     public static final Metric<Summary.Child, Summary> GC_EVENT_LAST_MINUTE_DURATION =
@@ -75,7 +76,7 @@ public class MetricRegistry extends CollectorRegistry {
                                     .quantile(0.5, 0.05)
                                     .quantile(0.75, 0.05)
                                     .quantile(1.0, 0.05)
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_event_last_minute_duration_seconds")
                                     .help("Last minute duration of gc event")
                                     .create());
@@ -84,7 +85,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path", "category")
+                                    .labelNames("path", "host", "category")
                                     .name("jgc_event_pause_duration_seconds")
                                     .help("Duration of gc pause event")
                                     .create());
@@ -93,7 +94,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_heap_occupancy_before_collection_bytes")
                                     .help("heap occupancy before collection")
                                     .create());
@@ -102,7 +103,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_heap_size_before_collection_bytes")
                                     .help("heap size before collection")
                                     .create());
@@ -111,7 +112,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_heap_occupancy_after_collection_bytes")
                                     .help("heap occupancy after collection")
                                     .create());
@@ -120,7 +121,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_heap_size_after_collection_bytes")
                                     .help("heap size after collection")
                                     .create());
@@ -129,7 +130,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_young_occupancy_before_collection_bytes")
                                     .help("young generation occupancy before collection")
                                     .create());
@@ -138,7 +139,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_generational_young_size_before_collection_bytes")
                                     .help("young generation size before collection")
                                     .create());
@@ -147,7 +148,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_generational_young_occupancy_after_collection_bytes")
                                     .help("young generation occupancy after collection")
                                     .create());
@@ -156,7 +157,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_generational_young_size_after_collection_bytes")
                                     .help("young generation size after collection")
                                     .create());
@@ -165,7 +166,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_old_occupancy_before_collection_bytes")
                                     .help("old generation occupancy before collection")
                                     .create());
@@ -174,7 +175,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_old_size_before_collection_bytes")
                                     .help("old generation size before collection")
                                     .create());
@@ -183,7 +184,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_old_occupancy_after_collection_bytes")
                                     .help("old generation occupancy after collection")
                                     .create());
@@ -192,7 +193,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_old_size_after_collection_bytes")
                                     .help("old generation size after collection")
                                     .create());
@@ -201,7 +202,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_metaspace_occupancy_before_collection_bytes")
                                     .help("metaspace occupancy before collection")
                                     .create());
@@ -210,7 +211,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_metaspace_size_before_collection_bytes")
                                     .help("metaspace size before collection")
                                     .create());
@@ -219,7 +220,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_metaspace_occupancy_after_collection_bytes")
                                     .help("metaspace occupancy after collection")
                                     .create());
@@ -228,7 +229,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_metaspace_size_after_collection_bytes")
                                     .help("metaspace size after collection")
                                     .create());
@@ -237,7 +238,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_cms_class_unloading_process_duration_seconds")
                                     .help("class unloading process time")
                                     .create());
@@ -246,7 +247,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_cms_symbol_table_process_duration_seconds")
                                     .help("symbol table process time")
                                     .create());
@@ -255,7 +256,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_cms_string_table_process_duration_seconds")
                                     .help("string table process duration")
                                     .create());
@@ -264,7 +265,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_cms_symbol_and_string_table_process_seconds")
                                     .help("symbol and string table process duration")
                                     .create());
@@ -273,7 +274,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_soft_references")
                                     .help("amount of soft references")
                                     .create());
@@ -282,7 +283,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_soft_reference_pause_duration_seconds")
                                     .help("soft reference pause duration")
                                     .create());
@@ -291,7 +292,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_weak_references")
                                     .help("amount of weak references")
                                     .create());
@@ -300,7 +301,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_weak_reference_pause_seconds")
                                     .help("weak reference pause duration")
                                     .create());
@@ -309,7 +310,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_final_references")
                                     .help("amount of final references")
                                     .create());
@@ -318,7 +319,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_final_reference_pause_duration_seconds")
                                     .help("final reference pause duration")
                                     .create());
@@ -327,7 +328,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_phantom_references")
                                     .help("amount of phantom references")
                                     .create());
@@ -336,7 +337,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_free_phantom_references")
                                     .help("amount of free phantom references")
                                     .create());
@@ -345,7 +346,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_phantom_reference_pause_duration_seconds")
                                     .help("phantom reference pause duration")
                                     .create());
@@ -354,7 +355,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_jni_weak_references")
                                     .help("amount of jni weak references")
                                     .create());
@@ -363,7 +364,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_jni_weak_reference_pause_duration_seconds")
                                     .help("jni weak reference pause duration")
                                     .create());
@@ -372,7 +373,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_eden_occupancy_after_collection_bytes")
                                     .help("eden occupancy bytes after collection")
                                     .create());
@@ -381,7 +382,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_eden_heap_occupancy_before_collection_bytes")
                                     .help("eden heap occupancy bytes before collection")
                                     .create());
@@ -390,7 +391,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_eden_size_after_collection_bytes")
                                     .help("eden size after collection")
                                     .create());
@@ -399,7 +400,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_eden_size_before_collection_bytes")
                                     .help("eden size before collection")
                                     .create());
@@ -407,7 +408,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_survivor_heap_occupancy_after_collection_bytes")
                                     .help("survivor heap occupancy bytes after collection")
                                     .create());
@@ -416,7 +417,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_survivor_heap_occupancy_before_collection_bytes")
                                     .help("survivor heap occupancy bytes before collection")
                                     .create());
@@ -425,7 +426,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_survivor_size_bytes")
                                     .help("survivor size")
                                     .create());
@@ -434,7 +435,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_eden_before_collection_regions")
                                     .help("amount of g1 eden region before collection")
                                     .create());
@@ -443,7 +444,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_eden_after_collection_regions")
                                     .help("amount of g1 eden region after collection")
                                     .create());
@@ -452,7 +453,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_eden_assign_regions")
                                     .help("amount of g1 eden assign regions")
                                     .create());
@@ -461,7 +462,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_survivor_before_collection_regions")
                                     .help("amount of g1 survivor region before collection")
                                     .create());
@@ -470,7 +471,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_survivor_after_collection_regions")
                                     .help("amount of g1 survivor region after collection")
                                     .create());
@@ -479,7 +480,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_survivor_assign_regions")
                                     .help("amount of g1 survivor assign regions")
                                     .create());
@@ -488,7 +489,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_old_before_collection_regions")
                                     .help("amount of g1 old regions before collection")
                                     .create());
@@ -497,7 +498,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_old_after_collection_regions")
                                     .help("amount of g1 old regions after collection")
                                     .create());
@@ -506,7 +507,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_old_assign_regions")
                                     .help("amount of g1 old assign regions")
                                     .create());
@@ -515,7 +516,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_humongous_before_collection_regions")
                                     .help("amount of g1 humongous regions before collection")
                                     .create());
@@ -524,7 +525,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_humongous_after_collection_regions")
                                     .help("amount of g1 humongous regions after collection")
                                     .create());
@@ -533,7 +534,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_humongous_assign_regions")
                                     .help("amount of g1 humongous assign regions")
                                     .create());
@@ -542,7 +543,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_archive_before_collection_regions")
                                     .help("amount of g1 archive regions before collection")
                                     .create());
@@ -551,7 +552,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_archive_after_collection_regions")
                                     .help("amount of g1 archive regions after collection")
                                     .create());
@@ -560,7 +561,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_g1_archive_assign_regions")
                                     .help("amount of g1 archive assign regions")
                                     .create());
@@ -568,7 +569,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_pause_mark_start_duration_seconds")
                                     .help("zgc pause mark start duration")
                                     .create());
@@ -576,7 +577,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_concurrent_mark_duration_seconds")
                                     .help("zgc concurrent mark duration")
                                     .create());
@@ -585,7 +586,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_concurrent_mark_free_duration_seconds")
                                     .help("zgc concurrent mark free duration")
                                     .create());
@@ -594,7 +595,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_pause_mark_end_duration_seconds")
                                     .help("zgc concurrent mark end duration")
                                     .create());
@@ -603,7 +604,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_process_non_strong_references_duration_seconds")
                                     .help("zgc process non-strong references duration")
                                     .create());
@@ -612,7 +613,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_concurrent_reset_relocationset_duration_seconds")
                                     .help("zgc concurrent reset relocationset duration")
                                     .create());
@@ -622,7 +623,7 @@ public class MetricRegistry extends CollectorRegistry {
                     Metric.of(
                             () ->
                                     Summary.build()
-                                            .labelNames("path")
+                                            .labelNames("path", "host")
                                             .name(
                                                     "jgc_zgc_concurrent_select_relocationset_duration_seconds")
                                             .help("zgc concurrent select relocationset duration")
@@ -632,7 +633,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_pause_relocate_start_duration_seconds")
                                     .help("zgc pause relocate start duration")
                                     .create());
@@ -641,7 +642,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Summary.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_concurrent_relocate_duration_seconds")
                                     .help("zgc concurrent relocate duration")
                                     .create());
@@ -650,7 +651,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_1m_cpu_load")
                                     .help("zgc latest 1 minute cpu load average")
                                     .create());
@@ -659,7 +660,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_5m_cpu_load")
                                     .help("zgc latest 5 minute cpu load average")
                                     .create());
@@ -668,7 +669,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_15m_cpu_load")
                                     .help("zgc latest 15 minute cpu load average")
                                     .create());
@@ -677,7 +678,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_2ms_mmu_ratio")
                                     .help("zgc 2ms mmu ratio")
                                     .create());
@@ -686,7 +687,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_5ms_mmu_ratio")
                                     .help("zgc 5ms mmu ratio")
                                     .create());
@@ -695,7 +696,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_10ms_mmu_ratio")
                                     .help("zgc 10ms mmu ratio")
                                     .create());
@@ -704,7 +705,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_20ms_mmu_ratio")
                                     .help("zgc 20ms mmu ratio")
                                     .create());
@@ -713,7 +714,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_50ms_mmu_ratio")
                                     .help("zgc 50ms mmu ratio")
                                     .create());
@@ -722,7 +723,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_100ms_mmu_ratio")
                                     .help("zgc 100ms mmu ratio")
                                     .create());
@@ -731,7 +732,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_mark_start_used_bytes")
                                     .help("zgc mark start used")
                                     .create());
@@ -740,7 +741,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_mark_start_free_bytes")
                                     .help("zgc mark start free")
                                     .create());
@@ -749,7 +750,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_mark_end_used_bytes")
                                     .help("zgc mark end used")
                                     .create());
@@ -758,7 +759,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_mark_end_free_bytes")
                                     .help("zgc mark end free")
                                     .create());
@@ -767,7 +768,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_relocate_start_used_bytes")
                                     .help("zgc relocate start used")
                                     .create());
@@ -776,7 +777,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_relocate_start_free_bytes")
                                     .help("zgc relocate start free")
                                     .create());
@@ -785,7 +786,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_relocate_end_used_bytes")
                                     .help("zgc relocate end used")
                                     .create());
@@ -794,7 +795,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_relocate_end_free_bytes")
                                     .help("zgc relocate end free")
                                     .create());
@@ -803,7 +804,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_live_mark_end_bytes")
                                     .help("zgc live mark end")
                                     .create());
@@ -812,7 +813,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_live_reclaim_start_bytes")
                                     .help("zgc live reclaim start")
                                     .create());
@@ -821,7 +822,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_live_reclaim_end_bytes")
                                     .help("zgc live reclaim end")
                                     .create());
@@ -830,7 +831,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_allocated_mark_end_bytes")
                                     .help("zgc allocated mark end")
                                     .create());
@@ -839,7 +840,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_allocated_reclaim_start_bytes")
                                     .help("zgc allocated reclaim start")
                                     .create());
@@ -848,7 +849,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_allocated_reclaim_end_bytes")
                                     .help("zgc allocated reclaim end")
                                     .create());
@@ -857,7 +858,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_garbage_mark_end_bytes")
                                     .help("zgc garbage mark end")
                                     .create());
@@ -866,7 +867,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_garbage_reclaim_start_heap_bytes")
                                     .help("zgc garbage reclaim start")
                                     .create());
@@ -875,7 +876,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_garbage_reclaim_end_bytes")
                                     .help("zgc garbage reclaim end")
                                     .create());
@@ -884,7 +885,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_reclaimed_reclaim_start_bytes")
                                     .help("zgc reclaim start")
                                     .create());
@@ -893,7 +894,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_reclaimed_reclaim_end_bytes")
                                     .help("zgc reclaim end")
                                     .create());
@@ -902,7 +903,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_memory_reclaim_start_bytes")
                                     .help("zgc memory reclaim start")
                                     .create());
@@ -911,7 +912,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_memory_reclaim_end_bytes")
                                     .help("zgc memory reclaim end")
                                     .create());
@@ -920,7 +921,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_metaspace_used_bytes")
                                     .help("metaspace used memory")
                                     .create());
@@ -929,7 +930,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_metaspace_committed_bytes")
                                     .help("metaspace committed memory")
                                     .create());
@@ -938,7 +939,7 @@ public class MetricRegistry extends CollectorRegistry {
             Metric.of(
                     () ->
                             Gauge.build()
-                                    .labelNames("path")
+                                    .labelNames("path", "host")
                                     .name("jgc_zgc_metaspace_reserved_bytes")
                                     .help("metaspace reserved memory")
                                     .create());
