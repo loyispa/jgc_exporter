@@ -18,11 +18,8 @@ package prometheus.exporter.jgc.metric;
 import io.prometheus.client.Collector;
 import io.prometheus.client.SimpleCollector;
 import io.prometheus.client.Supplier;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class Metric<C, T extends SimpleCollector<C>> extends Collector {
     private final Supplier<T> supplier;
@@ -44,10 +41,34 @@ public class Metric<C, T extends SimpleCollector<C>> extends Collector {
 
     @Override
     public List<MetricFamilySamples> collect() {
-        return targets.values().stream()
-                .map(SimpleCollector::collect)
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
+
+        final Optional<MetricFamilySamples> mfsOpt =
+                targets.values().stream()
+                        .map(SimpleCollector::collect)
+                        .filter(mfs -> !mfs.isEmpty())
+                        .map(mfs -> mfs.get(0))
+                        .findAny();
+
+        if (mfsOpt.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<MetricFamilySamples.Sample> samples = new ArrayList<>();
+        for (T target : targets.values()) {
+            for (MetricFamilySamples m : target.collect()) {
+                samples.addAll(m.samples);
+            }
+        }
+
+        MetricFamilySamples mfs = copyOf(mfsOpt.get(), samples);
+        List<MetricFamilySamples> mfsList = new ArrayList<>(1);
+        mfsList.add(mfs);
+        return mfsList;
+    }
+
+    private MetricFamilySamples copyOf(
+            MetricFamilySamples mfs, List<MetricFamilySamples.Sample> samples) {
+        return new MetricFamilySamples(mfs.name, mfs.unit, mfs.type, mfs.help, samples);
     }
 
     public static <C, T extends SimpleCollector<C>> Metric<C, T> of(Supplier<T> supplier) {
