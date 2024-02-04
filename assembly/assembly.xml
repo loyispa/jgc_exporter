@@ -14,14 +14,14 @@
                 <include>jgc_exporter</include>
                 <include>jgc_exporter.jar</include>
             </includes>
-            <outputDirectory>/lib</outputDirectory>
+            <outputDirectory>/jgc_exporter/lib</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>src/main/resources</directory>
             <includes>
                 <include>config.yaml</include>
             </includes>
-            <outputDirectory>/conf</outputDirectory>
+            <outputDirectory>/jgc_exporter/conf</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>.</directory>
@@ -29,11 +29,11 @@
                 <include>LICENSE</include>
                 <include>README.md</include>
             </includes>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/jgc_exporter</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>bin</directory>
-            <outputDirectory>/bin</outputDirectory>
+            <outputDirectory>/jgc_exporter/bin</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
