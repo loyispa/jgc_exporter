@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
+BASE_DIR=$(dirname $0)/..
+
 NATIVE_MODE="false"
 
-# Native executable
-if [ "$1" == "--native" ]; then
-    NATIVE_MODE="true"
+# prefer native executable
+if test -e "${BASE_DIR}"/lib/jgc_exporter; then
+  NATIVE_MODE="true"
 fi
-
-BASE_DIR=$(dirname $0)/..
 
 CONSOLE_OUTPUT_FILE="$BASE_DIR"/console.out
 
