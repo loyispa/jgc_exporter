@@ -9,7 +9,7 @@ if test -e "${BASE_DIR}"/lib/jgc_exporter; then
   NATIVE_MODE="true"
 fi
 
-CONSOLE_OUTPUT_FILE="$BASE_DIR"/console.out
+CONSOLE_OUTPUT_FILE="$BASE_DIR"/nohup.out
 
 JGC_HEAP_OPTS="-Xmx256m"
 
