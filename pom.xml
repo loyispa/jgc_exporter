@@ -87,7 +87,7 @@
                             <imageName>${project.artifactId}</imageName>
                             <mainClass>prometheus.exporter.jgc.Bootstrap</mainClass>
                             <buildArgs>
-                                <buildArg>--verbose --allow-incomplete-classpath --no-fallback</buildArg>
+                                <buildArg>--verbose --no-fallback</buildArg>
                                 <buildArg>-H:ConfigurationFileDirectories=src/main/resources/native-image</buildArg>
                             </buildArgs>
                         </configuration>
@@ -116,7 +116,7 @@
                             <imageName>${project.artifactId}</imageName>
                             <mainClass>prometheus.exporter.jgc.Bootstrap</mainClass>
                             <buildArgs>
-                                <buildArg>--verbose --gc=serial --libc=musl --static --allow-incomplete-classpath --no-fallback</buildArg>
+                                <buildArg>--verbose --gc=serial --libc=musl --static --no-fallback</buildArg>
                                 <buildArg>-H:ConfigurationFileDirectories=src/main/resources/native-image</buildArg>
                             </buildArgs>
                         </configuration>
