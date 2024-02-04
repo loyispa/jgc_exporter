@@ -44,14 +44,21 @@ http://0.0.0.0:5898/metrics
 See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/metric/MetricRegistry.java) related to specific garbage-collection algorithms.
 
 # Build
-```
+``` shell
 ./mvnw clean package
 ```
 
-# Native build (experimental)
-The exporter can be converted into native executables by installing [graalvm](https://www.graalvm.org/downloads/).
-```
+# Native build
+The exporter can be converted into native executables by installing [graalvm](https://www.graalvm.org/downloads/)(17 and 21).
+
+- native dynamic link:
+``` shell
 ./mvnw -Pnative clean package
+```
+
+- native static link with [musl](https://musl.cc/):
+``` shell
+./mvnw -Pnative-static-musl clean package
 ```
 
 # Suggestions
