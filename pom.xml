@@ -97,7 +97,7 @@
                                 <goals>
                                     <goal>compile-no-fork</goal>
                                 </goals>
-                                <phase>package</phase>
+                                <phase>compile</phase>
                             </execution>
                         </executions>
                     </plugin>
@@ -126,7 +126,7 @@
                                 <goals>
                                     <goal>compile-no-fork</goal>
                                 </goals>
-                                <phase>package</phase>
+                                <phase>compile</phase>
                             </execution>
                         </executions>
                     </plugin>
@@ -194,6 +194,26 @@
                             <createSourcesJar>true</createSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <finalName>jgc_exporter</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <descriptors>
+                                <descriptor>assembly/assembly.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>

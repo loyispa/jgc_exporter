@@ -26,11 +26,12 @@ http://0.0.0.0:5898/metrics
 ```
 
 # Configuration
-| Name             | Description                                                            |
-|------------------|------------------------------------------------------------------------|
-| hostPort         | Host and port that http server binds, default is 0.0.0.0:5898          |
-| fileGlobPattern  | Glob pattern of gc log file path, separate multiple paths with commas  |
-| idleTimeout      | Time (ms) to close idle files, default is 10 minutes(600,000ms)        |
+| Name            | Description                                                                  |
+|-----------------|------------------------------------------------------------------------------|
+| hostPort        | Host and port that http server binds, default is 0.0.0.0:5898                |
+| fileGlobPattern | Wildcard pattern of gc log file path, multiple paths separate with commas(,) |
+| idleTimeout     | Milliseconds before closing idle(no update) files, default is 1 hour         |
+| watchInterval   | Time interval for scanning matching files (ms)                               |
 
 # Metric
 | Name                                       | type    | labels               | Description                      |
