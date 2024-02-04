@@ -2,14 +2,14 @@
 
 BASE_DIR=$(dirname $0)/..
 
+EXPORTER_BASE_DIR="${BASE_DIR}"
+
 NATIVE_MODE="false"
 
 # prefer native executable
 if test -e "${BASE_DIR}"/lib/jgc_exporter; then
   NATIVE_MODE="true"
 fi
-
-CONSOLE_OUTPUT_FILE="$BASE_DIR"/nohup.out
 
 JGC_HEAP_OPTS="-Xmx256m"
 
@@ -23,8 +23,7 @@ else
 fi
 
 if [ "x$NATIVE_MODE" = "xtrue" ]; then
-  nohup "$BASE_DIR"/lib/jgc_exporter $JGC_NATIVE_HEAP_OPTS "$BASE_DIR"/conf/config.yaml > "$CONSOLE_OUTPUT_FILE" 2>&1 < /dev/null &
+  nohup "$BASE_DIR"/lib/jgc_exporter $JGC_NATIVE_HEAP_OPTS "$BASE_DIR"/conf/config.yaml > /dev/null 2>&1 &
 else
-  nohup "$JAVA" $JGC_HEAP_OPTS -jar "$BASE_DIR"/lib/jgc_exporter.jar "$BASE_DIR"/conf/config.yaml > "$CONSOLE_OUTPUT_FILE" 2>&1 < /dev/null &
+  nohup "$JAVA" $JGC_HEAP_OPTS -jar "$BASE_DIR"/lib/jgc_exporter.jar "$BASE_DIR"/conf/config.yaml > /dev/null 2>&1 &
 fi
-
