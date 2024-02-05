@@ -140,7 +140,7 @@ public class MetricRegistry extends CollectorRegistry {
                     () ->
                             Gauge.build()
                                     .labelNames("path", "host")
-                                    .name("jgc_generational_young_size_before_collection_bytes")
+                                    .name("jgc_young_size_before_collection_bytes")
                                     .help("young generation size before collection")
                                     .create());
 
@@ -149,7 +149,7 @@ public class MetricRegistry extends CollectorRegistry {
                     () ->
                             Gauge.build()
                                     .labelNames("path", "host")
-                                    .name("jgc_generational_young_occupancy_after_collection_bytes")
+                                    .name("jgc_young_occupancy_after_collection_bytes")
                                     .help("young generation occupancy after collection")
                                     .create());
 
@@ -158,7 +158,7 @@ public class MetricRegistry extends CollectorRegistry {
                     () ->
                             Gauge.build()
                                     .labelNames("path", "host")
-                                    .name("jgc_generational_young_size_after_collection_bytes")
+                                    .name("jgc_young_size_after_collection_bytes")
                                     .help("young generation size after collection")
                                     .create());
 
