@@ -4,32 +4,62 @@ BASE_DIR=$(dirname $0)/..
 
 export JGC_EXPORTER_BASE_DIR="${BASE_DIR}"
 
-NATIVE_MODE="false"
+# daemon mode
+DAEMON_MODE="false"
 
-# prefer native executable
+# prefer native mode
 if test -e "${BASE_DIR}"/native/jgc_exporter; then
   NATIVE_MODE="true"
-fi
-
-if [ "$1" == "--jar" ]; then
-    NATIVE_MODE="false"
-fi
-
-# Which java to use
-if [ -z "$JAVA_HOME" ]; then
-  JAVA="java"
 else
-  JAVA="$JAVA_HOME/bin/java"
+  NATIVE_MODE="false"
 fi
 
-JGC_NATIVE_HEAP_OPTS="-Xmx64m"
+while [ $# -gt 0 ]; do
+  case $1 in
+  --daemon)
+    DAEMON_MODE="true"
+    ;;
+  --jar)
+    NATIVE_MODE="false"
+    ;;
+  --native)
+    NATIVE_MODE="true"
+    ;;
+  esac
+  shift
+done
 
-JGC_JAR_HEAP_OPTS="-Xmx256m"
+CONFIG_PATH="$BASE_DIR"/conf/config.yaml
+
+NATIVE_EXECUTABLE="$BASE_DIR"/native/jgc_exporter
+
+JAR_EXECUTABLE="$BASE_DIR"/lib/jgc_exporter.jar
 
 if [ "x$NATIVE_MODE" = "xtrue" ]; then
-  echo "Using native executable: ${JGC_NATIVE_HEAP_OPTS}"
-  nohup "$BASE_DIR"/native/jgc_exporter $JGC_NATIVE_HEAP_OPTS "$BASE_DIR"/conf/config.yaml > /dev/null 2>&1 &
+  JGC_HEAP_OPTS="-Xmx64m"
+
+  echo "Using native executable" $JGC_HEAP_OPTS
+
+  if [ "x$DAEMON_MODE" = "xtrue" ]; then
+    nohup "$NATIVE_EXECUTABLE" $JGC_HEAP_OPTS "$CONFIG_PATH" >/dev/null 2>&1 &
+  else
+    exec "$NATIVE_EXECUTABLE" $JGC_HEAP_OPTS "$CONFIG_PATH"
+  fi
+
 else
-  echo "Using jar executable: ${JGC_JAR_HEAP_OPTS}"
-  nohup "$JAVA" $JGC_JAR_HEAP_OPTS -jar "$BASE_DIR"/lib/jgc_exporter.jar "$BASE_DIR"/conf/config.yaml > /dev/null 2>&1 &
+  JGC_HEAP_OPTS="-Xmx256m"
+
+  echo "Using jar executable" $JGC_HEAP_OPTS
+
+  if [ -z "$JAVA_HOME" ]; then
+    JAVA="java"
+  else
+    JAVA="$JAVA_HOME/bin/java"
+  fi
+
+  if [ "x$DAEMON_MODE" = "xtrue" ]; then
+    nohup "$JAVA" $JGC_HEAP_OPTS -jar "$JAR_EXECUTABLE" "$CONFIG_PATH" >/dev/null 2>&1 &
+  else
+    exec "$JAVA" $JGC_HEAP_OPTS -jar "$JAR_EXECUTABLE" "$CONFIG_PATH"
+  fi
 fi

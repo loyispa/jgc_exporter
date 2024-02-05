@@ -4,13 +4,26 @@
 
 An exporter that can continuously analyze hotspot garbage collection log and automatically detect Garbage collection algorithms. The basic ability relies on the [gctoolkit](https://github.com/microsoft/gctoolkit) library, which supports most mainstream garbage collections, such as CMS, G1, ZGC, etc.
 # Running the exporter
-JDK require: 11+
 
-OS require: linux
+Run the exporter as standalone HTTP server, prefer native executable if available:
 
-Run the exporter as standalone HTTP server:
+start with jar:
 ```shell
-java -jar jgc_exporter.jar /path/to/config.yml
+# jdk require: 11+
+#  os require: linux
+sh bin/run.sh --jar
+
+# background running
+sh bin/run.sh --jar --daemon
+```
+
+start with native executable if available:
+```shell
+# os require: linux
+sh bin/run.sh --native
+
+# background running
+sh bin/run.sh --native --daemon
 ```
 
 A simple `config.yml` looks like below:
