@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.collector.GCCollectorManager;
 import prometheus.exporter.jgc.metric.MetricRegistry;
 import prometheus.exporter.jgc.tailer.TailerManager;
-import prometheus.exporter.jgc.util.EnvUtils;
+import prometheus.exporter.jgc.util.OperateSystem;
 
 public class Bootstrap {
     private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
@@ -123,7 +123,7 @@ public class Bootstrap {
     }
 
     private void registerSystemMetrics() {
-        String hostname = EnvUtils.getLocalHostName();
+        String hostname = OperateSystem.getLocalHostName();
         EXPORTER_STARTUP_SECONDS.attach(this, hostname).setToCurrentTime();
         Package pkg = this.getClass().getPackage();
         String version = pkg.getImplementationVersion();

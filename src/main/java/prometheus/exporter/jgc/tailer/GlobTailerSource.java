@@ -15,12 +15,12 @@
  */
 package prometheus.exporter.jgc.tailer;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Iterator;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,24 +69,28 @@ public class GlobTailerSource extends TailerSource {
     }
 
     private Path getBase(String pattern) {
+        final String separator = FileSystems.getDefault().getSeparator();
+        final List<String> dirs = Splitter.on(separator).splitToList(pattern);
+        final StringBuilder path = new StringBuilder();
 
-        Path path = Path.of(pattern).toAbsolutePath();
-        Path root = path.getRoot();
-
-        int i = 0;
-        Iterator<Path> iterator = path.iterator();
-        while (iterator.hasNext()) {
-            Path entry = iterator.next();
-            String dir = entry.toString();
-            for (int j = 0; j < dir.length(); ++j) {
-                char ch = dir.charAt(j);
-                if (globMetaChars.indexOf(ch) != -1) {
-                    return Path.of(root.toString(), path.subpath(0, i).toString());
-                }
+        for (int i = 0; i < dirs.size() - 1; ++i) {
+            String dir = dirs.get(i);
+            if (isWildcard(dir)) {
+                break;
             }
-            i++;
+            path.append(dir).append(separator);
         }
 
-        return path.getParent();
+        return Path.of(path.toString()).toAbsolutePath();
+    }
+
+    private boolean isWildcard(String dir) {
+        for (int j = 0; j < dir.length(); ++j) {
+            char ch = dir.charAt(j);
+            if (globMetaChars.indexOf(ch) != -1) {
+                return true;
+            }
+        }
+        return false;
     }
 }

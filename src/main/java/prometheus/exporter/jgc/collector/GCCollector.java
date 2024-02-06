@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.util.EnvUtils;
+import prometheus.exporter.jgc.util.OperateSystem;
 import prometheus.exporter.jgc.util.Parsers;
 
 public class GCCollector implements JVMEventChannel {
@@ -48,7 +48,7 @@ public class GCCollector implements JVMEventChannel {
         }
         parsers.forEach(parser -> parser.publishTo(this));
         path = file.getAbsolutePath();
-        host = EnvUtils.getLocalHostName();
+        host = OperateSystem.getLocalHostName();
         GC_COLLECT_FILES.attach(this, path, host).set(1);
     }
 

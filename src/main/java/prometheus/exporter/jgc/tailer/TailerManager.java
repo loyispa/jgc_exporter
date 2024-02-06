@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.Config;
+import prometheus.exporter.jgc.util.OperateSystem;
 
 public class TailerManager {
     private static final Logger LOG = LoggerFactory.getLogger(TailerManager.class);
@@ -81,7 +82,7 @@ public class TailerManager {
                                 file,
                                 f -> {
                                     listener.onOpen(file);
-                                    return new Tailer(
+                                    return newTailer(
                                             f, true, batchSize, bufferSize, linesPerSecond);
                                 });
                     } catch (UnsupportedOperationException ignore) {
@@ -186,5 +187,13 @@ public class TailerManager {
         if (started.compareAndSet(true, false)) {
             watcher.shutdown();
         }
+    }
+
+    public static Tailer newTailer(
+            File file, boolean seekToEnd, int batchSize, int bufferSize, int linesPerSecond) {
+        if (!OperateSystem.isUnixLike()) {
+            LOG.warn("Unsupported OS: {}", OperateSystem.OS);
+        }
+        return new UnixLikeTailer(file, seekToEnd, batchSize, bufferSize, linesPerSecond);
     }
 }

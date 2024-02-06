@@ -45,7 +45,7 @@ public class TailerTest {
         pw.close();
 
         Tailer tailer =
-                new Tailer(
+                TailerManager.newTailer(
                         temp,
                         false,
                         Config.DEFAULT_BATCH_SIZE,
@@ -80,7 +80,8 @@ public class TailerTest {
         pw.close();
 
         Tailer tailer =
-                new Tailer(temp, false, Config.DEFAULT_BATCH_SIZE, Config.DEFAULT_BUFFER_SIZE, 1);
+                TailerManager.newTailer(
+                        temp, false, Config.DEFAULT_BATCH_SIZE, Config.DEFAULT_BUFFER_SIZE, 1);
 
         int total = 1;
         while (total < 2) {
@@ -186,8 +187,9 @@ public class TailerTest {
         tmpdir.mkdir();
 
         File file = File.createTempFile("test-rotate", ".log", tmpdir);
+        file.deleteOnExit();
         Tailer tailer =
-                new Tailer(
+                TailerManager.newTailer(
                         file,
                         true,
                         Config.DEFAULT_BATCH_SIZE,
@@ -195,8 +197,10 @@ public class TailerTest {
                         Config.DEFAULT_LINES_PER_SECOND);
 
         Assert.assertEquals(tailer.rotated(), false);
-        file.delete();
-        file.createNewFile();
+        File oldFile = new File(file.getAbsolutePath() + ".old");
+        oldFile.deleteOnExit();
+        Assert.assertTrue(file.renameTo(oldFile));
+        Assert.assertTrue(file.createNewFile());
         Assert.assertEquals(tailer.rotated(), true);
     }
 
@@ -208,8 +212,9 @@ public class TailerTest {
         tmpdir.mkdir();
 
         File file = File.createTempFile("test-rotate", ".log", tmpdir);
+        file.deleteOnExit();
         Tailer tailer =
-                new Tailer(
+                TailerManager.newTailer(
                         file,
                         true,
                         Config.DEFAULT_BATCH_SIZE,
