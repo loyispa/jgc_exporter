@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus.exporter.jgc.util;
+package prometheus.exporter.jgc.tailer;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.File;
 
-public class EnvUtils {
-    private EnvUtils() {}
-
-    public static String getLocalHostName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-        }
-        return "localhost";
+public class UnixLikeTailer extends Tailer {
+    public UnixLikeTailer(
+            File file, boolean seekToEnd, int batchSize, int bufferSize, int linesPerSecond) {
+        super(file, seekToEnd, batchSize, bufferSize, linesPerSecond);
     }
 }

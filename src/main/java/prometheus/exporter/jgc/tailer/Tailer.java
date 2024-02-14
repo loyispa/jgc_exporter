@@ -17,21 +17,21 @@ package prometheus.exporter.jgc.tailer;
 
 import com.google.common.util.concurrent.RateLimiter;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import prometheus.exporter.jgc.util.OperateSystem;
 
-public class Tailer {
+public abstract class Tailer {
     private static final Logger LOG = LoggerFactory.getLogger(Tailer.class);
     private static final byte BYTE_NL = (byte) 10;
     private static final byte BYTE_CR = (byte) 13;
     private static final int NEED_READING = -1;
-    private final File file;
-    private RandomAccessFile raf;
-    private long inode;
+    protected final File file;
+    protected RandomAccessFile raf;
+    private Object fileKey;
     private int bufferPos;
     private int bufferCap;
     private final boolean seekToEnd;
@@ -59,7 +59,7 @@ public class Tailer {
         this.readBuffer = new byte[bufferSize];
         this.lineBuffer = new LineBuffer();
         this.limiter = RateLimiter.create(linesPerSecond);
-        refresh();
+        initialize();
     }
 
     public List<String> readLines() throws IOException {
@@ -77,8 +77,8 @@ public class Tailer {
     public boolean rotated() {
         try {
             // inode changes
-            long currInode = getInode(this.file);
-            if (currInode != inode) {
+            Object currFileKey = OperateSystem.getFileKey(file);
+            if (!Objects.equals(currFileKey, fileKey)) {
                 LOG.info("{} rotated: inode changed", this.file);
                 return true;
             }
@@ -116,11 +116,10 @@ public class Tailer {
         }
     }
 
-    private void refresh() {
+    private void initialize() {
         try {
-            this.close();
             this.raf = new RandomAccessFile(file, "r");
-            this.inode = getInode(file);
+            this.fileKey = OperateSystem.getFileKey(file);
             if (seekToEnd) {
                 this.raf.seek(this.raf.length());
             } else {
@@ -177,10 +176,6 @@ public class Tailer {
         bufferPos = 0;
     }
 
-    private long getInode(File file) throws IOException {
-        return (long) Files.getAttribute(file.toPath(), "unix:ino");
-    }
-
     class LineBuffer extends ByteArrayOutputStream {
 
         public LineBuffer() {
@@ -208,12 +203,10 @@ public class Tailer {
 
     @Override
     public String toString() {
-        return "Tailer{"
+        return getClass().getSimpleName()
+                + "{"
                 + "file='"
                 + file
-                + '\''
-                + ", inode="
-                + inode
                 + ", lastUpdated="
                 + lastModified
                 + '}';

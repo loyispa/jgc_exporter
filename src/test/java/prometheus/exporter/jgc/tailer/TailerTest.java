@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.Config;
+import prometheus.exporter.jgc.util.OperateSystem;
 
 public class TailerTest {
     private static final Logger LOG = LoggerFactory.getLogger(TailerTest.class);
@@ -45,7 +46,7 @@ public class TailerTest {
         pw.close();
 
         Tailer tailer =
-                new Tailer(
+                TailerManager.newTailer(
                         temp,
                         false,
                         Config.DEFAULT_BATCH_SIZE,
@@ -80,7 +81,8 @@ public class TailerTest {
         pw.close();
 
         Tailer tailer =
-                new Tailer(temp, false, Config.DEFAULT_BATCH_SIZE, Config.DEFAULT_BUFFER_SIZE, 1);
+                TailerManager.newTailer(
+                        temp, false, Config.DEFAULT_BATCH_SIZE, Config.DEFAULT_BUFFER_SIZE, 1);
 
         int total = 1;
         while (total < 2) {
@@ -186,18 +188,21 @@ public class TailerTest {
         tmpdir.mkdir();
 
         File file = File.createTempFile("test-rotate", ".log", tmpdir);
+        file.deleteOnExit();
         Tailer tailer =
-                new Tailer(
+                TailerManager.newTailer(
                         file,
                         true,
                         Config.DEFAULT_BATCH_SIZE,
                         Config.DEFAULT_BUFFER_SIZE,
                         Config.DEFAULT_LINES_PER_SECOND);
 
-        Assert.assertEquals(tailer.rotated(), false);
-        file.delete();
-        file.createNewFile();
-        Assert.assertEquals(tailer.rotated(), true);
+        Assert.assertFalse(tailer.rotated());
+        File oldFile = new File(file.getAbsolutePath() + ".old");
+        oldFile.deleteOnExit();
+        Assert.assertTrue(file.renameTo(oldFile));
+        Assert.assertTrue(file.createNewFile());
+        Assert.assertTrue(tailer.rotated());
     }
 
     @Test
@@ -208,8 +213,9 @@ public class TailerTest {
         tmpdir.mkdir();
 
         File file = File.createTempFile("test-rotate", ".log", tmpdir);
+        file.deleteOnExit();
         Tailer tailer =
-                new Tailer(
+                TailerManager.newTailer(
                         file,
                         true,
                         Config.DEFAULT_BATCH_SIZE,
@@ -282,5 +288,21 @@ public class TailerTest {
         Thread.sleep(5000);
         close.await();
         manager.close();
+    }
+
+    @Test
+    public void testFileKeyChange() throws Exception {
+        File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
+        tmpdir.delete();
+        tmpdir.mkdir();
+        File file = File.createTempFile("test-fileKey", ".log", tmpdir);
+        file.deleteOnExit();
+        Object fileKey = OperateSystem.getFileKey(file);
+        File oldFile = new File(file.getAbsolutePath() + ".old");
+        oldFile.deleteOnExit();
+        Assert.assertTrue(file.renameTo(oldFile));
+        Assert.assertTrue(file.createNewFile());
+        Object currFileKey = OperateSystem.getFileKey(file);
+        Assert.assertNotEquals(fileKey, currFileKey);
     }
 }
