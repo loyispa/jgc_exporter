@@ -45,6 +45,7 @@ http://0.0.0.0:5898/metrics
 | fileGlobPattern | Wildcard pattern of gc log file path, multiple paths separate with commas(,) |
 | idleTimeout     | Milliseconds before closing idle(no update) files, default is 1 hour         |
 | watchInterval   | Time interval for scanning matching files (ms)                               |
+| readInterval    | Time to sleep between files reading (ms)                                     |
 
 # Metric
 | Name                                       | type    | labels               | Description                      |

@@ -25,6 +25,7 @@ public class Config {
     public static final int DEFAULT_BUFFER_SIZE = 8192;
     public static final int DEFAULT_LINES_PER_SECOND = Integer.MAX_VALUE;
     public static final int DEFAULT_WATCH_INTERVAL = 30000;
+    public static final int DEFAULT_READ_INTERVAL = 1_000;
     private String fileRegexPattern;
     private String fileGlobPattern;
     private String hostPort = DEFAULT_HOST_PORT;
@@ -33,6 +34,7 @@ public class Config {
     private int bufferSize = DEFAULT_BUFFER_SIZE;
     private int linesPerSecond = DEFAULT_LINES_PER_SECOND;
     private int watchInterval = DEFAULT_WATCH_INTERVAL;
+    private int readInterval = DEFAULT_READ_INTERVAL;
 
     public String getFileRegexPattern() {
         return fileRegexPattern;
@@ -96,6 +98,14 @@ public class Config {
 
     public void setWatchInterval(int watchInterval) {
         this.watchInterval = watchInterval;
+    }
+
+    public int getReadInterval() {
+        return readInterval;
+    }
+
+    public void setReadInterval(int readInterval) {
+        this.readInterval = readInterval;
     }
 
     @Override
