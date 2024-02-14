@@ -193,9 +193,13 @@ public class TailerManager {
 
     public static Tailer newTailer(
             File file, boolean seekToEnd, int batchSize, int bufferSize, int linesPerSecond) {
-        if (!OperateSystem.isUnixLike()) {
-            LOG.warn("Unsupported OS: {}", OperateSystem.OS);
+        if (OperateSystem.isUnixLike()) {
+            return new UnixLikeTailer(file, seekToEnd, batchSize, bufferSize, linesPerSecond);
         }
+        if (OperateSystem.isWindows()) {
+            return new WindowsTailer(file, seekToEnd, batchSize, bufferSize, linesPerSecond);
+        }
+        LOG.warn("Unsupported OS: {}", OperateSystem.OS);
         return new UnixLikeTailer(file, seekToEnd, batchSize, bufferSize, linesPerSecond);
     }
 }
