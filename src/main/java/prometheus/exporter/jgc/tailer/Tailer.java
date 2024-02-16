@@ -91,7 +91,7 @@ public abstract class Tailer {
                 return true;
             }
         } catch (IOException ex) {
-            LOG.error("IO error: {}", this.file, ex.getMessage());
+            LOG.error("IO error: {}", this.file, ex);
         }
         return false;
     }

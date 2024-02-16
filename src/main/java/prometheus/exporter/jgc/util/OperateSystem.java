@@ -41,6 +41,10 @@ public class OperateSystem {
         return OS.contains("mac");
     }
 
+    public static boolean isWindows() {
+        return OS.contains("windows");
+    }
+
     public static String getLocalHostName() {
         try {
             return InetAddress.getLocalHost().getHostName();
