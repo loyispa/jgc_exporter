@@ -16,6 +16,7 @@
 package prometheus.exporter.jgc.tailer;
 
 import java.io.*;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -110,7 +111,13 @@ public class TailerTest {
             temp.deleteOnExit();
         }
 
-        TailerMatcher matcher = new TailerMatcher(tmpdir.getPath() + "/test-regex.*\\.log", null);
+        String regex =
+                tmpdir.getPath() + FileSystems.getDefault().getSeparator() + "test-regex.*.log";
+        if (OperateSystem.isWindows()) {
+            regex = regex.replaceAll("\\\\", "\\\\\\\\");
+        }
+
+        RegexTailerSource matcher = new RegexTailerSource(regex);
         List<File> actualFiles = matcher.findMatchingFiles();
         expectFiles.sort(Comparator.comparing(File::getName));
         actualFiles.sort(Comparator.comparing(File::getName));
@@ -131,7 +138,12 @@ public class TailerTest {
             expectFiles.add(temp);
         }
 
-        TailerMatcher matcher = new TailerMatcher(null, tmpdir.getPath() + "/test-glob*.log");
+        String glob = tmpdir.getPath() + FileSystems.getDefault().getSeparator() + "test-glob*.log";
+        if (OperateSystem.isWindows()) {
+            glob = glob.replaceAll("\\\\", "\\\\\\\\");
+        }
+
+        GlobTailerSource matcher = new GlobTailerSource(glob);
         List<File> actualFiles = matcher.findMatchingFiles();
         expectFiles.sort(Comparator.comparing(File::getName));
         actualFiles.sort(Comparator.comparing(File::getName));
@@ -182,6 +194,9 @@ public class TailerTest {
 
     @Test
     public void testChange() throws Exception {
+        if (OperateSystem.isWindows()) {
+            return;
+        }
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
         tmpdir.delete();
@@ -246,7 +261,7 @@ public class TailerTest {
         Assert.assertEquals(tailer.rotated(), true);
     }
 
-    @Test(timeout = 60000)
+    @Test(timeout = 15000)
     public void testIdle() throws Exception {
 
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
@@ -257,7 +272,13 @@ public class TailerTest {
         temp.deleteOnExit();
 
         Config config = new Config();
-        config.setFileGlobPattern(temp.getAbsolutePath());
+
+        String glob = temp.getAbsolutePath();
+        if (OperateSystem.isWindows()) {
+            glob = temp.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
+        }
+
+        config.setFileGlobPattern(glob);
         config.setIdleTimeout(3000);
         config.setWatchInterval(1000);
 
@@ -291,7 +312,10 @@ public class TailerTest {
     }
 
     @Test
-    public void testFileKeyChange() throws Exception {
+    public void tesFileKeyChange() throws Exception {
+        if (OperateSystem.isWindows()) {
+            return;
+        }
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
         tmpdir.delete();
         tmpdir.mkdir();

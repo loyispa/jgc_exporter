@@ -23,6 +23,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class RegexTailerSource extends TailerSource {
     private static final Logger LOG = LoggerFactory.getLogger(TailerMatcher.class);
     private final File base;

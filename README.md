@@ -10,7 +10,7 @@ Run the exporter as standalone HTTP server, prefer native executable if availabl
 start with jar:
 ```shell
 # jdk require: 11+
-#  os require: linux
+#  os require: linux, windows
 sh bin/run.sh --jar
 
 # background running
@@ -19,7 +19,7 @@ sh bin/run.sh --jar --daemon
 
 start with native executable if available:
 ```shell
-# os require: linux
+# os require: linux, windows
 sh bin/run.sh --native
 
 # background running
@@ -34,7 +34,7 @@ fileGlobPattern: /path/to/some*/*.log
 ```
 
 Fetch the metrics:
-```agsl
+```
 http://0.0.0.0:5898/metrics
 ```
 
@@ -45,7 +45,7 @@ http://0.0.0.0:5898/metrics
 | fileGlobPattern | Wildcard pattern of gc log file path, multiple paths separate with commas(,) |
 | idleTimeout     | Milliseconds before closing idle(no update) files, default is 1 hour         |
 | watchInterval   | Time interval for scanning matching files (ms)                               |
-| readInterval    | Time to sleep between files reading (ms)                                     |
+| readInterval    | Time to sleep between files reading empty (ms)                               |
 
 # Metric
 | Name                                       | type    | labels               | Description                      |
