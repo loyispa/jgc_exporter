@@ -82,7 +82,7 @@
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
-                        <version>0.9.28</version>
+                        <version>0.10.0</version>
                         <configuration>
                             <imageName>${project.artifactId}</imageName>
                             <mainClass>prometheus.exporter.jgc.Bootstrap</mainClass>
@@ -111,7 +111,7 @@
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
-                        <version>0.9.28</version>
+                        <version>0.10.0</version>
                         <configuration>
                             <imageName>${project.artifactId}</imageName>
                             <mainClass>prometheus.exporter.jgc.Bootstrap</mainClass>
