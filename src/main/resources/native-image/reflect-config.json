@@ -172,6 +172,6 @@
   "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
   "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setFileGlobPattern","parameterTypes":["java.lang.String"] }, {"name":"setHostPort","parameterTypes":["java.lang.String"] }, {"name":"setIdleTimeout","parameterTypes":["int"] }, {"name":"setWatchInterval","parameterTypes":["int"] }]
+  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"setFileGlobPattern","parameterTypes":["java.lang.String"] }, {"name":"setHostPort","parameterTypes":["java.lang.String"] }, {"name":"setIdleTimeout","parameterTypes":["int"] }, {"name":"setWatchInterval","parameterTypes":["int"] }, {"name":"setReadInterval","parameterTypes":["int"] }]
 }
 ]
