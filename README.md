@@ -17,9 +17,9 @@ sh bin/run.sh --jar
 sh bin/run.sh --jar --daemon
 ```
 
-start with native executable if available:
+start with native executable (only linux):
 ```shell
-# os require: linux, windows
+# os require: linux
 sh bin/run.sh --native
 
 # background running
