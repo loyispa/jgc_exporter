@@ -2,7 +2,7 @@
 [![Build Status][maven-build-image]][maven-build-url]
 [![CodeCov][codecov-image]][codecov-url]
 
-An exporter that can continuously analyze hotspot garbage collection log and automatically detect Garbage collection algorithms. The basic ability relies on the [gctoolkit](https://github.com/microsoft/gctoolkit) library, which supports most mainstream garbage collections, such as CMS, G1, ZGC, etc.
+An exporter that can continuously analyze hotspot gc logs and automatically detect garbage collection algorithms(parallel, CMS, G1, ZGC, etc.)
 # Running the exporter
 
 Run the exporter as standalone HTTP server, prefer native executable if available:
@@ -17,7 +17,7 @@ sh bin/run.sh --jar
 sh bin/run.sh --jar --daemon
 ```
 
-start with native executable (only linux):
+start with native executable (only linux now, windows is on the way):
 ```shell
 # os require: linux
 sh bin/run.sh --native
@@ -29,7 +29,7 @@ sh bin/run.sh --native --daemon
 A simple `config.yml` looks like below:
 ```yaml
 
-# glob pattern is allowed in any level of paths
+# wildcard pattern is allowed in any level of paths, most of the time you only need to modify this configuration
 fileGlobPattern: /path/to/some*/*.log
 ```
 
@@ -42,7 +42,7 @@ http://0.0.0.0:5898/metrics
 | Name            | Description                                                                  |
 |-----------------|------------------------------------------------------------------------------|
 | hostPort        | Host and port that http server binds, default is 0.0.0.0:5898                |
-| fileGlobPattern | Wildcard pattern of gc log file path, multiple paths separate with commas(,) |
+| fileGlobPattern | Wildcard pattern of gc log file path, separate multiple paths with commas(,) |
 | idleTimeout     | Milliseconds before closing idle(no update) files, default is 1 hour         |
 | watchInterval   | Time interval for scanning matching files (ms)                               |
 | readInterval    | Time to sleep between files reading empty (ms)                               |
@@ -91,7 +91,7 @@ The exporter can be converted into native executables by installing [graalvm](ht
 ```
 
 # Contributing
-All contributions are welcome, docs, bugfixes and features.
+The exporter is still iterating frequently, all contributions are welcome. If you want a new feature, please raise an issue first.
 
 [maven-build-image]: https://github.com/loyispa/jgc_exporter/workflows/Java%20CI%20with%20Maven/badge.svg
 [maven-build-url]: https://github.com/loyispa/jgc_exporter/actions/workflows/maven.yaml
