@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,8 @@ public class GlobTailerSource extends TailerSource {
     public GlobTailerSource(String filePattern) {
         super(filePattern);
         this.base = getBase(filePattern);
+        LOG.info("pattern: {}", filePattern);
+        LOG.info("   base: {}", base);
         final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + filePattern);
         this.fileFilter = entry -> matcher.matches(entry) && !Files.isDirectory(entry);
     }
@@ -45,6 +48,8 @@ public class GlobTailerSource extends TailerSource {
         try {
             Files.walkFileTree(
                     base,
+                    Collections.singleton(FileVisitOption.FOLLOW_LINKS),
+                    100,
                     new SimpleFileVisitor<>() {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
@@ -57,10 +62,11 @@ public class GlobTailerSource extends TailerSource {
 
                         @Override
                         public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                            LOG.debug("visit {} failed:", file, exc);
                             return FileVisitResult.CONTINUE;
                         }
                     });
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOG.error("Find matching files fail: {} ", filePattern, e);
         }
 
