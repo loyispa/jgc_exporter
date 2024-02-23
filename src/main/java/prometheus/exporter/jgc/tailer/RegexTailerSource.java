@@ -31,6 +31,7 @@ public class RegexTailerSource extends TailerSource {
 
     public RegexTailerSource(String filePattern) {
         super(filePattern);
+        LOG.warn("fileRegexPattern is deprecated");
         File f = new File(filePattern).getAbsoluteFile();
         this.base = f.getParentFile();
         String regex = f.getName();
