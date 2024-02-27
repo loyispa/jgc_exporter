@@ -17,118 +17,17 @@ package prometheus.exporter.jgc.util;
 
 import static com.microsoft.gctoolkit.event.GCCause.*;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.microsoft.gctoolkit.event.GCCause;
 import com.microsoft.gctoolkit.event.g1gc.*;
 import com.microsoft.gctoolkit.event.generational.*;
 import com.microsoft.gctoolkit.event.zgc.ZGCCycle;
-import com.microsoft.gctoolkit.io.SingleGCLogFile;
-import com.microsoft.gctoolkit.jvm.Diary;
-import com.microsoft.gctoolkit.message.DataSourceParser;
-import com.microsoft.gctoolkit.parser.*;
-import com.microsoft.gctoolkit.parser.unified.UnifiedG1GCPatterns;
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Parsers {
     private static final Logger LOG = LoggerFactory.getLogger(Parsers.class);
 
-    private static final Cache<Path, GCLogTrace> G1_HEAP_REGION_SIZE_MB =
-            CacheBuilder.newBuilder().maximumSize(1024).build();
-
     private Parsers() {}
-
-    public static List<DataSourceParser> findParsers(File file) {
-        try {
-            final SingleGCLogFile logFile = new SingleGCLogFile(file.toPath());
-
-            Diary diary = logFile.diary();
-            LOG.info(
-                    "{} diary: isG1GC={}, isZGC={}, isCMS={}, isParNew={}, isDefNew={},"
-                            + " isSerial={}, isPSOld={}, isPSYoung={}",
-                    file,
-                    diary.isG1GC(),
-                    diary.isZGC(),
-                    diary.isCMS(),
-                    diary.isParNew(),
-                    diary.isDefNew(),
-                    diary.isSerialFull(),
-                    diary.isPSOldGen(),
-                    diary.isPSYoung());
-
-            if (diary.isG1GC()
-                    || diary.isZGC()
-                    || diary.isCMS()
-                    || diary.isParNew()
-                    || diary.isDefNew()
-                    || diary.isSerialFull()
-                    || diary.isPSOldGen()
-                    || diary.isPSYoung()) {
-
-                List<DataSourceParser> parsers =
-                        Stream.of(
-                                        new CMSTenuredPoolParser(),
-                                        new GenerationalHeapParser(),
-                                        new PreUnifiedG1GCParser(),
-                                        new UnifiedG1GCParser(),
-                                        new UnifiedGenerationalParser(),
-                                        new ZGCParser())
-                                .filter(dataSourceParser -> dataSourceParser.accepts(diary))
-                                .map(
-                                        parser -> {
-                                            parser.diary(diary);
-                                            return workaroundForParsers(logFile, parser);
-                                        })
-                                .collect(Collectors.toList());
-                return parsers;
-            }
-        } catch (Exception ex) {
-            LOG.error("find parsers for {} error:", file, ex);
-        }
-        return Collections.emptyList();
-    }
-
-    // todo  remove me while gctoolkit release new version
-    private static DataSourceParser workaroundForParsers(
-            SingleGCLogFile logFile, DataSourceParser parser) {
-        // dirty works for UnifiedG1GCParser must require heapRegionSize
-        if (parser instanceof UnifiedG1GCParser) {
-            try {
-                Optional<GCLogTrace> heapRegionSizeOptional =
-                        logFile.stream()
-                                .limit(1024)
-                                .map(UnifiedG1GCPatterns.HEAP_REGION_SIZE::parse)
-                                .filter(Objects::nonNull)
-                                .findFirst();
-                if (heapRegionSizeOptional.isPresent()) {
-                    GCLogTrace trace = heapRegionSizeOptional.get();
-                    ((UnifiedG1GCParser) parser).heapRegionSize(trace, trace.toString());
-                    G1_HEAP_REGION_SIZE_MB.put(logFile.getPath(), trace);
-                    LOG.info("{} find {}", logFile.getPath(), trace);
-                } else {
-                    GCLogTrace trace = G1_HEAP_REGION_SIZE_MB.getIfPresent(logFile.getPath());
-                    if (trace != null) {
-                        ((UnifiedG1GCParser) parser).heapRegionSize(trace, trace.toString());
-                        LOG.warn("{} reuse {}", logFile.getPath(), trace);
-                    } else {
-                        LOG.error("{} mismatch G1_HEAP_REGION_SIZE_MB", logFile.getPath());
-                    }
-                }
-            } catch (Throwable e) {
-                LOG.error("workaroundForParsers failed:", e);
-            }
-        }
-        return parser;
-    }
 
     public static String parseGenerationalGCEventCategory(GenerationalGCEvent event) {
         if (isCMSGCEvent(event)) {

@@ -15,6 +15,8 @@
  */
 package prometheus.exporter.jgc.tailer;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.File;
 import java.util.*;
@@ -45,6 +47,7 @@ public class TailerManager {
     private final Predicate<Long> idleChecker;
     private final AtomicBoolean started;
     private final int readInterval;
+    private final Cache<File, Long> invalidFiles;
 
     public TailerManager(Config config, TailerListener listener) {
         this.started = new AtomicBoolean(true);
@@ -56,6 +59,11 @@ public class TailerManager {
         this.linesPerSecond = config.getLinesPerSecond();
         this.readInterval = config.getReadInterval();
         this.listener = Objects.requireNonNull(listener);
+        this.invalidFiles =
+                CacheBuilder.newBuilder()
+                        .expireAfterWrite(1, TimeUnit.HOURS)
+                        .maximumSize(512)
+                        .build();
         this.lock = new ReentrantLock();
         this.idleChecker = lastModified -> lastModified + idleTimeout < System.currentTimeMillis();
         this.watcher =
@@ -76,6 +84,7 @@ public class TailerManager {
             try {
                 final List<File> matchingFiles =
                         tailerMatcher.findMatchingFiles().stream()
+                                .filter(f -> invalidFiles.getIfPresent(f) == null)
                                 .filter(f -> idleChecker.negate().test(f.lastModified()))
                                 .collect(Collectors.toList());
                 for (File file : matchingFiles) {
@@ -91,6 +100,7 @@ public class TailerManager {
                         LOG.warn("Ignore unsupported file: {}", file);
                     } catch (Throwable t) {
                         LOG.error("Watch file error: {}", file, t);
+                        invalidFiles.put(file, System.currentTimeMillis());
                     }
                 }
 

@@ -42,13 +42,11 @@ public class GCCollector implements JVMEventChannel {
     private final List<DataSourceParser> parsers;
 
     public GCCollector(File file) {
-        parsers = Parsers.findParsers(file);
-        if (parsers.isEmpty()) {
-            throw new UnsupportedOperationException(file.getPath());
-        }
-        parsers.forEach(parser -> parser.publishTo(this));
-        path = file.getAbsolutePath();
-        host = OperateSystem.getLocalHostName();
+        ParserMatcher matcher = new ParserMatcher(file.toPath());
+        this.parsers = matcher.find();
+        this.parsers.forEach(parser -> parser.publishTo(this));
+        this.path = file.getAbsolutePath();
+        this.host = OperateSystem.getLocalHostName();
         GC_COLLECT_FILES.attach(this, path, host).set(1);
     }
 

@@ -37,7 +37,7 @@ public class Bootstrap {
     private final TailerManager tailerManager;
     private final GCCollectorManager collectorManager;
 
-    public Bootstrap(Config config) throws IOException {
+    public Bootstrap(Config config) throws Exception {
         registerSystemMetrics();
         String hostPort = config.getHostPort();
         String host = hostPort.split(":")[0];

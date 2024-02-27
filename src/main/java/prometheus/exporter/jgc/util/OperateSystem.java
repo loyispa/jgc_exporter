@@ -19,8 +19,12 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OperateSystem {
+    private static final Logger LOG = LoggerFactory.getLogger(OperateSystem.class);
+
     public static final String OS = System.getProperty("os.name").toLowerCase();
 
     private OperateSystem() {}
