@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.Config;
-import prometheus.exporter.jgc.util.OperateSystem;
+import prometheus.exporter.jgc.util.OperatingSystem;
 
 public class TailerManager {
     private static final Logger LOG = LoggerFactory.getLogger(TailerManager.class);
@@ -203,13 +203,13 @@ public class TailerManager {
 
     public static Tailer newTailer(
             File file, boolean seekToEnd, int batchSize, int bufferSize, int linesPerSecond) {
-        if (OperateSystem.isUnixLike()) {
+        if (OperatingSystem.isUnixLike()) {
             return new UnixLikeTailer(file, seekToEnd, batchSize, bufferSize, linesPerSecond);
         }
-        if (OperateSystem.isWindows()) {
+        if (OperatingSystem.isWindows()) {
             return new WindowsTailer(file, seekToEnd, batchSize, bufferSize, linesPerSecond);
         }
-        LOG.warn("Unsupported OS: {}", OperateSystem.OS);
+        LOG.warn("Unsupported OS: {}", OperatingSystem.OS);
         return new UnixLikeTailer(file, seekToEnd, batchSize, bufferSize, linesPerSecond);
     }
 }

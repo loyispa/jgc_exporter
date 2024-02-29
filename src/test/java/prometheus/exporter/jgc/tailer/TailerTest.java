@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.Config;
-import prometheus.exporter.jgc.util.OperateSystem;
+import prometheus.exporter.jgc.util.OperatingSystem;
 
 public class TailerTest {
     private static final Logger LOG = LoggerFactory.getLogger(TailerTest.class);
@@ -113,7 +113,7 @@ public class TailerTest {
 
         String regex =
                 tmpdir.getPath() + FileSystems.getDefault().getSeparator() + "test-regex.*.log";
-        if (OperateSystem.isWindows()) {
+        if (OperatingSystem.isWindows()) {
             regex = regex.replaceAll("\\\\", "\\\\\\\\");
         }
 
@@ -139,7 +139,7 @@ public class TailerTest {
         }
 
         String glob = tmpdir.getPath() + FileSystems.getDefault().getSeparator() + "test-glob*.log";
-        if (OperateSystem.isWindows()) {
+        if (OperatingSystem.isWindows()) {
             glob = glob.replaceAll("\\\\", "\\\\\\\\");
         }
 
@@ -194,7 +194,7 @@ public class TailerTest {
 
     @Test
     public void testChange() throws Exception {
-        if (OperateSystem.isWindows()) {
+        if (OperatingSystem.isWindows()) {
             return;
         }
 
@@ -274,7 +274,7 @@ public class TailerTest {
         Config config = new Config();
 
         String glob = temp.getAbsolutePath();
-        if (OperateSystem.isWindows()) {
+        if (OperatingSystem.isWindows()) {
             glob = temp.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\");
         }
 
@@ -313,7 +313,7 @@ public class TailerTest {
 
     @Test
     public void tesFileKeyChange() throws Exception {
-        if (OperateSystem.isWindows()) {
+        if (OperatingSystem.isWindows()) {
             return;
         }
         File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
@@ -321,12 +321,12 @@ public class TailerTest {
         tmpdir.mkdir();
         File file = File.createTempFile("test-fileKey", ".log", tmpdir);
         file.deleteOnExit();
-        Object fileKey = OperateSystem.getFileKey(file);
+        Object fileKey = OperatingSystem.getFileKey(file);
         File oldFile = new File(file.getAbsolutePath() + ".old");
         oldFile.deleteOnExit();
         Assert.assertTrue(file.renameTo(oldFile));
         Assert.assertTrue(file.createNewFile());
-        Object currFileKey = OperateSystem.getFileKey(file);
+        Object currFileKey = OperatingSystem.getFileKey(file);
         Assert.assertNotEquals(fileKey, currFileKey);
     }
 }
