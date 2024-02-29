@@ -22,12 +22,12 @@ import java.nio.file.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OperateSystem {
-    private static final Logger LOG = LoggerFactory.getLogger(OperateSystem.class);
+public class OperatingSystem {
+    private static final Logger LOG = LoggerFactory.getLogger(OperatingSystem.class);
 
     public static final String OS = System.getProperty("os.name").toLowerCase();
 
-    private OperateSystem() {}
+    private OperatingSystem() {}
 
     public static boolean isUnixLike() {
         return isLinux() || isUnix() || isMacOS();

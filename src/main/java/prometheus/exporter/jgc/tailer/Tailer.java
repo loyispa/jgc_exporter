@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.util.OperateSystem;
+import prometheus.exporter.jgc.util.OperatingSystem;
 
 public abstract class Tailer {
     private static final Logger LOG = LoggerFactory.getLogger(Tailer.class);
@@ -77,7 +77,7 @@ public abstract class Tailer {
     public boolean rotated() {
         try {
             // inode changes
-            Object currFileKey = OperateSystem.getFileKey(file);
+            Object currFileKey = OperatingSystem.getFileKey(file);
             if (!Objects.equals(currFileKey, fileKey)) {
                 LOG.info("{} rotated: inode changed", this.file);
                 return true;
@@ -119,7 +119,7 @@ public abstract class Tailer {
     private void initialize() {
         try {
             this.raf = new RandomAccessFile(file, "r");
-            this.fileKey = OperateSystem.getFileKey(file);
+            this.fileKey = OperatingSystem.getFileKey(file);
             if (seekToEnd) {
                 this.raf.seek(this.raf.length());
             } else {

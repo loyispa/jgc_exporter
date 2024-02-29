@@ -13,30 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package prometheus.exporter.jgc.collector;
+package prometheus.exporter.jgc.parser;
 
 import com.microsoft.gctoolkit.io.GCLogFile;
 import com.microsoft.gctoolkit.io.LogFileMetadata;
 import com.microsoft.gctoolkit.io.SingleLogFileMetadata;
 import com.microsoft.gctoolkit.jvm.Diary;
-import com.microsoft.gctoolkit.message.DataSourceParser;
-import com.microsoft.gctoolkit.parser.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParserMatcher extends GCLogFile {
-    private static final Logger LOG = LoggerFactory.getLogger(ParserMatcher.class);
+public class GCEventHandlerMatcher extends GCLogFile {
+    private static final Logger LOG = LoggerFactory.getLogger(GCEventHandlerMatcher.class);
     private static final int MAX_LINES = 512;
     private final List<String> lines;
 
-    public ParserMatcher(Path path) {
+    public GCEventHandlerMatcher(Path path) {
         super(path);
         this.lines = readLines();
     }
@@ -102,58 +99,37 @@ public class ParserMatcher extends GCLogFile {
         return input.toString();
     }
 
-    public List<DataSourceParser> find() {
-
+    public AbstractJVMEventHandler find() {
         try {
             Diary diary = super.diary();
-            if (matchAny(diary)) {
-                List<DataSourceParser> parsers =
-                        Stream.of(
-                                        new CMSTenuredPoolParser(),
-                                        new GenerationalHeapParser(),
-                                        new PreUnifiedG1GCParser(),
-                                        new UnifiedG1GCParser(),
-                                        new UnifiedGenerationalParser(),
-                                        new ZGCParser())
-                                .filter(dataSourceParser -> dataSourceParser.accepts(diary))
-                                .map(
-                                        parser -> {
-                                            parser.diary(diary);
-                                            return parser;
-                                        })
-                                .collect(Collectors.toList());
-
-                if (!parsers.isEmpty()) {
-                    return parsers;
-                }
-            }
+            return matchAny(diary);
         } catch (IOException ioe) {
             LOG.error("Find parser error: {}", path, ioe);
+            throw new UnsupportedOperationException(path.toString(), ioe);
         }
-        throw new UnsupportedOperationException(path.toString());
     }
 
-    private boolean matchAny(Diary diary) {
+    private AbstractJVMEventHandler matchAny(Diary diary) {
         if (diary.isG1GC()) {
             LOG.info("{} is G1", path);
-            return true;
+            return new G1GCEventHandler(path.toFile(), diary);
         } else if (diary.isZGC()) {
             LOG.info("{} is ZGC", path);
-            return true;
+            return new ZGCEventHandler(path.toFile(), diary);
         } else if (diary.isCMS() || diary.isParNew()) {
             LOG.info("{} is CMS", path);
-            return true;
+            return new CMSGCEventHandler(path.toFile(), diary);
         } else if (diary.isDefNew()) {
             LOG.info("{} is defnew", path);
-            return true;
+            return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
         } else if (diary.isSerialFull()) {
             LOG.info("{} is serial", path);
-            return true;
+            return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
         } else if (diary.isPSOldGen() || diary.isPSYoung()) {
             LOG.info("{} is parallel", path);
-            return true;
+            return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
         }
         LOG.info("Unmatched gc log: {}", path);
-        return false;
+        throw new UnsupportedOperationException(path.toString());
     }
 }

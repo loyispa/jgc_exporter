@@ -26,16 +26,16 @@ import java.io.File;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prometheus.exporter.jgc.collector.GCCollectorManager;
 import prometheus.exporter.jgc.metric.MetricRegistry;
+import prometheus.exporter.jgc.parser.GCEventHandlerManager;
 import prometheus.exporter.jgc.tailer.TailerManager;
-import prometheus.exporter.jgc.util.OperateSystem;
+import prometheus.exporter.jgc.util.OperatingSystem;
 
 public class Bootstrap {
     private static final Logger LOG = LoggerFactory.getLogger(Bootstrap.class);
     private final HTTPServer httpServer;
     private final TailerManager tailerManager;
-    private final GCCollectorManager collectorManager;
+    private final GCEventHandlerManager eventHandlerManager;
 
     public Bootstrap(Config config) throws Exception {
         registerSystemMetrics();
@@ -51,8 +51,8 @@ public class Bootstrap {
                                 SampleNameFilterSupplier.of(this::filterSamples))
                         .withDaemonThreads(false)
                         .build();
-        this.collectorManager = new GCCollectorManager();
-        this.tailerManager = new TailerManager(config, collectorManager);
+        this.eventHandlerManager = new GCEventHandlerManager();
+        this.tailerManager = new TailerManager(config, eventHandlerManager);
     }
 
     public static void main(String[] args) throws Exception {
@@ -123,7 +123,7 @@ public class Bootstrap {
     }
 
     private void registerSystemMetrics() {
-        String hostname = OperateSystem.getLocalHostName();
+        String hostname = OperatingSystem.getLocalHostName();
         EXPORTER_STARTUP_SECONDS.attach(this, hostname).setToCurrentTime();
         Package pkg = this.getClass().getPackage();
         String version = pkg.getImplementationVersion();
