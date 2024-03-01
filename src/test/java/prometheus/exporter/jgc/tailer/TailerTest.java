@@ -23,14 +23,10 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.Config;
 import prometheus.exporter.jgc.util.OperatingSystem;
 
 public class TailerTest {
-    private static final Logger LOG = LoggerFactory.getLogger(TailerTest.class);
-
     @Test(timeout = 10000)
     public void testRead() throws Exception {
 

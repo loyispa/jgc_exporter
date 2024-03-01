@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 public class ParserTest {
 
     protected Diary getDiary(File file) throws IOException {
-        return new GCEventHandlerMatcher(file.toPath()).diary();
+        return new GCEventHandlerMatcher(file).diary();
     }
 
     @Test
