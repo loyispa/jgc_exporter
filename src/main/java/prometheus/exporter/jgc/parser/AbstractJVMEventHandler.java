@@ -15,6 +15,7 @@
  */
 package prometheus.exporter.jgc.parser;
 
+import static prometheus.exporter.jgc.metric.MetricRegistry.GC_COLLECT_FILES;
 import static prometheus.exporter.jgc.metric.MetricRegistry.GC_LOG_LINES;
 
 import com.microsoft.gctoolkit.jvm.Diary;
@@ -53,6 +54,7 @@ public abstract class AbstractJVMEventHandler implements JVMEventChannel {
             parser.diary(diary);
             parser.publishTo(this);
         }
+        GC_COLLECT_FILES.attach(this, path, host).set(1);
     }
 
     public AbstractJVMEventHandler consume(String message) {

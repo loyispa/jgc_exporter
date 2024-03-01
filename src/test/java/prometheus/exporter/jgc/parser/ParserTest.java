@@ -79,7 +79,7 @@ public class ParserTest {
         Diary diary = getDiary(log);
         AbstractJVMEventHandler handler =
                 Mockito.mock(
-                        CMSGCEventHandler.class,
+                        ClassicGCEventHandler.class,
                         withSettings()
                                 .useConstructor(log, diary)
                                 .defaultAnswer(CALLS_REAL_METHODS));
@@ -93,7 +93,7 @@ public class ParserTest {
         Diary diary = getDiary(log);
         AbstractJVMEventHandler handler =
                 Mockito.mock(
-                        CMSGCEventHandler.class,
+                        ClassicGCEventHandler.class,
                         withSettings()
                                 .useConstructor(log, diary)
                                 .defaultAnswer(CALLS_REAL_METHODS));
@@ -107,7 +107,7 @@ public class ParserTest {
         Diary diary = getDiary(log);
         AbstractJVMEventHandler handler =
                 Mockito.mock(
-                        ParallelAndSerialGCEventHandler.class,
+                        ClassicGCEventHandler.class,
                         withSettings()
                                 .useConstructor(log, diary)
                                 .defaultAnswer(CALLS_REAL_METHODS));

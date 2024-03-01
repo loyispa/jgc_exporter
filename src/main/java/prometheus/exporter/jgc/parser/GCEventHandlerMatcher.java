@@ -109,16 +109,16 @@ public class GCEventHandlerMatcher extends GCLogFile {
                 return new ZGCEventHandler(path.toFile(), diary);
             } else if (diary.isCMS() || diary.isParNew()) {
                 LOG.info("{} is CMS", path);
-                return new CMSGCEventHandler(path.toFile(), diary);
+                return new ClassicGCEventHandler(path.toFile(), diary);
             } else if (diary.isDefNew()) {
                 LOG.info("{} is defnew", path);
-                return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
+                return new ClassicGCEventHandler(path.toFile(), diary);
             } else if (diary.isSerialFull()) {
                 LOG.info("{} is serial", path);
-                return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
+                return new ClassicGCEventHandler(path.toFile(), diary);
             } else if (diary.isPSOldGen() || diary.isPSYoung()) {
                 LOG.info("{} is parallel", path);
-                return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
+                return new ClassicGCEventHandler(path.toFile(), diary);
             }
         } catch (IOException ioe) {
             LOG.error("Find GCEventHandler error: {}", path, ioe);
