@@ -19,9 +19,9 @@ import com.microsoft.gctoolkit.io.GCLogFile;
 import com.microsoft.gctoolkit.io.LogFileMetadata;
 import com.microsoft.gctoolkit.io.SingleLogFileMetadata;
 import com.microsoft.gctoolkit.jvm.Diary;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -31,11 +31,10 @@ import org.slf4j.LoggerFactory;
 public class GCEventHandlerMatcher extends GCLogFile {
     private static final Logger LOG = LoggerFactory.getLogger(GCEventHandlerMatcher.class);
     private static final int MAX_LINES = 512;
-    private final List<String> lines;
+    private static final int MAX_LINE_BYTES = 1024;
 
-    public GCEventHandlerMatcher(Path path) {
-        super(path);
-        this.lines = readLines();
+    public GCEventHandlerMatcher(File file) {
+        super(file.toPath());
     }
 
     @Override
@@ -44,11 +43,11 @@ public class GCEventHandlerMatcher extends GCLogFile {
     }
 
     @Override
-    public Stream<String> stream() throws IOException {
-        return Stream.concat(lines.stream(), Stream.of(endOfData()));
+    public Stream<String> stream() {
+        return Stream.concat(firstLines(), Stream.of(endOfData()));
     }
 
-    private List<String> readLines() {
+    private Stream<String> firstLines() {
         List<String> lines = new ArrayList<>();
         try (RandomAccessFile raf = new RandomAccessFile(path.toFile(), "r")) {
             for (int i = 0; i < MAX_LINES; ++i) {
@@ -60,7 +59,7 @@ public class GCEventHandlerMatcher extends GCLogFile {
                 }
                 lines.add(line);
             }
-            return lines;
+            return lines.stream();
         } catch (Exception ex) {
             throw new UnsupportedOperationException(ex);
         }
@@ -88,8 +87,8 @@ public class GCEventHandlerMatcher extends GCLogFile {
                     input.append((char) c);
                     break;
             }
-            if (input.length() > 1024) {
-                throw new IllegalArgumentException("Too large line: " + path);
+            if (input.length() > MAX_LINE_BYTES) {
+                throw new IllegalArgumentException("Line bytes exceed " + MAX_LINE_BYTES);
             }
         }
 
@@ -102,34 +101,29 @@ public class GCEventHandlerMatcher extends GCLogFile {
     public AbstractJVMEventHandler find() {
         try {
             Diary diary = super.diary();
-            return matchAny(diary);
+            if (diary.isG1GC()) {
+                LOG.info("{} is G1", path);
+                return new G1GCEventHandler(path.toFile(), diary);
+            } else if (diary.isZGC()) {
+                LOG.info("{} is ZGC", path);
+                return new ZGCEventHandler(path.toFile(), diary);
+            } else if (diary.isCMS() || diary.isParNew()) {
+                LOG.info("{} is CMS", path);
+                return new CMSGCEventHandler(path.toFile(), diary);
+            } else if (diary.isDefNew()) {
+                LOG.info("{} is defnew", path);
+                return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
+            } else if (diary.isSerialFull()) {
+                LOG.info("{} is serial", path);
+                return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
+            } else if (diary.isPSOldGen() || diary.isPSYoung()) {
+                LOG.info("{} is parallel", path);
+                return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
+            }
         } catch (IOException ioe) {
-            LOG.error("Find parser error: {}", path, ioe);
-            throw new UnsupportedOperationException(path.toString(), ioe);
+            LOG.error("Find GCEventHandler error: {}", path, ioe);
         }
-    }
-
-    private AbstractJVMEventHandler matchAny(Diary diary) {
-        if (diary.isG1GC()) {
-            LOG.info("{} is G1", path);
-            return new G1GCEventHandler(path.toFile(), diary);
-        } else if (diary.isZGC()) {
-            LOG.info("{} is ZGC", path);
-            return new ZGCEventHandler(path.toFile(), diary);
-        } else if (diary.isCMS() || diary.isParNew()) {
-            LOG.info("{} is CMS", path);
-            return new CMSGCEventHandler(path.toFile(), diary);
-        } else if (diary.isDefNew()) {
-            LOG.info("{} is defnew", path);
-            return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
-        } else if (diary.isSerialFull()) {
-            LOG.info("{} is serial", path);
-            return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
-        } else if (diary.isPSOldGen() || diary.isPSYoung()) {
-            LOG.info("{} is parallel", path);
-            return new ParallelAndSerialGCEventHandler(path.toFile(), diary);
-        }
-        LOG.info("Unmatched gc log: {}", path);
+        LOG.warn("Unmatched gc log: {}", path);
         throw new UnsupportedOperationException(path.toString());
     }
 }

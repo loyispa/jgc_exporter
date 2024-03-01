@@ -33,8 +33,7 @@ public class GCEventHandlerManager implements TailerListener {
 
     @Override
     public void onOpen(File file) {
-        GCEventHandlerMatcher matcher = new GCEventHandlerMatcher(file.toPath());
-        registry.computeIfAbsent(file, f -> matcher.find());
+        registry.computeIfAbsent(file, f -> new GCEventHandlerMatcher(file).find());
         LOG.info("Register file: {}", file);
     }
 
