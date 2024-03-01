@@ -24,6 +24,7 @@ import com.microsoft.gctoolkit.event.jvm.JVMEvent;
 import com.microsoft.gctoolkit.jvm.Diary;
 import com.microsoft.gctoolkit.message.ChannelName;
 import com.microsoft.gctoolkit.message.DataSourceParser;
+import com.microsoft.gctoolkit.parser.CMSTenuredPoolParser;
 import com.microsoft.gctoolkit.parser.GenerationalHeapParser;
 import com.microsoft.gctoolkit.parser.UnifiedGenerationalParser;
 import java.io.File;
@@ -33,11 +34,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParallelAndSerialGCEventHandler extends AbstractJVMEventHandler {
-    private static final Logger LOG =
-            LoggerFactory.getLogger(ParallelAndSerialGCEventHandler.class);
+public class ClassicGCEventHandler extends AbstractJVMEventHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(ClassicGCEventHandler.class);
 
-    public ParallelAndSerialGCEventHandler(File file, Diary diary) {
+    public ClassicGCEventHandler(File file, Diary diary) {
         super(file, diary);
     }
 
@@ -45,6 +45,9 @@ public class ParallelAndSerialGCEventHandler extends AbstractJVMEventHandler {
     protected List<DataSourceParser> loadParsers() {
         if (diary.isUnifiedLogging()) {
             return Collections.singletonList(new UnifiedGenerationalParser());
+        } else if (diary.isCMS()) {
+            // TODO: remove CMSTenuredPoolParser while gctoolkit release newly
+            return Arrays.asList(new CMSTenuredPoolParser(), new GenerationalHeapParser());
         } else {
             return Arrays.asList(new GenerationalHeapParser());
         }
@@ -62,17 +65,24 @@ public class ParallelAndSerialGCEventHandler extends AbstractJVMEventHandler {
     private void recordGCEvent(GenerationalGCEvent event) {
 
         String category = parseCategory(event);
-        LOG.debug("Collect GCEvent {}", category);
+        LOG.debug("Collect ClassicGCEvent {}", category);
         GC_EVENT_DURATION.attach(this, path, host, category).observe(event.getDuration());
         GC_EVENT_LAST_MINUTE_DURATION.attach(this, path, host).observe(event.getDuration());
 
         if (event instanceof GenerationalGCPauseEvent) {
             GC_EVENT_PAUSE_DURATION.attach(this, path, host, category).observe(event.getDuration());
-            recordGenerationalGCPauseEvent((GenerationalGCPauseEvent) event);
+            recordClassicGCPauseEvent((GenerationalGCPauseEvent) event);
         }
     }
 
-    private static String parseCategory(GenerationalGCEvent event) {
+    private String parseCategory(GenerationalGCEvent event) {
+
+        if (event instanceof CMSPhase
+                || event instanceof ConcurrentModeFailure
+                || event instanceof ConcurrentModeInterrupted) {
+            return parseCMSCategory(event);
+        }
+
         if (event instanceof GenerationalGCPauseEvent) {
             if (event instanceof FullGC) {
                 if (event instanceof PSFullGC) {
@@ -97,7 +107,30 @@ public class ParallelAndSerialGCEventHandler extends AbstractJVMEventHandler {
         return "Unknown";
     }
 
-    protected void recordGenerationalGCPauseEvent(GenerationalGCPauseEvent event) {
+    private String parseCMSCategory(GenerationalGCEvent event) {
+        if (event instanceof ConcurrentModeFailure) {
+            return "CMSConcurrentModeFailure";
+        } else if (event instanceof ConcurrentModeInterrupted) {
+            return "CMSConcurrentModeInterrupted";
+        } else if (event instanceof InitialMark) {
+            return "CMSInitialMark";
+        } else if (event instanceof CMSRemark) {
+            return "CMSRemark";
+        } else if (event instanceof AbortablePreClean) {
+            return "CMSAbortablePreClean";
+        } else if (event instanceof ConcurrentMark) {
+            return "CMSConcurrentMark";
+        } else if (event instanceof ConcurrentSweep) {
+            return "CMSConcurrentSweep";
+        } else if (event instanceof ConcurrentPreClean) {
+            return "CMSConcurrentPreClean";
+        } else if (event instanceof ConcurrentReset) {
+            return "CMSConcurrentReset";
+        }
+        return "CMSUnknown";
+    }
+
+    protected void recordClassicGCPauseEvent(GenerationalGCPauseEvent event) {
 
         MemoryPoolSummary heapSummary = event.getHeap();
         if (heapSummary != null) {
@@ -161,6 +194,34 @@ public class ParallelAndSerialGCEventHandler extends AbstractJVMEventHandler {
             METASPACE_OCCUPANCY_BEFORE_COLLECTION
                     .attach(this, path, host)
                     .set(permOrMetaspace.getOccupancyBeforeCollection() * 1024);
+        }
+
+        if (event instanceof CMSPhase) {
+            double classUnloadingProcessingTime = event.getClassUnloadingProcessingTime();
+            double symbolTableProcessingTime = event.getSymbolTableProcessingTime();
+            double stringTableProcessingTime = event.getStringTableProcessingTime();
+            double symbolAndStringTableProcessingTime =
+                    event.getSymbolAndStringTableProcessingTime();
+            if (classUnloadingProcessingTime > 0.0) {
+                CMS_CLASS_UNLOADING_PROCESS_TIME
+                        .attach(this, path, host)
+                        .observe(classUnloadingProcessingTime);
+            }
+            if (symbolTableProcessingTime > 0.0) {
+                CMS_SYMBOL_TABLE_PROCESS_TIME
+                        .attach(this, path, host)
+                        .observe(symbolTableProcessingTime);
+            }
+            if (stringTableProcessingTime > 0.0) {
+                CMS_STRING_TABLE_PROCESS_TIME
+                        .attach(this, path, host)
+                        .observe(stringTableProcessingTime);
+            }
+            if (symbolAndStringTableProcessingTime > 0.0) {
+                CMS_SYMBOL_AND_STRING_TABLE_PROCESS_TIME
+                        .attach(this, path, host)
+                        .observe(symbolAndStringTableProcessingTime);
+            }
         }
 
         ReferenceGCSummary referenceGCSummary = event.getReferenceGCSummary();
