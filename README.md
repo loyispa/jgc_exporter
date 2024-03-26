@@ -2,7 +2,7 @@
 [![Build Status][maven-build-image]][maven-build-url]
 [![CodeCov][codecov-image]][codecov-url]
 
-An exporter that can continuously analyze hotspot gc logs and automatically detect garbage collection algorithms(parallel, CMS, G1, ZGC, etc.)
+An exporter that can continuously analyze hotspot gc logs(Parallel, CMS, G1, ZGC, etc.)
 # Running the exporter
 
 Run the exporter as standalone HTTP server, prefer native executable if available:
