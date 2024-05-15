@@ -133,6 +133,35 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>native-static-musl-compatibility</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>0.10.1</version>
+                        <configuration>
+                            <imageName>${project.artifactId}_compatible</imageName>
+                            <mainClass>prometheus.exporter.jgc.Bootstrap</mainClass>
+                            <buildArgs>
+                                <buildArg>--verbose -march=compatibility --gc=serial --libc=musl --static --no-fallback</buildArg>
+                                <buildArg>-H:ConfigurationFileDirectories=src/main/resources/native-image</buildArg>
+                            </buildArgs>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>compile</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
     <build>
         <plugins>
