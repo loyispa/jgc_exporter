@@ -52,7 +52,10 @@ public class TailerManager {
     public TailerManager(Config config, TailerListener listener) {
         this.started = new AtomicBoolean(true);
         this.tailerMatcher =
-                new TailerMatcher(config.getFileRegexPattern(), config.getFileGlobPattern());
+                new TailerMatcher(
+                        config.getFileRegexPattern(),
+                        config.getFileGlobPattern(),
+                        config.getScanFilesPerSecond());
         this.idleTimeout = config.getIdleTimeout();
         this.batchSize = config.getBatchSize();
         this.bufferSize = config.getBufferSize();
