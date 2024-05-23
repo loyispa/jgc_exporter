@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class TailerMatcher {
     private final List<TailerSource> sources = new ArrayList<>();
 
-    public TailerMatcher(String regexPattern, String globPattern) {
+    public TailerMatcher(String regexPattern, String globPattern, int scanFilesPerSecond) {
         if (regexPattern != null) {
             String[] regexPatterns = regexPattern.split(",");
             for (String pattern : regexPatterns) {
@@ -35,7 +35,7 @@ public class TailerMatcher {
         if (globPattern != null) {
             String[] globPatterns = globPattern.split(",");
             for (String pattern : globPatterns) {
-                sources.add(new GlobTailerSource(pattern));
+                sources.add(new GlobTailerSource(pattern, scanFilesPerSecond));
             }
         }
     }

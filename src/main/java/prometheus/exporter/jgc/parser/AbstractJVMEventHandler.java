@@ -24,6 +24,7 @@ import com.microsoft.gctoolkit.message.JVMEventChannel;
 import com.microsoft.gctoolkit.message.JVMEventChannelListener;
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import prometheus.exporter.jgc.metric.MetricRegistry;
@@ -77,5 +78,20 @@ public abstract class AbstractJVMEventHandler implements JVMEventChannel {
     @Override
     public void close() {
         MetricRegistry.detach(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractJVMEventHandler)) {
+            return false;
+        }
+        AbstractJVMEventHandler handler = (AbstractJVMEventHandler) o;
+        return Objects.equals(this.path, handler.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path);
     }
 }

@@ -35,6 +35,7 @@ public class Config {
     private int linesPerSecond = DEFAULT_LINES_PER_SECOND;
     private int watchInterval = DEFAULT_WATCH_INTERVAL;
     private int readInterval = DEFAULT_READ_INTERVAL;
+    private int scanFilesPerSecond;
 
     public String getFileRegexPattern() {
         return fileRegexPattern;
@@ -108,6 +109,14 @@ public class Config {
         this.readInterval = readInterval;
     }
 
+    public int getScanFilesPerSecond() {
+        return scanFilesPerSecond;
+    }
+
+    public void setScanFilesPerSecond(int scanFilesPerSecond) {
+        this.scanFilesPerSecond = scanFilesPerSecond;
+    }
+
     @Override
     public String toString() {
         return "Config{"
@@ -130,6 +139,8 @@ public class Config {
                 + linesPerSecond
                 + ", watchInterval="
                 + watchInterval
+                + ", scanFilesPerSecond="
+                + scanFilesPerSecond
                 + '}';
     }
 }

@@ -17,12 +17,14 @@ package prometheus.exporter.jgc.tailer;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.RateLimiter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,20 +33,30 @@ public class GlobTailerSource extends TailerSource {
     private static final String globMetaChars = "\\*?[{";
     private final Path base;
     private final DirectoryStream.Filter<Path> fileFilter;
+    private RateLimiter scanLimiter;
 
     public GlobTailerSource(String filePattern) {
+        this(filePattern, 0);
+    }
+
+    public GlobTailerSource(String filePattern, int scanFilesPerSecond) {
         super(filePattern);
         this.base = getBase(filePattern);
         LOG.info("pattern: {}", filePattern);
         LOG.info("   base: {}", base);
         final PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + filePattern);
         this.fileFilter = entry -> matcher.matches(entry) && !Files.isDirectory(entry);
+        if (scanFilesPerSecond > 0) {
+            this.scanLimiter = RateLimiter.create(scanFilesPerSecond);
+        }
     }
 
     @Override
     public List<File> findMatchingFiles() {
         List<File> result = Lists.newArrayList();
 
+        AtomicInteger files = new AtomicInteger(0);
+        long scanStart = System.currentTimeMillis();
         try {
             Files.walkFileTree(
                     base,
@@ -54,7 +66,11 @@ public class GlobTailerSource extends TailerSource {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
                                 throws IOException {
-                            if (fileFilter.accept(file)) {
+                            files.addAndGet(1);
+                            if (scanLimiter != null) {
+                                scanLimiter.acquire();
+                            }
+                            if (file.toFile().isFile() && fileFilter.accept(file)) {
                                 result.add(file.toFile());
                             }
                             return super.visitFile(file, attrs);
@@ -70,7 +86,13 @@ public class GlobTailerSource extends TailerSource {
             LOG.error("Find matching files fail: {} ", filePattern, e);
         }
 
-        LOG.debug("Find matching files: {}", result);
+        long scanEnd = System.currentTimeMillis();
+        LOG.info(
+                "Pattern[{}] Scan {} files, Find {} files, Cost {} ms",
+                filePattern,
+                files.get(),
+                result.size(),
+                scanEnd - scanStart);
         return result;
     }
 

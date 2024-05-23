@@ -123,7 +123,6 @@ public class GCEventHandlerMatcher extends GCLogFile {
         } catch (IOException ioe) {
             LOG.error("Find GCEventHandler error: {}", path, ioe);
         }
-        LOG.warn("Unmatched gc log: {}", path);
         throw new UnsupportedOperationException(path.toString());
     }
 }
