@@ -107,7 +107,7 @@ public class ZGCEventHandler extends AbstractJVMEventHandler {
         GC_EVENT_DURATION.attach(this, path, host, category).observe(duration);
         GC_EVENT_LAST_MINUTE_DURATION.attach(this, path, host).observe(duration);
         GC_EVENT_PAUSE_DURATION.attach(this, path, host, category).observe(pauseDuration);
-        ;
+        GC_EVENT_LAST_MINUTE_PAUSE_DURATION.attach(this, path, host).observe(pauseDuration);
 
         double load1m = event.getLoadAverageAt(1);
         double load5m = event.getLoadAverageAt(5);

@@ -81,6 +81,21 @@ public class MetricRegistry extends CollectorRegistry {
                                     .help("Last minute duration of gc event")
                                     .create());
 
+    public static final Metric<Summary.Child, Summary> GC_EVENT_LAST_MINUTE_PAUSE_DURATION =
+            Metric.of(
+                    () ->
+                            Summary.build()
+                                    .ageBuckets(6)
+                                    .maxAgeSeconds(60)
+                                    .quantile(0, 0.05)
+                                    .quantile(0.5, 0.05)
+                                    .quantile(0.75, 0.05)
+                                    .quantile(1.0, 0.05)
+                                    .labelNames("path", "host")
+                                    .name("jgc_event_last_minute_pause_duration_seconds")
+                                    .help("Last minute pause duration of gc event")
+                                    .create());
+
     public static final Metric<Summary.Child, Summary> GC_EVENT_PAUSE_DURATION =
             Metric.of(
                     () ->

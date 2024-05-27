@@ -71,6 +71,9 @@ public class ClassicGCEventHandler extends AbstractJVMEventHandler {
 
         if (event instanceof GenerationalGCPauseEvent) {
             GC_EVENT_PAUSE_DURATION.attach(this, path, host, category).observe(event.getDuration());
+            GC_EVENT_LAST_MINUTE_PAUSE_DURATION
+                    .attach(this, path, host)
+                    .observe(event.getDuration());
             recordClassicGCPauseEvent((GenerationalGCPauseEvent) event);
         }
     }

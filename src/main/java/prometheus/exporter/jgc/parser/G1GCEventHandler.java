@@ -65,6 +65,9 @@ public class G1GCEventHandler extends AbstractJVMEventHandler {
 
         if (event instanceof G1GCPauseEvent) {
             GC_EVENT_PAUSE_DURATION.attach(this, path, host, category).observe(event.getDuration());
+            GC_EVENT_LAST_MINUTE_PAUSE_DURATION
+                    .attach(this, path, host)
+                    .observe(event.getDuration());
             recordG1GCPauseEvent((G1GCPauseEvent) event);
         }
     }
