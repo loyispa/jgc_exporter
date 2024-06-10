@@ -19,11 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class WindowsTailer extends Tailer {
-    private static final Logger LOG = LoggerFactory.getLogger(WindowsTailer.class);
     private long filePointer;
 
     public WindowsTailer(
@@ -40,19 +37,6 @@ public class WindowsTailer extends Tailer {
         } finally {
             releaseFile();
         }
-    }
-
-    @Override
-    public boolean rotated() {
-        try {
-            holdFile();
-            return super.rotated();
-        } catch (IOException ex) {
-            LOG.error("IO error: {}", this.file, ex);
-        } finally {
-            releaseFile();
-        }
-        return false;
     }
 
     private void releaseFile() {

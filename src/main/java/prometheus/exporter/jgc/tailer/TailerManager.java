@@ -105,12 +105,6 @@ public class TailerManager {
                         } finally {
                             iterator.remove();
                         }
-                    } else if (tailer.rotated()) {
-                        try {
-                            rotate(tailer);
-                        } finally {
-                            iterator.remove();
-                        }
                     }
                 }
 
@@ -147,18 +141,6 @@ public class TailerManager {
                 listener.onClose(tailer.getFile());
             } catch (Throwable t) {
                 LOG.error("Close file failed: {}", tailer, t);
-            }
-        }
-    }
-
-    private void rotate(Tailer tailer) {
-        try {
-            tailer.close();
-        } finally {
-            try {
-                listener.onRotate(tailer.getFile());
-            } catch (Throwable t) {
-                LOG.error("Rotate file failed: {}", tailer, t);
             }
         }
     }

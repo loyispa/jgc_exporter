@@ -177,84 +177,12 @@ public class TailerTest {
                             }
 
                             @Override
-                            public void onRotate(File file) {}
-
-                            @Override
                             public void onRead(File file, String line) {}
                         });
 
         open.await();
         manager.close();
         close.await();
-    }
-
-    @Test
-    public void testChange() throws Exception {
-        if (OperatingSystem.isWindows()) {
-            return;
-        }
-
-        File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
-        tmpdir.delete();
-        tmpdir.mkdir();
-
-        File file = File.createTempFile("test-rotate", ".log", tmpdir);
-        file.deleteOnExit();
-        Tailer tailer =
-                TailerManager.newTailer(
-                        file,
-                        true,
-                        Config.DEFAULT_BATCH_SIZE,
-                        Config.DEFAULT_BUFFER_SIZE,
-                        Config.DEFAULT_LINES_PER_SECOND);
-
-        Assert.assertFalse(tailer.rotated());
-        File oldFile = new File(file.getAbsolutePath() + ".old");
-        oldFile.deleteOnExit();
-        Assert.assertTrue(file.renameTo(oldFile));
-        Assert.assertTrue(file.createNewFile());
-        Assert.assertTrue(tailer.rotated());
-    }
-
-    @Test
-    public void testTruncate() throws Exception {
-
-        File tmpdir = new File(System.getProperty("java.io.tmpdir"), "jgc");
-        tmpdir.delete();
-        tmpdir.mkdir();
-
-        File file = File.createTempFile("test-rotate", ".log", tmpdir);
-        file.deleteOnExit();
-        Tailer tailer =
-                TailerManager.newTailer(
-                        file,
-                        true,
-                        Config.DEFAULT_BATCH_SIZE,
-                        Config.DEFAULT_BUFFER_SIZE,
-                        Config.DEFAULT_LINES_PER_SECOND);
-
-        Assert.assertEquals(tailer.rotated(), false);
-
-        try (PrintWriter pw =
-                new PrintWriter(new OutputStreamWriter(new FileOutputStream(file, false)))) {
-            for (int i = 0; i < 10; ++i) {
-                pw.println("line:" + i);
-            }
-        }
-
-        while (!tailer.readLines().isEmpty())
-            ;
-
-        Assert.assertEquals(tailer.rotated(), false);
-
-        try (PrintWriter pw =
-                new PrintWriter(new OutputStreamWriter(new FileOutputStream(file, false)))) {
-            for (int i = 0; i < 5; ++i) {
-                pw.println("line:" + i);
-            }
-        }
-
-        Assert.assertEquals(tailer.rotated(), true);
     }
 
     @Test(timeout = 15000)
@@ -293,9 +221,6 @@ public class TailerTest {
                             public void onClose(File file) {
                                 close.countDown();
                             }
-
-                            @Override
-                            public void onRotate(File file) {}
 
                             @Override
                             public void onRead(File file, String line) {}

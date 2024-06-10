@@ -22,7 +22,5 @@ public interface TailerListener {
 
     void onClose(File file);
 
-    void onRotate(File file);
-
     void onRead(File file, String line);
 }

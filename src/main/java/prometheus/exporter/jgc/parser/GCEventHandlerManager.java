@@ -47,13 +47,6 @@ public class GCEventHandlerManager implements TailerListener {
     }
 
     @Override
-    public void onRotate(File file) {
-        // not clean metric
-        registry.remove(file);
-        LOG.info("Rotate file: {}", file);
-    }
-
-    @Override
     public void onRead(File file, String line) {
         LOG.debug("Tailing file: {} >>> {}", file, line);
         registry.computeIfPresent(file, (f, handler) -> handler.consume(line));

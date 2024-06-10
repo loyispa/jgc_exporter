@@ -74,28 +74,6 @@ public abstract class Tailer {
         return lines;
     }
 
-    public boolean rotated() {
-        try {
-            // inode changes
-            Object currFileKey = OperatingSystem.getFileKey(file);
-            if (!Objects.equals(currFileKey, fileKey)) {
-                LOG.info("{} rotated: inode changed", this.file);
-                return true;
-            }
-
-            // truncate occurs
-            long fp = raf.getFilePointer();
-            long len = raf.length();
-            if (fp > len) {
-                LOG.info("{} rotated: file truncated", this.file);
-                return true;
-            }
-        } catch (IOException ex) {
-            LOG.error("IO error: {}", this.file, ex);
-        }
-        return false;
-    }
-
     public long lastModified() {
         lastModified = Math.max(lastModified, file.lastModified());
         return lastModified;
@@ -140,6 +118,10 @@ public abstract class Tailer {
         }
         while (true) {
             if (bufferPos == NEED_READING) {
+                if (raf.getFilePointer() > raf.length()) {
+                    LOG.info("Rotate file: {}. reading it from begening", file);
+                    raf.seek(0);
+                }
                 if (raf.getFilePointer() < raf.length()) {
                     readFile();
                 } else {
