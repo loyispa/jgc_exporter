@@ -33,10 +33,7 @@ public class TailerMatcher {
         }
 
         if (globPattern != null) {
-            String[] globPatterns = globPattern.split(",");
-            for (String pattern : globPatterns) {
-                sources.add(new GlobTailerSource(pattern, scanFilesPerSecond));
-            }
+            sources.add(new GlobTailerSource(globPattern, scanFilesPerSecond));
         }
     }
 
