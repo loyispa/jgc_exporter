@@ -86,17 +86,28 @@ type FileSummary struct {
 	HeapUsage  MultiWindowStat `json:"heap_usage"`
 }
 
-type PausePoint struct {
+// STWDurationBucket is one UTC-minute bucket of stop-the-world pause stats for a path.
+// Only GC events with IsPause==true and non-negative Duration are aggregated (parser marks true STW pauses).
+type STWDurationBucket struct {
 	Timestamp time.Time `json:"timestamp"`
-	Duration  float64   `json:"duration"`
-	Category  string    `json:"category"`
 	Path      string    `json:"path"`
+	Count     int       `json:"count"`
+	SumSec    float64   `json:"sum_sec"`
+	MinSec    float64   `json:"min_sec"`
+	MaxSec    float64   `json:"max_sec"`
+	AvgSec    float64   `json:"avg_sec"`
 }
 
 // GCEventsBucket is a time bucket with per-category event counts (for last 1h).
 type GCEventsBucket struct {
 	Timestamp time.Time      `json:"timestamp"`
 	Counts    map[string]int `json:"counts"`
+}
+
+// GCDurationBucket is a time bucket with per-category summed GC pause duration in seconds (UTC minute).
+type GCDurationBucket struct {
+	Timestamp time.Time          `json:"timestamp"`
+	Seconds   map[string]float64 `json:"seconds"`
 }
 
 // AllocationRatePoint is the allocation rate (MB/s) at a given time for a path.
@@ -112,12 +123,13 @@ type Dashboard struct {
 	Files                 []FileSummary         `json:"files"`
 	RecentFullGCs         []GCEventRecord       `json:"recent_full_gcs"`
 	HeapHistory           []HeapSnapshot        `json:"heap_history"`
-	PauseHistory          []PausePoint          `json:"pause_history"`
+	STWDurationHistory    []STWDurationBucket   `json:"stw_duration_history"`
 	CategoryCounts        map[string]int        `json:"category_counts"`
 	Recommendations       []Recommendation      `json:"recommendations"`
 	ThroughputRatio       float64               `json:"throughput_ratio"`
 	P99PauseSec           float64               `json:"p99_pause_sec"`
 	GCEventsTimeSeries    []GCEventsBucket      `json:"gc_events_timeseries"`
+	GCDurationTimeSeries  []GCDurationBucket    `json:"gc_duration_timeseries"`
 	AllocationRateHistory []AllocationRatePoint `json:"allocation_rate_history"`
 }
 
@@ -281,9 +293,11 @@ func (m *Monitor) GetDashboard() Dashboard {
 
 	d := Dashboard{}
 	now := time.Now()
-	oneMinAgo := now.Add(-window1m)
-	fiveMinAgo := now.Add(-window5m)
-	oneHourAgo := now.Add(-window1h)
+	// All dashboard windows use UTC wall-clock minutes to avoid boundary drift / double-counting.
+	refMin := utcMinute(now)
+	chartEndMin := refMin
+	chartStartMin := refMin.Add(-59 * time.Minute) // inclusive 60 UTC minutes
+	fiveMinStartMin := refMin.Add(-4 * time.Minute)
 
 	type pathWindowStats struct {
 		events1m       int
@@ -307,24 +321,38 @@ func (m *Monitor) GetDashboard() Dashboard {
 	totalPauseTime1m := 0.0
 	recentFullGCCount := 0
 
-	var pauseHistory []PausePoint
 	categoryCounts1h := make(map[string]int)
+	stwAggs := make(map[pathMinuteKey]*stwAgg)
 
 	events := m.events.Slice()
 	var events1h []GCEventRecord
 	for _, ev := range events {
-		if ev.Timestamp.Before(oneHourAgo) {
+		em := utcMinute(ev.Timestamp)
+		if em.Before(chartStartMin) || em.After(chartEndMin) {
 			continue
 		}
 		events1h = append(events1h, ev)
 
-		if ev.IsPause {
-			pauseHistory = append(pauseHistory, PausePoint{
-				Timestamp: ev.Timestamp,
-				Duration:  ev.Duration,
-				Category:  ev.Category,
-				Path:      ev.Path,
-			})
+		if ev.IsPause && ev.Duration >= 0 && ev.Path != "" {
+			k := pathMinuteKey{ev.Path, em}
+			a := stwAggs[k]
+			if a == nil {
+				a = &stwAgg{}
+				stwAggs[k] = a
+			}
+			if a.count == 0 {
+				a.min = ev.Duration
+				a.max = ev.Duration
+			} else {
+				if ev.Duration < a.min {
+					a.min = ev.Duration
+				}
+				if ev.Duration > a.max {
+					a.max = ev.Duration
+				}
+			}
+			a.sum += ev.Duration
+			a.count++
 		}
 		if ev.Category != "" {
 			categoryCounts1h[ev.Category]++
@@ -339,7 +367,7 @@ func (m *Monitor) GetDashboard() Dashboard {
 			pw.categoryCounts[ev.Category]++
 		}
 
-		if !ev.Timestamp.Before(oneMinAgo) {
+		if em.Equal(refMin) {
 			pw.events1m++
 			if ev.IsPause {
 				pw.pause1m = append(pw.pause1m, ev.Duration)
@@ -353,7 +381,7 @@ func (m *Monitor) GetDashboard() Dashboard {
 				recentFullGCCount++
 			}
 		}
-		if !ev.Timestamp.Before(fiveMinAgo) {
+		if !em.Before(fiveMinStartMin) && !em.After(refMin) {
 			pw.events5m++
 			if ev.IsPause {
 				pw.pause5m = append(pw.pause5m, ev.Duration)
@@ -363,15 +391,13 @@ func (m *Monitor) GetDashboard() Dashboard {
 				pw.fullGC5m++
 			}
 		}
-		if !ev.Timestamp.Before(oneHourAgo) {
-			pw.events1h++
-			if ev.IsPause {
-				pw.pause1h = append(pw.pause1h, ev.Duration)
-				pw.totalPause1h += ev.Duration
-			}
-			if ev.IsFullGC {
-				pw.fullGC1h++
-			}
+		pw.events1h++
+		if ev.IsPause {
+			pw.pause1h = append(pw.pause1h, ev.Duration)
+			pw.totalPause1h += ev.Duration
+		}
+		if ev.IsFullGC {
+			pw.fullGC1h++
 		}
 	}
 
@@ -381,8 +407,12 @@ func (m *Monitor) GetDashboard() Dashboard {
 	d.RecentFullGCs = recentFullGCs
 	d.CategoryCounts = categoryCounts1h
 
+	curMinElapsed := now.Sub(refMin).Seconds()
+	if curMinElapsed < 1 {
+		curMinElapsed = 1
+	}
 	if totalPauseTime1m > 0 {
-		d.ThroughputRatio = 1.0 - (totalPauseTime1m / window1m.Seconds())
+		d.ThroughputRatio = 1.0 - (totalPauseTime1m / curMinElapsed)
 		if d.ThroughputRatio < 0 {
 			d.ThroughputRatio = 0
 		}
@@ -394,31 +424,40 @@ func (m *Monitor) GetDashboard() Dashboard {
 	}
 
 	heapSlice := m.heapHistory.Slice()
+	var sparseHeap []HeapSnapshot
 	for _, h := range heapSlice {
-		if !h.Timestamp.Before(oneHourAgo) {
-			d.HeapHistory = append(d.HeapHistory, h)
+		hm := utcMinute(h.Timestamp)
+		if hm.Before(chartStartMin) || hm.After(chartEndMin) {
+			continue
 		}
+		sparseHeap = append(sparseHeap, h)
 	}
-	d.PauseHistory = pauseHistory
 
 	bucketCounts := make(map[time.Time]map[string]int)
+	durationBucketSums := make(map[time.Time]map[string]float64)
 	for _, ev := range events1h {
 		if ev.Category == "" {
 			continue
 		}
-		bucket := ev.Timestamp.Truncate(time.Minute)
+		bucket := utcMinute(ev.Timestamp)
 		if bucketCounts[bucket] == nil {
 			bucketCounts[bucket] = make(map[string]int)
 		}
 		bucketCounts[bucket][ev.Category]++
+		if durationBucketSums[bucket] == nil {
+			durationBucketSums[bucket] = make(map[string]float64)
+		}
+		if ev.Duration > 0 {
+			durationBucketSums[bucket][ev.Category] += ev.Duration
+		}
 	}
-	var bucketTimes []time.Time
-	for t := range bucketCounts {
-		bucketTimes = append(bucketTimes, t)
+	fiveMinElapsed := now.Sub(fiveMinStartMin).Seconds()
+	if fiveMinElapsed < 1 {
+		fiveMinElapsed = 1
 	}
-	sort.Slice(bucketTimes, func(i, j int) bool { return bucketTimes[i].Before(bucketTimes[j]) })
-	for _, t := range bucketTimes {
-		d.GCEventsTimeSeries = append(d.GCEventsTimeSeries, GCEventsBucket{Timestamp: t, Counts: bucketCounts[t]})
+	chartSpanElapsed := now.Sub(chartStartMin).Seconds()
+	if chartSpanElapsed < 1 {
+		chartSpanElapsed = 1
 	}
 
 	byPath := make(map[string][]GCEventRecord)
@@ -448,12 +487,14 @@ func (m *Monitor) GetDashboard() Dashboard {
 			})
 		}
 	}
-	sort.Slice(d.AllocationRateHistory, func(i, j int) bool {
-		return d.AllocationRateHistory[i].Timestamp.Before(d.AllocationRateHistory[j].Timestamp)
+	sparseAlloc := d.AllocationRateHistory
+	d.AllocationRateHistory = nil
+	sort.Slice(sparseAlloc, func(i, j int) bool {
+		return sparseAlloc[i].Timestamp.Before(sparseAlloc[j].Timestamp)
 	})
 
 	allocRateByPath := make(map[string][]AllocationRatePoint)
-	for _, p := range d.AllocationRateHistory {
+	for _, p := range sparseAlloc {
 		allocRateByPath[p.Path] = append(allocRateByPath[p.Path], p)
 	}
 
@@ -481,24 +522,24 @@ func (m *Monitor) GetDashboard() Dashboard {
 			}
 			summary.CategoryCounts = cc
 
-			// Throughput: 1 - (pauseTime/window)
+			// Throughput: 1 - (pauseTime / wall time spanned by aligned windows)
 			summary.Throughput.Last1m = 1.0
 			if pw.totalPause1m > 0 {
-				summary.Throughput.Last1m = 1.0 - (pw.totalPause1m / window1m.Seconds())
+				summary.Throughput.Last1m = 1.0 - (pw.totalPause1m / curMinElapsed)
 				if summary.Throughput.Last1m < 0 {
 					summary.Throughput.Last1m = 0
 				}
 			}
 			summary.Throughput.Avg5m = 1.0
 			if pw.totalPause5m > 0 {
-				summary.Throughput.Avg5m = 1.0 - (pw.totalPause5m / window5m.Seconds())
+				summary.Throughput.Avg5m = 1.0 - (pw.totalPause5m / fiveMinElapsed)
 				if summary.Throughput.Avg5m < 0 {
 					summary.Throughput.Avg5m = 0
 				}
 			}
 			summary.Throughput.Avg1h = 1.0
 			if pw.totalPause1h > 0 {
-				summary.Throughput.Avg1h = 1.0 - (pw.totalPause1h / window1h.Seconds())
+				summary.Throughput.Avg1h = 1.0 - (pw.totalPause1h / chartSpanElapsed)
 				if summary.Throughput.Avg1h < 0 {
 					summary.Throughput.Avg1h = 0
 				}
@@ -530,15 +571,16 @@ func (m *Monitor) GetDashboard() Dashboard {
 			var sum1m, sum5m, sum1h float64
 			var n1m, n5m, n1h int
 			for _, p := range allocPoints {
-				if !p.Timestamp.Before(oneMinAgo) {
+				pm := utcMinute(p.Timestamp)
+				if pm.Equal(refMin) {
 					sum1m += p.RateMBPerSec
 					n1m++
 				}
-				if !p.Timestamp.Before(fiveMinAgo) {
+				if !pm.Before(fiveMinStartMin) && !pm.After(refMin) {
 					sum5m += p.RateMBPerSec
 					n5m++
 				}
-				if !p.Timestamp.Before(oneHourAgo) {
+				if !pm.Before(chartStartMin) && !pm.After(chartEndMin) {
 					sum1h += p.RateMBPerSec
 					n1h++
 				}
@@ -561,20 +603,21 @@ func (m *Monitor) GetDashboard() Dashboard {
 		// Heap Usage: average ratio from heap_history in each time window
 		var sum1m, sum5m, sum1h float64
 		var n1m, n5m, n1h int
-		for _, h := range d.HeapHistory {
+		for _, h := range sparseHeap {
 			if h.Path != path || h.HeapTotalKB <= 0 {
 				continue
 			}
 			ratio := float64(h.HeapUsedKB) / float64(h.HeapTotalKB)
-			if !h.Timestamp.Before(oneMinAgo) {
+			hm := utcMinute(h.Timestamp)
+			if hm.Equal(refMin) {
 				sum1m += ratio
 				n1m++
 			}
-			if !h.Timestamp.Before(fiveMinAgo) {
+			if !hm.Before(fiveMinStartMin) && !hm.After(refMin) {
 				sum5m += ratio
 				n5m++
 			}
-			if !h.Timestamp.Before(oneHourAgo) {
+			if !hm.Before(chartStartMin) && !hm.After(chartEndMin) {
 				sum1h += ratio
 				n1h++
 			}
@@ -602,6 +645,13 @@ func (m *Monitor) GetDashboard() Dashboard {
 		summary.Status = evaluateFileSummaryHealth(summary)
 		d.Files = append(d.Files, summary)
 	}
+
+	pathList := sortedFilePaths(m.fileSummary)
+	d.GCEventsTimeSeries = densifyGCEventsBuckets(bucketCounts, chartStartMin, chartEndMin)
+	d.GCDurationTimeSeries = densifyGCDurationBuckets(durationBucketSums, chartStartMin, chartEndMin)
+	d.STWDurationHistory = densifySTWHistory(stwAggs, pathList, chartStartMin, chartEndMin)
+	d.AllocationRateHistory = densifyAllocationRateHistory(sparseAlloc, pathList, chartStartMin, chartEndMin)
+	d.HeapHistory = densifyHeapHistory(sparseHeap, pathList, chartStartMin, chartEndMin)
 
 	d.OverallStatus, d.Alerts = evaluateOverallHealth(d.Files, recentFullGCCount, d.P99PauseSec)
 	d.Recommendations = computeRecommendations(d.Files, d.ThroughputRatio, d.P99PauseSec, recentFullGCCount, recentFullGCs)

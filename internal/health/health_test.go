@@ -146,11 +146,81 @@ func TestGetDashboardEmpty(t *testing.T) {
 	}
 }
 
+func TestDashboardGCDurationTimeSeriesAlignedWithGCEvents(t *testing.T) {
+	m := NewMonitor()
+	d := m.GetDashboard()
+	if len(d.GCDurationTimeSeries) != len(d.GCEventsTimeSeries) {
+		t.Fatalf("gc_duration_timeseries len %d want same as gc_events_timeseries len %d",
+			len(d.GCDurationTimeSeries), len(d.GCEventsTimeSeries))
+	}
+	for i := range d.GCEventsTimeSeries {
+		if !d.GCEventsTimeSeries[i].Timestamp.Equal(d.GCDurationTimeSeries[i].Timestamp) {
+			t.Fatalf("timestamp mismatch at %d: %v vs %v", i,
+				d.GCEventsTimeSeries[i].Timestamp, d.GCDurationTimeSeries[i].Timestamp)
+		}
+	}
+}
+
+func TestDashboardGCEventsDenseMinuteGrid(t *testing.T) {
+	m := NewMonitor()
+	d := m.GetDashboard()
+	n := len(d.GCEventsTimeSeries)
+	if n < 2 || n > 120 {
+		t.Fatalf("unexpected GC events series length %d (expected ~61 minute slots)", n)
+	}
+	for i := 1; i < len(d.GCEventsTimeSeries); i++ {
+		prev := d.GCEventsTimeSeries[i-1].Timestamp
+		cur := d.GCEventsTimeSeries[i].Timestamp
+		if cur.Sub(prev) != time.Minute {
+			t.Fatalf("non-consecutive GC buckets: %v then %v (delta %v)", prev, cur, cur.Sub(prev))
+		}
+	}
+}
+
+func TestSTWDurationHistoryUsesPauseEventsOnly(t *testing.T) {
+	m := NewMonitor()
+	min := time.Now().UTC().Truncate(time.Minute).Add(10 * time.Second)
+	m.RecordEvent(GCEventRecord{
+		Timestamp: min, Path: "/a.log", Category: "G1YoungGC", Duration: 0.05, IsPause: true,
+		HeapAfterKB: 100, HeapTotalKB: 1000,
+	})
+	m.RecordEvent(GCEventRecord{
+		Timestamp: min.Add(2 * time.Second), Path: "/a.log", Category: "G1YoungGC", Duration: 0.03, IsPause: true,
+		HeapAfterKB: 100, HeapTotalKB: 1000,
+	})
+	m.RecordEvent(GCEventRecord{
+		Timestamp: min.Add(4 * time.Second), Path: "/a.log", Category: "Concurrent", Duration: 1.0, IsPause: false,
+		HeapAfterKB: 100, HeapTotalKB: 1000,
+	})
+	d := m.GetDashboard()
+	wantMin := utcMinute(min)
+	var found int
+	for _, b := range d.STWDurationHistory {
+		if b.Path != "/a.log" || !b.Timestamp.Equal(wantMin) {
+			continue
+		}
+		found++
+		if b.Count != 2 {
+			t.Fatalf("expected 2 STW pauses in bucket, got %d", b.Count)
+		}
+		if b.SumSec < 0.079 || b.SumSec > 0.081 {
+			t.Fatalf("unexpected sum_sec %v", b.SumSec)
+		}
+		if b.MinSec != 0.03 || b.MaxSec != 0.05 {
+			t.Fatalf("min/max got %v / %v", b.MinSec, b.MaxSec)
+		}
+	}
+	if found != 1 {
+		t.Fatalf("expected exactly one matching STW bucket for path+minute, found %d", found)
+	}
+}
+
 func TestGetDashboardWithEvents(t *testing.T) {
 	m := NewMonitor()
 	m.SetGCType("/test.log", "G1")
 
-	base := time.Now().Add(-60 * time.Second)
+	// Align with dashboard "current UTC minute" window so last-1m stats see all events.
+	base := time.Now().UTC().Truncate(time.Minute).Add(2 * time.Second)
 	for i := 0; i < 10; i++ {
 		m.RecordEvent(GCEventRecord{
 			Timestamp:   base.Add(time.Duration(i) * time.Second),

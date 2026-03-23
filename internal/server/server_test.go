@@ -62,8 +62,23 @@ func TestUIEndpoint(t *testing.T) {
 	}
 	body := w.Body.String()
 	if !contains(body, "recsSection") || !contains(body, "recsContainer") {
-		t.Fatalf("UI must contain Recommendation section: recsSection=%v recsContainer=%v",
+		t.Fatalf("UI must contain recommendations section: recsSection=%v recsContainer=%v",
 			contains(body, "recsSection"), contains(body, "recsContainer"))
+	}
+	if !contains(body, "Tuning Recommendations") {
+		t.Fatal("UI must contain Tuning Recommendations heading")
+	}
+	if !contains(body, "gcEventTypeFilter") || !contains(body, ">Total</button>") {
+		t.Fatal("UI must contain GC event type filter")
+	}
+	if !contains(body, "STW Duration") || !contains(body, "pauseCanvas") {
+		t.Fatal("UI must contain STW Duration chart")
+	}
+	if !contains(body, "GC Duration") || !contains(body, "gcDurationTypeFilter") {
+		t.Fatal("UI must contain GC Duration chart and type filter")
+	}
+	if !contains(body, "gc-two-col-row") {
+		t.Fatal("UI must place GC Events and GC Duration on one row")
 	}
 	ct := w.Header().Get("Content-Type")
 	if ct != "text/html; charset=utf-8" {
@@ -71,6 +86,9 @@ func TestUIEndpoint(t *testing.T) {
 	}
 	if w.Body.Len() == 0 {
 		t.Fatal("expected non-empty body")
+	}
+	if !contains(body, "Auto-refresh: 5s") || !contains(body, "setInterval(refresh,5000)") {
+		t.Fatal("UI refresh interval should be 5s")
 	}
 }
 

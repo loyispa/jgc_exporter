@@ -7,7 +7,7 @@ Real-time Java GC log collector and Prometheus exporter with health visualizatio
 - **Multi-collector support**: G1, CMS, ZGC with PreUnified (JDK8) and Unified (JDK9+) log formats
 - **Real-time tail**: Glob-based file discovery with automatic rotation handling
 - **Prometheus metrics**: `jgc_*` prefix, compatible with existing dashboards
-- **Health dashboard**: Web UI at `/ui` with overall health status (Healthy/Warning/Critical), Full GC alerts, heap trends, and pause distribution
+- **Health dashboard**: Web UI at `/ui` with overall health status (Healthy/Warning/Critical), Full GC alerts, heap trends, and STW (stop-the-world) duration trends
 
 ## Quick Start
 
