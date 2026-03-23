@@ -1,0 +1,21 @@
+OpenJDK 64-Bit Server VM (25.322-b06) for bsd-aarch64 JRE (1.8.0_322-b06), built on Jan 19 2022 05:50:08 by "re" with gcc Apple LLVM 12.0.0 (clang-1200.0.32.28)
+Memory: 16k page, physical 16777216k(69472k free)
+
+/proc/meminfo:
+
+CommandLine flags: -XX:InitialHeapSize=268435456 -XX:MaxHeapSize=268435456 -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseConcMarkSweepGC
+2024-01-02T18:35:11.712+0800: 1.083: [GC (Allocation Failure)  69952K->12800K(253440K), 0.0055678 secs]
+2024-01-02T18:35:12.100+0800: 1.471: [GC (Allocation Failure)  78656K->18432K(253440K), 0.0069012 secs]
+2024-01-02T18:35:12.400+0800: 1.771: [GC (CMS Initial Mark) [1 CMS-initial-mark: 9728K(174784K)] 20480K(253440K), 0.0012345 secs]
+2024-01-02T18:35:12.500+0800: 1.871: [CMS-concurrent-mark-start]
+2024-01-02T18:35:12.550+0800: 1.921: [CMS-concurrent-mark: 0.050/0.050 secs]
+2024-01-02T18:35:12.600+0800: 1.971: [CMS-concurrent-preclean-start]
+2024-01-02T18:35:12.610+0800: 1.981: [CMS-concurrent-preclean: 0.010/0.010 secs]
+2024-01-02T18:35:12.700+0800: 2.071: [GC (CMS Final Remark) [YG occupancy: 35840K (78656K)][1 CMS-remark: 9728K(174784K)] 45568K(253440K), 0.0023456 secs]
+2024-01-02T18:35:12.800+0800: 2.171: [CMS-concurrent-sweep-start]
+2024-01-02T18:35:12.850+0800: 2.221: [CMS-concurrent-sweep: 0.050/0.050 secs]
+2024-01-02T18:35:12.900+0800: 2.271: [CMS-concurrent-reset-start]
+2024-01-02T18:35:12.910+0800: 2.281: [CMS-concurrent-reset: 0.010/0.010 secs]
+2024-01-02T18:35:13.200+0800: 2.571: [Full GC (System.gc())  40960K->10240K(253440K), 0.0451234 secs]
+2024-01-02T18:35:13.500+0800: 2.871: [GC (Allocation Failure)  82944K->20480K(253440K), 0.0078901 secs]
+2024-01-02T18:35:13.800+0800: 3.171: [Full GC (Metadata GC Threshold)  51200K->15360K(253440K), 0.0567890 secs]

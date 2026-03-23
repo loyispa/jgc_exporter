@@ -1,0 +1,54 @@
+OpenJDK 64-Bit Server VM (25.322-b06) for bsd-aarch64 JRE (1.8.0_322-b06), built on Jan 19 2022 05:50:08 by "re"
+Memory: 16k page, physical 16777216k(69472k free)
+
+CommandLine flags: -XX:InitialHeapSize=268435456 -XX:MaxHeapSize=4294967296 -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -XX:+UseConcMarkSweepGC -XX:+UseCompressedOops -XX:+UseParNewGC
+2024-01-02T18:40:01.100+0800: 0.500: [GC (Allocation Failure) [ParNew: 69952K->8704K(78656K), 0.0100000 secs] 69952K->22000K(253440K), 0.0110000 secs]
+ [Times: user=0.02 sys=0.00, real=0.01 secs]
+2024-01-02T18:40:02.200+0800: 1.600: [GC (CMS Initial Mark) [1 CMS-initial-mark: 13296K(174784K)] 22000K(253440K), 0.0020000 secs]
+ [Times: user=0.00 sys=0.00, real=0.00 secs]
+2024-01-02T18:40:02.210+0800: 1.610: [CMS-concurrent-mark-start]
+2024-01-02T18:40:02.250+0800: 1.650: [CMS-concurrent-mark: 0.040/0.040 secs]
+ [Times: user=0.08 sys=0.01, real=0.04 secs]
+2024-01-02T18:40:02.252+0800: 1.652: [CMS-concurrent-preclean-start]
+2024-01-02T18:40:02.255+0800: 1.655: [CMS-concurrent-preclean: 0.003/0.003 secs]
+ [Times: user=0.01 sys=0.00, real=0.00 secs]
+2024-01-02T18:40:02.260+0800: 1.660: [CMS-concurrent-abortable-preclean-start]
+2024-01-02T18:40:02.280+0800: 1.680: [CMS-concurrent-abortable-preclean: 0.020/0.020 secs]
+ [Times: user=0.02 sys=0.00, real=0.02 secs]
+2024-01-02T18:40:02.285+0800: 1.685: [GC (CMS Final Remark) [YG occupancy: 8704 K (78656 K)][Rescan (parallel) , 0.001 secs][weak refs processing, 0.000 secs][class unloading, 0.001 secs][scrub symbol table, 0.001 secs][scrub string table, 0.000 secs][1 CMS-remark: 13296K(174784K)] 22000K(253440K), 0.0050000 secs]
+ [Times: user=0.01 sys=0.00, real=0.01 secs]
+2024-01-02T18:40:02.295+0800: 1.695: [CMS-concurrent-sweep-start]
+2024-01-02T18:40:02.335+0800: 1.735: [CMS-concurrent-sweep: 0.040/0.040 secs]
+ [Times: user=0.05 sys=0.00, real=0.04 secs]
+2024-01-02T18:40:02.337+0800: 1.737: [CMS-concurrent-reset-start]
+2024-01-02T18:40:02.340+0800: 1.740: [CMS-concurrent-reset: 0.003/0.003 secs]
+ [Times: user=0.00 sys=0.00, real=0.00 secs]
+2024-01-02T18:40:03.500+0800: 2.900: [GC (Allocation Failure) [ParNew: 78656K->8704K(78656K), 0.0120000 secs] 91856K->23000K(253440K), 0.0125000 secs]
+ [Times: user=0.02 sys=0.00, real=0.01 secs]
+Desired survivor size 107347968 bytes, new threshold 7 (max 15)
+ - age   1:   1048576 bytes,   1048576 total
+ - age   2:    524288 bytes,    1572864 total
+ - age   3:    262144 bytes,    1835008 total
+2024-01-02T18:40:04.600+0800: 4.000: [GC (Allocation Failure) [ParNew: 69952K->8704K(78656K), 0.0110000 secs] 84248K->24000K(253440K), 0.0115000 secs]
+ [Times: user=0.02 sys=0.00, real=0.01 secs]
+Desired survivor size 107347968 bytes, new threshold 7 (max 15)
+ - age   1:   2097152 bytes,   2097152 total
+ - age   2:   1048576 bytes,   3145728 total
+ - age   3:    524288 bytes,    3670016 total
+ - age   4:    262144 bytes,    3932160 total
+2024-01-02T18:40:05.700+0800: 5.100: [GC (Allocation Failure) [ParNew: 69952K->8704K(78656K), 0.0100000 secs] 85248K->25000K(253440K), 0.0105000 secs]
+ [Times: user=0.02 sys=0.00, real=0.01 secs]
+2024-01-02T18:40:06.800+0800: 6.200: [GC (Allocation Failure) [ParNew: 69952K->8704K(78656K), 0.0090000 secs] 86248K->26000K(253440K), 0.0095000 secs]
+ [Times: user=0.02 sys=0.00, real=0.01 secs]
+2024-01-02T18:40:07.900+0800: 7.300: [GC (Allocation Failure) [ParNew: 69952K->8704K(78656K), 0.0100000 secs] 87248K->27000K(253440K), 0.0105000 secs]
+ [Times: user=0.02 sys=0.00, real=0.01 secs]
+2024-01-02T18:40:09.000+0800: 8.400: [GC (Allocation Failure) [ParNew: 69952K->69952K(78656K), 0.0000000 secs][CMS (concurrent mode failure): 160000K->120000K(174784K), 0.2500000 secs] 229952K->120000K(253440K), 0.2600000 secs]
+ [Times: user=0.25 sys=0.01, real=0.26 secs]
+2024-01-02T18:40:10.100+0800: 9.500: [GC (Allocation Failure) [ParNew (promotion failed): 78000K->78000K(78656K), 0.0300000 secs][CMS: 120000K->95000K(174784K), 0.1800000 secs] 198000K->95000K(253440K), 0.2100000 secs]
+ [Times: user=0.21 sys=0.00, real=0.21 secs]
+2024-01-02T18:40:11.200+0800: 10.600: [Full GC (System.gc()) 95000K->5000K(253440K), 0.0500000 secs]
+   [Metaspace: 8192K->8192K(1056768K)]
+ [Times: user=0.05 sys=0.01, real=0.05 secs]
+2024-01-02T18:40:12.300+0800: 11.700: [Full GC (Metadata GC Threshold) 55000K->6000K(253440K), 0.0600000 secs]
+   [Metaspace: 10240K->6144K(1056768K)]
+ [Times: user=0.06 sys=0.01, real=0.06 secs]

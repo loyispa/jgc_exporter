@@ -1,25 +1,31 @@
-# Lines that start with '#' are comments.
+# Build output
+dist/
+jgc_exporter
+jgc_exporter-*
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.cursor/
+
+# OS
+.DS_Store
 *~
 *.diff
 *#
-.classpath
-.project
-.settings
-bin/flume-env.sh
-conf/flume-site.xml
-bin/.settings
-.eclipse
-pmd_report.html
-*/bin
-target
-patchprocess
-derby.log
-.idea
-*.iml
-nb-configuration.xml
-.DS_Store
-/.mvn/wrapper/maven-wrapper.jar
-**/metastore_db
-dependency-reduced-pom.xml
+
+# Go
+vendor/
+
+# Logs
 /logs/*
 *.out
+# Optional Docker regen output (see scripts/generate-gc-fixtures.sh)
+testdata/parser/docker-regen/
+/docs/*
+!docs/GC_LOG_MATRIX.md
+
+.cursor/
+
+scripts/*

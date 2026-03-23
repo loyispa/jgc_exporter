@@ -1,0 +1,4 @@
+[2024-05-10T09:00:00.100+0800][info][gc] Using The Z Garbage Collector
+[2024-05-10T09:00:05.200+0800][info][gc] GC(0) Garbage Collection (Warmup) 412M(10%)->10M(0%) 33.891ms
+[2024-05-10T09:00:10.400+0800][info][gc] GC(1) Garbage Collection (Allocation Rate) 892M(22%)->24M(1%) 50.456ms
+[2024-05-10T09:00:15.600+0800][info][gc] GC(2) Garbage Collection (Proactive) 1432M(35%)->48M(1%) 60.234ms

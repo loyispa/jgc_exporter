@@ -1,0 +1,9 @@
+[2024-06-15T10:00:00.100+0800][gc] Using The Z Garbage Collector
+[2024-06-15T10:00:05.200+0800][gc] GC(0) Minor Collection (Warmup) 256M(2%)->32M(0%) 99.652ms
+[2024-06-15T10:00:10.524+0800][gc] GC(1) Minor Collection (Allocation Rate) 512M(3%)->48M(0%) 123.963ms
+[2024-06-15T10:00:15.746+0800][gc] GC(2) Minor Collection (Timer) 768M(5%)->64M(0%) 146.002ms
+[2024-06-15T10:00:20.834+0800][gc] GC(3) Major Collection (Proactive) 320M(2%)->96M(1%) 33.440ms
+[2024-06-15T10:00:25.944+0800][gc] GC(4) Major Collection (Metadata GC Threshold) 480M(3%)->128M(1%) 44.108ms
+[2024-06-15T10:00:31.051+0800][gc] GC(5) Major Collection (System.gc()) 640M(4%)->160M(1%) 51.054ms
+[2024-06-15T10:00:36.349+0800][gc] GC(6) Minor Collection (Allocation Stall) 896M(6%)->80M(0%) 158.234ms
+[2024-06-15T10:00:41.559+0800][gc] GC(7) Major Collection (Allocation Stall) 768M(5%)->192M(1%) 58.912ms

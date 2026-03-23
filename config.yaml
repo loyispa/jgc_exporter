@@ -1,0 +1,11 @@
+# Host and port that http server binds, default is 0.0.0.0:5898
+hostPort: 0.0.0.0:5898
+
+# Wildcard pattern of gc log file path, multiple paths separate with commas(,)
+fileGlobPattern: /path/to/*/*.log
+
+# Milliseconds before closing idle(no update) files, default is 1 hour
+idleTimeout: 3600000
+
+# Time interval for scanning matching files (ms)
+watchInterval: 10000

@@ -1,99 +1,57 @@
-# jgc_exporter
-[![Build Status][maven-build-image]][maven-build-url]
-[![CodeCov][codecov-image]][codecov-url]
+# JGC Exporter
 
-An exporter that can continuously analyze hotspot gc logs(Parallel, CMS, G1, ZGC, etc.)
-# Running the exporter
+Real-time Java GC log collector and Prometheus exporter with health visualization.
 
-Run the exporter as standalone HTTP server, prefer native executable if available:
+## Features
 
-start with jar:
-```shell
-# jdk require: 11+
-#  os require: linux, windows
-sh bin/run.sh --jar
+- **Multi-collector support**: G1, CMS, ZGC with PreUnified (JDK8) and Unified (JDK9+) log formats
+- **Real-time tail**: Glob-based file discovery with automatic rotation handling
+- **Prometheus metrics**: `jgc_*` prefix, compatible with existing dashboards
+- **Health dashboard**: Web UI at `/ui` with overall health status (Healthy/Warning/Critical), Full GC alerts, heap trends, and pause distribution
 
-# background running
-sh bin/run.sh --jar --daemon
-```
+## Quick Start
 
-start with native executable (only linux now, windows is on the way):
-```shell
-# os require: linux
-sh bin/run.sh --native
-
-# background running
-sh bin/run.sh --native --daemon
-```
-
-A simple `config.yml` looks like below:
-```yaml
-
-# wildcard pattern is allowed in any level of paths, most of the time you only need to modify this configuration
-fileGlobPattern: /path/to/some*/*.log
-```
-
-Fetch the metrics:
-```
-http://0.0.0.0:5898/metrics
-```
-
-# Configuration
-| Name            | Description                                                                  |
-|-----------------|------------------------------------------------------------------------------|
-| hostPort        | Host and port that http server binds, default is 0.0.0.0:5898                |
-| fileGlobPattern | Wildcard pattern of gc log file path, separate multiple paths with commas(,) |
-| idleTimeout     | Milliseconds before closing idle(no update) files, default is 1 hour         |
-| watchInterval   | Time interval for scanning matching files (ms)                               |
-| readInterval    | Time to sleep between files reading empty (ms)                               |
-
-# Metric
-| Name                                       | type    | labels               | Description                      |
-|--------------------------------------------|---------|----------------------|----------------------------------|
-| jgc_log_lines_total                        | counter | path, host           | Number of process log lines      |
-| jgc_event_duration_seconds                 | summary | path, host, category | Duration of GC events            |
-| jgc_event_pause_duration_seconds           | summary | path, host, category | Duration of GC pause events      |
-| jgc_heap_occupancy_before_collection_bytes | gauge   | path, host           | Heap occupancy before collection |
-| jgc_heap_occupancy_after_collection_bytes  | gauge   | path, host           | Heap occupancy after collection  |
-
-See more [metrics](https://github.com/loyispa/jgc_exporter/blob/main/src/main/java/prometheus/exporter/jgc/metric/MetricRegistry.java) related to specific garbage-collection algorithms.
-
+```bash
 # Build
-``` shell
-./mvnw clean package
+make build
+
+# Run with glob pattern (quote the pattern so the shell does not expand it)
+./jgc_exporter --glob-path '/var/logs/**/gc.log'
 ```
 
-# Native build
-The exporter can be converted into native executables by installing [graalvm](https://www.graalvm.org/downloads/)(17 and 21).
+## Configuration
 
-- native dynamic link:
-``` shell
-./mvnw -Pnative clean package
-```
+| Flag  | Default | Description |
+|------|---------|-------------|
+| `--glob-path` | *required* | Glob pattern for GC log files |
+| `--port` | `5898` | HTTP port for /metrics and /ui |
+| `--idle-timeout` | `3600000` | Idle file close timeout (ms) |
+| `--watch-interval` | `10000` | File scan interval (ms) |
 
-- native static link with [musl](https://musl.cc/):
-``` shell
-./mvnw -Pnative-static-musl clean package
-```
 
-# Suggestions
+## HTTP Endpoints
 
-*Note: The lack of essential jvm flags may miss some indicators, so we recommend that you set up your target java process as follows:*
+| Path | Description |
+|------|-------------|
+| `GET /metrics` | Prometheus exposition format |
+| `GET /ui` | GC health dashboard |
+| `GET /api/dashboard` | Health data as JSON |
 
-- jdk8 and previous versions
-```
--verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps
-```
+## Health Status Rules
 
-- jdk9 and later versions
-```
--verbose:gc -Xlog:gc*=info,gc+heap=debug,gc+phases=debug:file=xxx/gc.log:t,tags
-```
+| Status | Condition |
+|--------|-----------|
+| **Critical** | ≥2 Full GCs in 5min, OR P99 pause >500ms, OR heap >90% |
+| **Warning** | Any Full GC in 5min, OR P99 >200ms, OR heap >80% |
+| **Healthy** | None of the above |
 
-# Contributing
-The exporter is still iterating frequently, all contributions are welcome. If you want a new feature, please raise an issue first.
+## Prometheus Metrics
 
-[maven-build-image]: https://github.com/loyispa/jgc_exporter/workflows/Java%20CI%20with%20Maven/badge.svg
-[maven-build-url]: https://github.com/loyispa/jgc_exporter/actions/workflows/maven.yaml
-[codecov-image]: https://codecov.io/gh/loyispa/jgc_exporter/branch/main/graph/badge.svg
-[codecov-url]: https://app.codecov.io/gh/loyispa/jgc_exporter
+Core metrics with `jgc_` prefix and labels `path`, `host`:
+
+- `jgc_event_duration_seconds` — GC event duration summary
+- `jgc_event_pause_duration_seconds` — Pause-only duration summary
+- `jgc_heap_occupancy_*_bytes` — Heap before/after collection
+- `jgc_young_*_bytes`, `jgc_old_*_bytes`, `jgc_metaspace_*_bytes`
+- `jgc_zgc_*` — ZGC-specific (MMU, load, phase durations)
+- `jgc_log_lines_total` — Processed log lines (labels: path, host, gc_type)

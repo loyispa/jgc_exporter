@@ -1,0 +1,12 @@
+[2024-01-03T15:15:00.100+0800][info][gc] Using G1
+[2024-01-03T15:15:03.556+0800][info][gc] GC(0) Pause Young (Normal) (G1 Evacuation Pause) 50M->20M(256M) 5.234ms
+[2024-01-03T15:15:04.123+0800][info][gc] GC(1) Pause Young (Normal) (G1 Evacuation Pause) 60M->22M(256M) 4.567ms
+[2024-01-03T15:15:05.234+0800][info][gc] GC(2) Pause Young (Concurrent Start) (G1 Evacuation Pause) 70M->25M(256M) 6.789ms
+[2024-01-03T15:15:05.500+0800][info][gc] GC(3) Concurrent Mark Cycle
+[2024-01-03T15:15:05.600+0800][info][gc] GC(3) Pause Remark 25M->25M(256M) 1.234ms
+[2024-01-03T15:15:05.700+0800][info][gc] GC(3) Pause Cleanup 24M->24M(256M) 0.456ms
+[2024-01-03T15:15:05.800+0800][info][gc] GC(3) Concurrent Mark Cycle 300.123ms
+[2024-01-03T15:15:06.500+0800][info][gc] GC(4) Pause Young (Prepare Mixed) (G1 Evacuation Pause) 80M->28M(256M) 5.891ms
+[2024-01-03T15:15:07.200+0800][info][gc] GC(5) Pause Young (Mixed) (G1 Evacuation Pause) 55M->18M(256M) 7.123ms
+[2024-01-03T15:15:08.000+0800][info][gc] GC(6) Pause Full (System.gc()) 30M->10M(256M) 45.678ms
+[2024-01-03T15:15:09.000+0800][info][gc] GC(7) Pause Young (Normal) (G1 Evacuation Pause) 40M->15M(256M) 3.456ms

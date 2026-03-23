@@ -1,0 +1,8 @@
+[2024-01-03T15:15:00.100+0800][info][gc] Using The Z Garbage Collector
+[2024-01-03T15:15:05.200+0800][info][gc] GC(0) Garbage Collection (Warmup) 412M(10%)->10M(0%) 33.891ms
+[2024-01-03T15:15:10.400+0800][info][gc] GC(1) Garbage Collection (Allocation Rate) 892M(22%)->24M(1%) 50.456ms
+[2024-01-03T15:15:15.600+0800][info][gc] GC(2) Garbage Collection (Proactive) 1432M(35%)->48M(1%) 60.234ms
+[2024-01-03T15:15:20.800+0800][info][gc] GC(3) Garbage Collection (Timer) 1984M(49%)->72M(2%) 74.123ms
+[2024-01-03T15:15:26.000+0800][info][gc] GC(4) Garbage Collection (System.gc()) 2568M(63%)->112M(3%) 84.567ms
+[2024-01-03T15:15:34.700+0800][info][gc] GC(5) Garbage Collection (Allocation Stall) 3100M(76%)->142M(3%) 96.234ms
+[2024-01-03T15:15:39.900+0800][info][gc] GC(6) Garbage Collection (Metadata GC Threshold) 2800M(68%)->128M(3%) 78.456ms

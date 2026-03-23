@@ -1,0 +1,38 @@
+[2024-03-15T10:00:00.008+0800][info ][gc     ] Using Serial
+[2024-03-15T10:00:00.008+0800][info ][gc,init] Version: 11.0.20+8 (release)
+[2024-03-15T10:00:00.127+0800][info ][gc,start       ] GC(0) Pause Full (System.gc())
+[2024-03-15T10:00:00.138+0800][info ][gc,heap        ] GC(0) DefNew: 3147K(9792K)->0K(9920K) Eden: 3147K(8704K)->0K(8832K) From: 0K(1088K)->0K(1088K)
+[2024-03-15T10:00:00.138+0800][info ][gc,heap        ] GC(0) Tenured: 1073K(21888K)->2065K(21888K)
+[2024-03-15T10:00:00.138+0800][info ][gc,metaspace   ] GC(0) Metaspace: 342K(512K)->342K(512K)
+[2024-03-15T10:00:00.138+0800][info ][gc             ] GC(0) Pause Full (System.gc()) 4M->2M(31M) 11.316ms
+[2024-03-15T10:00:00.138+0800][info ][gc,cpu         ] GC(0) User=0.01s Sys=0.00s Real=0.01s
+[2024-03-15T10:00:08.638+0800][info ][gc,start       ] GC(1) Pause Young (Allocation Failure)
+[2024-03-15T10:00:08.639+0800][info ][gc,heap        ] GC(1) DefNew: 8704K(9920K)->542K(9920K) Eden: 8704K(8832K)->0K(8832K) From: 0K(1088K)->542K(1088K)
+[2024-03-15T10:00:08.639+0800][info ][gc,heap        ] GC(1) Tenured: 2065K(21888K)->2065K(21888K)
+[2024-03-15T10:00:08.639+0800][info ][gc,metaspace   ] GC(1) Metaspace: 9605K(9856K)->9605K(9856K)
+[2024-03-15T10:00:08.639+0800][info ][gc             ] GC(1) Pause Young (Allocation Failure) 10M->2M(31M) 0.886ms
+[2024-03-15T10:00:08.639+0800][info ][gc,cpu         ] GC(1) User=0.00s Sys=0.00s Real=0.00s
+[2024-03-15T10:00:08.658+0800][info ][gc,start       ] GC(2) Pause Young (Allocation Failure)
+[2024-03-15T10:00:08.659+0800][info ][gc,heap        ] GC(2) DefNew: 9246K(9920K)->932K(9920K) Eden: 8704K(8832K)->0K(8832K) From: 542K(1088K)->932K(1088K)
+[2024-03-15T10:00:08.659+0800][info ][gc,heap        ] GC(2) Tenured: 2065K(21888K)->2065K(21888K)
+[2024-03-15T10:00:08.659+0800][info ][gc,metaspace   ] GC(2) Metaspace: 9614K(9856K)->9614K(9856K)
+[2024-03-15T10:00:08.659+0800][info ][gc             ] GC(2) Pause Young (Allocation Failure) 11M->2M(31M) 0.517ms
+[2024-03-15T10:00:08.659+0800][info ][gc,cpu         ] GC(2) User=0.00s Sys=0.00s Real=0.00s
+[2024-03-15T10:00:08.668+0800][info ][gc,start       ] GC(3) Pause Young (Allocation Failure)
+[2024-03-15T10:00:08.669+0800][info ][gc,heap        ] GC(3) DefNew: 9636K(9920K)->932K(9920K) Eden: 8704K(8832K)->0K(8832K) From: 932K(1088K)->932K(1088K)
+[2024-03-15T10:00:08.669+0800][info ][gc,heap        ] GC(3) Tenured: 2065K(21888K)->2065K(21888K)
+[2024-03-15T10:00:08.669+0800][info ][gc,metaspace   ] GC(3) Metaspace: 9625K(9856K)->9625K(9856K)
+[2024-03-15T10:00:08.669+0800][info ][gc             ] GC(3) Pause Young (Allocation Failure) 11M->2M(31M) 0.426ms
+[2024-03-15T10:00:08.669+0800][info ][gc,cpu         ] GC(3) User=0.00s Sys=0.00s Real=0.00s
+[2024-03-15T10:00:15.000+0800][info ][gc,start       ] GC(4) Pause Full (Metadata GC Threshold)
+[2024-03-15T10:00:15.011+0800][info ][gc,heap        ] GC(4) DefNew: 500K(9920K)->0K(9920K) Eden: 500K(8832K)->0K(8832K) From: 0K(1088K)->0K(1088K)
+[2024-03-15T10:00:15.011+0800][info ][gc,heap        ] GC(4) Tenured: 20500K(21888K)->18000K(21888K)
+[2024-03-15T10:00:15.011+0800][info ][gc,metaspace   ] GC(4) Metaspace: 20480K(20736K)->20480K(20736K)
+[2024-03-15T10:00:15.011+0800][info ][gc             ] GC(4) Pause Full (Metadata GC Threshold) 20M->17M(31M) 11.200ms
+[2024-03-15T10:00:15.011+0800][info ][gc,cpu         ] GC(4) User=0.01s Sys=0.00s Real=0.01s
+[2024-03-15T10:00:20.000+0800][info ][gc,start       ] GC(5) Pause Full (Allocation Failure)
+[2024-03-15T10:00:20.013+0800][info ][gc,heap        ] GC(5) DefNew: 0K(9920K)->0K(9920K) Eden: 0K(8832K)->0K(8832K) From: 0K(1088K)->0K(1088K)
+[2024-03-15T10:00:20.013+0800][info ][gc,heap        ] GC(5) Tenured: 21500K(21888K)->19000K(21888K)
+[2024-03-15T10:00:20.013+0800][info ][gc,metaspace   ] GC(5) Metaspace: 20600K(20736K)->20600K(20736K)
+[2024-03-15T10:00:20.013+0800][info ][gc             ] GC(5) Pause Full (Allocation Failure) 21M->18M(31M) 13.100ms
+[2024-03-15T10:00:20.013+0800][info ][gc,cpu         ] GC(5) User=0.01s Sys=0.00s Real=0.01s

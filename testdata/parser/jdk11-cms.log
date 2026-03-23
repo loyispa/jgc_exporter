@@ -1,0 +1,71 @@
+[2024-01-03T16:30:00.000+0800][gc     ] Using Concurrent Mark Sweep
+[2024-01-03T16:30:01.100+0800][gc,start    ] GC(0) Pause Young (Allocation Failure)
+[2024-01-03T16:30:01.100+0800][gc,task     ] GC(0) Using 8 workers
+[2024-01-03T16:30:01.105+0800][gc          ] GC(0) Pause Young (Allocation Failure) 150M->80M(253M) 10.123ms
+[2024-01-03T16:30:01.105+0800][gc,heap     ] GC(0) Heap 150M(253M)->80M(253M)
+[2024-01-03T16:30:01.105+0800][gc,metaspace] GC(0) Metaspace: 5000K(5120K)->5000K(5120K) committed 5376K
+[2024-01-03T16:30:02.200+0800][gc,start    ] GC(1) Pause Initial Mark
+[2024-01-03T16:30:02.200+0800][gc,task     ] GC(1) Using 8 workers
+[2024-01-03T16:30:02.201+0800][gc          ] GC(1) Pause Initial Mark 95M->95M(253M) 1.234ms
+[2024-01-03T16:30:02.201+0800][gc,heap     ] GC(1) Heap 95M(253M)->95M(253M)
+[2024-01-03T16:30:02.201+0800][gc,metaspace] GC(1) Metaspace: 5012K(5120K)->5012K(5120K) committed 5376K
+[2024-01-03T16:30:02.210+0800][gc          ] GC(1) Concurrent Mark 45.678ms
+[2024-01-03T16:30:02.220+0800][gc          ] GC(1) Concurrent Preclean 2.345ms
+[2024-01-03T16:30:02.250+0800][gc          ] GC(1) Concurrent Abortable Preclean 15.123ms
+[2024-01-03T16:30:02.260+0800][gc,start    ] GC(1) Pause Remark
+[2024-01-03T16:30:02.260+0800][gc,task     ] GC(1) Using 8 workers
+[2024-01-03T16:30:02.263+0800][gc          ] GC(1) Pause Remark 120M->120M(253M) 3.456ms
+[2024-01-03T16:30:02.263+0800][gc,heap     ] GC(1) Heap 120M(253M)->120M(253M)
+[2024-01-03T16:30:02.263+0800][gc,metaspace] GC(1) Metaspace: 5020K(5120K)->5020K(5120K) committed 5376K
+[2024-01-03T16:30:02.270+0800][gc          ] GC(1) Concurrent Sweep 35.789ms
+[2024-01-03T16:30:02.280+0800][gc          ] GC(1) Concurrent Reset 1.234ms
+[2024-01-03T16:30:03.500+0800][gc,start    ] GC(2) Pause Young (Allocation Failure)
+[2024-01-03T16:30:03.500+0800][gc,task     ] GC(2) Using 8 workers
+[2024-01-03T16:30:03.505+0800][gc          ] GC(2) Pause Young (Allocation Failure) 140M->75M(253M) 8.901ms
+[2024-01-03T16:30:03.505+0800][gc,heap     ] GC(2) Heap 140M(253M)->75M(253M)
+[2024-01-03T16:30:03.505+0800][gc,metaspace] GC(2) Metaspace: 5030K(5120K)->5030K(5120K) committed 5376K
+[2024-01-03T16:30:04.800+0800][gc,start    ] GC(3) Pause Young (Allocation Failure)
+[2024-01-03T16:30:04.800+0800][gc,task     ] GC(3) Using 8 workers
+[2024-01-03T16:30:04.805+0800][gc          ] GC(3) Pause Young (Allocation Failure) 155M->82M(253M) 9.234ms
+[2024-01-03T16:30:04.805+0800][gc,heap     ] GC(3) Heap 155M(253M)->82M(253M)
+[2024-01-03T16:30:04.805+0800][gc,metaspace] GC(3) Metaspace: 5040K(5120K)->5040K(5120K) committed 5376K
+[2024-01-03T16:30:06.000+0800][gc,start    ] GC(4) Pause Full (System.gc())
+[2024-01-03T16:30:06.000+0800][gc,task     ] GC(4) Using 8 workers
+[2024-01-03T16:30:06.050+0800][gc          ] GC(4) Pause Full (System.gc()) 120M->50M(253M) 50.123ms
+[2024-01-03T16:30:06.050+0800][gc,heap     ] GC(4) Heap 120M(253M)->50M(253M)
+[2024-01-03T16:30:06.050+0800][gc,metaspace] GC(4) Metaspace: 5050K(5120K)->5050K(5120K) committed 5376K
+[2024-01-03T16:30:07.200+0800][gc,start    ] GC(5) Pause Young (Allocation Failure)
+[2024-01-03T16:30:07.200+0800][gc,task     ] GC(5) Using 8 workers
+[2024-01-03T16:30:07.205+0800][gc          ] GC(5) Pause Young (Allocation Failure) 90M->55M(253M) 7.456ms
+[2024-01-03T16:30:07.205+0800][gc,heap     ] GC(5) Heap 90M(253M)->55M(253M)
+[2024-01-03T16:30:07.205+0800][gc,metaspace] GC(5) Metaspace: 5060K(5120K)->5060K(5120K) committed 5376K
+[2024-01-03T16:30:08.500+0800][gc,start    ] GC(6) Pause Full (Metadata GC Threshold)
+[2024-01-03T16:30:08.500+0800][gc,task     ] GC(6) Using 8 workers
+[2024-01-03T16:30:08.560+0800][gc          ] GC(6) Pause Full (Metadata GC Threshold) 100M->45M(253M) 60.234ms
+[2024-01-03T16:30:08.560+0800][gc,heap     ] GC(6) Heap 100M(253M)->45M(253M)
+[2024-01-03T16:30:08.560+0800][gc,metaspace] GC(6) Metaspace: 10240K(10500K)->6144K(10500K) committed 10752K
+[2024-01-03T16:30:09.800+0800][gc,start    ] GC(7) Pause Initial Mark
+[2024-01-03T16:30:09.800+0800][gc,task     ] GC(7) Using 8 workers
+[2024-01-03T16:30:09.801+0800][gc          ] GC(7) Pause Initial Mark 70M->70M(253M) 0.987ms
+[2024-01-03T16:30:09.801+0800][gc,heap     ] GC(7) Heap 70M(253M)->70M(253M)
+[2024-01-03T16:30:09.801+0800][gc,metaspace] GC(7) Metaspace: 6150K(10500K)->6150K(10500K) committed 10752K
+[2024-01-03T16:30:09.810+0800][gc          ] GC(7) Concurrent Mark 38.456ms
+[2024-01-03T16:30:09.820+0800][gc          ] GC(7) Concurrent Preclean 1.890ms
+[2024-01-03T16:30:09.840+0800][gc          ] GC(7) Concurrent Abortable Preclean 12.345ms
+[2024-01-03T16:30:09.850+0800][gc,start    ] GC(7) Pause Remark
+[2024-01-03T16:30:09.850+0800][gc,task     ] GC(7) Using 8 workers
+[2024-01-03T16:30:09.853+0800][gc          ] GC(7) Pause Remark 95M->95M(253M) 2.345ms
+[2024-01-03T16:30:09.853+0800][gc,heap     ] GC(7) Heap 95M(253M)->95M(253M)
+[2024-01-03T16:30:09.853+0800][gc,metaspace] GC(7) Metaspace: 6160K(10500K)->6160K(10500K) committed 10752K
+[2024-01-03T16:30:09.860+0800][gc          ] GC(7) Concurrent Sweep 28.123ms
+[2024-01-03T16:30:09.868+0800][gc          ] GC(7) Concurrent Reset 0.876ms
+[2024-01-03T16:30:10.500+0800][gc,start    ] GC(8) Pause Young (Allocation Failure)
+[2024-01-03T16:30:10.500+0800][gc,task     ] GC(8) Using 8 workers
+[2024-01-03T16:30:10.505+0800][gc          ] GC(8) Pause Young (Allocation Failure) 110M->65M(253M) 6.789ms
+[2024-01-03T16:30:10.505+0800][gc,heap     ] GC(8) Heap 110M(253M)->65M(253M)
+[2024-01-03T16:30:10.505+0800][gc,metaspace] GC(8) Metaspace: 6170K(10500K)->6170K(10500K) committed 10752K
+[2024-01-03T16:30:12.000+0800][gc,start    ] GC(9) Pause Full (Allocation Failure)
+[2024-01-03T16:30:12.000+0800][gc,task     ] GC(9) Using 8 workers
+[2024-01-03T16:30:12.080+0800][gc          ] GC(9) Pause Full (Allocation Failure) 230M->120M(253M) 80.456ms
+[2024-01-03T16:30:12.080+0800][gc,heap     ] GC(9) Heap 230M(253M)->120M(253M)
+[2024-01-03T16:30:12.080+0800][gc,metaspace] GC(9) Metaspace: 6180K(10500K)->6180K(10500K) committed 10752K

@@ -1,0 +1,134 @@
+[2024-06-15T10:00:00.100+0800][gc,init      ] Initializing The Z Garbage Collector
+[2024-06-15T10:00:00.100+0800][gc,init      ] Version: 21.0.3+9-LTS (release)
+[2024-06-15T10:00:00.100+0800][gc,init      ] NUMA Support: Disabled
+[2024-06-15T10:00:00.100+0800][gc,init      ] CPUs: 8 total, 8 available
+[2024-06-15T10:00:00.100+0800][gc,init      ] Memory: 16384M
+[2024-06-15T10:00:00.100+0800][gc,init      ] Large Page Support: Disabled
+[2024-06-15T10:00:00.100+0800][gc,init      ] GC Workers: 2 (dynamic)
+[2024-06-15T10:00:00.100+0800][gc,init      ] Young Generation: Soft Max Capacity: 4096M
+[2024-06-15T10:00:00.100+0800][gc,init      ] Old Generation: Soft Max Capacity: 12288M
+[2024-06-15T10:00:00.101+0800][gc           ] Using The Z Garbage Collector
+[2024-06-15T10:00:05.200+0800][gc,start     ] GC(0) Minor Collection (Warmup)
+[2024-06-15T10:00:05.200+0800][gc,task      ] GC(0) Using 2 workers
+[2024-06-15T10:00:05.200+0800][gc,phases    ] GC(0) y: Pause Mark Start 0.008ms
+[2024-06-15T10:00:05.272+0800][gc,phases    ] GC(0) y: Concurrent Mark 71.345ms
+[2024-06-15T10:00:05.272+0800][gc,phases    ] GC(0) y: Concurrent Mark Continue 0.000ms
+[2024-06-15T10:00:05.272+0800][gc,phases    ] GC(0) y: Concurrent Mark Free 0.001ms
+[2024-06-15T10:00:05.273+0800][gc,phases    ] GC(0) y: Pause Mark End 0.019ms
+[2024-06-15T10:00:05.273+0800][gc,phases    ] GC(0) y: Concurrent Reset Relocation Set 0.015ms
+[2024-06-15T10:00:05.283+0800][gc,phases    ] GC(0) y: Concurrent Select Relocation Set 9.823ms
+[2024-06-15T10:00:05.283+0800][gc,phases    ] GC(0) y: Pause Relocate Start 0.009ms
+[2024-06-15T10:00:05.299+0800][gc,phases    ] GC(0) y: Concurrent Relocate 15.432ms
+[2024-06-15T10:00:05.299+0800][gc,load      ] GC(0) Load: 2.45/1.89/1.34
+[2024-06-15T10:00:05.299+0800][gc,mmu       ] GC(0) MMU: 2ms/99.6%, 5ms/99.8%, 10ms/99.9%, 20ms/99.9%, 50ms/100.0%, 100ms/100.0%
+[2024-06-15T10:00:05.299+0800][gc,metaspace ] GC(0) Metaspace: 18M used, 20M committed, 1088M reserved
+[2024-06-15T10:00:05.300+0800][gc           ] GC(0) Minor Collection (Warmup) 256M(2%)->32M(0%) 99.652ms
+[2024-06-15T10:00:10.400+0800][gc,start     ] GC(1) Minor Collection (Allocation Rate)
+[2024-06-15T10:00:10.400+0800][gc,task      ] GC(1) Using 2 workers
+[2024-06-15T10:00:10.400+0800][gc,phases    ] GC(1) y: Pause Mark Start 0.010ms
+[2024-06-15T10:00:10.489+0800][gc,phases    ] GC(1) y: Concurrent Mark 88.456ms
+[2024-06-15T10:00:10.489+0800][gc,phases    ] GC(1) y: Concurrent Mark Continue 0.000ms
+[2024-06-15T10:00:10.489+0800][gc,phases    ] GC(1) y: Concurrent Mark Free 0.002ms
+[2024-06-15T10:00:10.490+0800][gc,phases    ] GC(1) y: Pause Mark End 0.022ms
+[2024-06-15T10:00:10.490+0800][gc,phases    ] GC(1) y: Concurrent Reset Relocation Set 0.018ms
+[2024-06-15T10:00:10.503+0800][gc,phases    ] GC(1) y: Concurrent Select Relocation Set 12.567ms
+[2024-06-15T10:00:10.503+0800][gc,phases    ] GC(1) y: Pause Relocate Start 0.012ms
+[2024-06-15T10:00:10.523+0800][gc,phases    ] GC(1) y: Concurrent Relocate 19.876ms
+[2024-06-15T10:00:10.523+0800][gc,load      ] GC(1) Load: 3.12/2.45/1.89
+[2024-06-15T10:00:10.523+0800][gc,mmu       ] GC(1) MMU: 2ms/98.9%, 5ms/99.4%, 10ms/99.7%, 20ms/99.8%, 50ms/99.9%, 100ms/99.9%
+[2024-06-15T10:00:10.523+0800][gc,metaspace ] GC(1) Metaspace: 22M used, 24M committed, 1088M reserved
+[2024-06-15T10:00:10.524+0800][gc           ] GC(1) Minor Collection (Allocation Rate) 512M(3%)->48M(0%) 123.963ms
+[2024-06-15T10:00:15.600+0800][gc,start     ] GC(2) Minor Collection (Timer)
+[2024-06-15T10:00:15.600+0800][gc,task      ] GC(2) Using 2 workers
+[2024-06-15T10:00:15.600+0800][gc,phases    ] GC(2) y: Pause Mark Start 0.012ms
+[2024-06-15T10:00:15.704+0800][gc,phases    ] GC(2) y: Concurrent Mark 103.234ms
+[2024-06-15T10:00:15.704+0800][gc,phases    ] GC(2) y: Concurrent Mark Continue 1.234ms
+[2024-06-15T10:00:15.704+0800][gc,phases    ] GC(2) y: Concurrent Mark Free 0.003ms
+[2024-06-15T10:00:15.705+0800][gc,phases    ] GC(2) y: Pause Mark End 0.025ms
+[2024-06-15T10:00:15.705+0800][gc,phases    ] GC(2) y: Concurrent Reset Relocation Set 0.022ms
+[2024-06-15T10:00:15.720+0800][gc,phases    ] GC(2) y: Concurrent Select Relocation Set 14.891ms
+[2024-06-15T10:00:15.720+0800][gc,phases    ] GC(2) y: Pause Relocate Start 0.014ms
+[2024-06-15T10:00:15.745+0800][gc,phases    ] GC(2) y: Concurrent Relocate 24.567ms
+[2024-06-15T10:00:15.745+0800][gc,load      ] GC(2) Load: 3.89/3.12/2.34
+[2024-06-15T10:00:15.745+0800][gc,mmu       ] GC(2) MMU: 2ms/98.1%, 5ms/99.0%, 10ms/99.4%, 20ms/99.7%, 50ms/99.8%, 100ms/99.9%
+[2024-06-15T10:00:15.745+0800][gc,metaspace ] GC(2) Metaspace: 28M used, 32M committed, 1088M reserved
+[2024-06-15T10:00:15.746+0800][gc           ] GC(2) Minor Collection (Timer) 768M(5%)->64M(0%) 146.002ms
+[2024-06-15T10:00:20.800+0800][gc,start     ] GC(3) Major Collection (Proactive)
+[2024-06-15T10:00:20.800+0800][gc,task      ] GC(3) Using 2 workers
+[2024-06-15T10:00:20.800+0800][gc,phases    ] GC(3) o: Concurrent Mark 1.234ms
+[2024-06-15T10:00:20.802+0800][gc,phases    ] GC(3) o: Concurrent Mark Continue 0.345ms
+[2024-06-15T10:00:20.802+0800][gc,phases    ] GC(3) o: Concurrent Mark Free 0.005ms
+[2024-06-15T10:00:20.803+0800][gc,phases    ] GC(3) o: Pause Mark End 0.021ms
+[2024-06-15T10:00:20.815+0800][gc,phases    ] GC(3) o: Concurrent Process Non-Strong References 12.456ms
+[2024-06-15T10:00:20.815+0800][gc,phases    ] GC(3) o: Concurrent Reset Relocation Set 0.002ms
+[2024-06-15T10:00:20.818+0800][gc,phases    ] GC(3) o: Concurrent Select Relocation Set 2.891ms
+[2024-06-15T10:00:20.818+0800][gc,phases    ] GC(3) o: Pause Relocate Start 0.018ms
+[2024-06-15T10:00:20.819+0800][gc,phases    ] GC(3) o: Concurrent Relocate 0.345ms
+[2024-06-15T10:00:20.833+0800][gc,phases    ] GC(3) o: Concurrent Remap Roots 14.123ms
+[2024-06-15T10:00:20.833+0800][gc,load      ] GC(3) Load: 4.23/3.56/2.89
+[2024-06-15T10:00:20.833+0800][gc,mmu       ] GC(3) MMU: 2ms/97.5%, 5ms/98.6%, 10ms/99.1%, 20ms/99.5%, 50ms/99.7%, 100ms/99.8%
+[2024-06-15T10:00:20.833+0800][gc,metaspace ] GC(3) Metaspace: 35M used, 40M committed, 1088M reserved
+[2024-06-15T10:00:20.834+0800][gc           ] GC(3) Major Collection (Proactive) 320M(2%)->96M(1%) 33.440ms
+[2024-06-15T10:00:25.900+0800][gc,start     ] GC(4) Major Collection (Metadata GC Threshold)
+[2024-06-15T10:00:25.900+0800][gc,task      ] GC(4) Using 2 workers
+[2024-06-15T10:00:25.900+0800][gc,phases    ] GC(4) o: Concurrent Mark 2.567ms
+[2024-06-15T10:00:25.903+0800][gc,phases    ] GC(4) o: Concurrent Mark Continue 0.678ms
+[2024-06-15T10:00:25.903+0800][gc,phases    ] GC(4) o: Concurrent Mark Free 0.008ms
+[2024-06-15T10:00:25.904+0800][gc,phases    ] GC(4) o: Pause Mark End 0.025ms
+[2024-06-15T10:00:25.920+0800][gc,phases    ] GC(4) o: Concurrent Process Non-Strong References 15.891ms
+[2024-06-15T10:00:25.920+0800][gc,phases    ] GC(4) o: Concurrent Reset Relocation Set 0.003ms
+[2024-06-15T10:00:25.924+0800][gc,phases    ] GC(4) o: Concurrent Select Relocation Set 3.456ms
+[2024-06-15T10:00:25.924+0800][gc,phases    ] GC(4) o: Pause Relocate Start 0.022ms
+[2024-06-15T10:00:25.925+0800][gc,phases    ] GC(4) o: Concurrent Relocate 0.567ms
+[2024-06-15T10:00:25.943+0800][gc,phases    ] GC(4) o: Concurrent Remap Roots 17.891ms
+[2024-06-15T10:00:25.943+0800][gc,load      ] GC(4) Load: 4.78/3.89/3.12
+[2024-06-15T10:00:25.943+0800][gc,mmu       ] GC(4) MMU: 2ms/96.8%, 5ms/98.1%, 10ms/98.8%, 20ms/99.3%, 50ms/99.6%, 100ms/99.8%
+[2024-06-15T10:00:25.943+0800][gc,metaspace ] GC(4) Metaspace: 42M used, 48M committed, 1088M reserved
+[2024-06-15T10:00:25.944+0800][gc           ] GC(4) Major Collection (Metadata GC Threshold) 480M(3%)->128M(1%) 44.108ms
+[2024-06-15T10:00:31.000+0800][gc,start     ] GC(5) Major Collection (System.gc())
+[2024-06-15T10:00:31.000+0800][gc,task      ] GC(5) Using 2 workers
+[2024-06-15T10:00:31.000+0800][gc,phases    ] GC(5) o: Concurrent Mark 3.891ms
+[2024-06-15T10:00:31.004+0800][gc,phases    ] GC(5) o: Concurrent Mark Continue 0.912ms
+[2024-06-15T10:00:31.004+0800][gc,phases    ] GC(5) o: Concurrent Mark Free 0.012ms
+[2024-06-15T10:00:31.005+0800][gc,phases    ] GC(5) o: Pause Mark End 0.029ms
+[2024-06-15T10:00:31.024+0800][gc,phases    ] GC(5) o: Concurrent Process Non-Strong References 18.923ms
+[2024-06-15T10:00:31.024+0800][gc,phases    ] GC(5) o: Concurrent Reset Relocation Set 0.004ms
+[2024-06-15T10:00:31.028+0800][gc,phases    ] GC(5) o: Concurrent Select Relocation Set 4.123ms
+[2024-06-15T10:00:31.028+0800][gc,phases    ] GC(5) o: Pause Relocate Start 0.026ms
+[2024-06-15T10:00:31.029+0800][gc,phases    ] GC(5) o: Concurrent Relocate 0.789ms
+[2024-06-15T10:00:31.050+0800][gc,phases    ] GC(5) o: Concurrent Remap Roots 21.345ms
+[2024-06-15T10:00:31.050+0800][gc,load      ] GC(5) Load: 5.12/4.23/3.56
+[2024-06-15T10:00:31.050+0800][gc,mmu       ] GC(5) MMU: 2ms/96.1%, 5ms/97.6%, 10ms/98.4%, 20ms/99.0%, 50ms/99.5%, 100ms/99.7%
+[2024-06-15T10:00:31.050+0800][gc,metaspace ] GC(5) Metaspace: 48M used, 56M committed, 1088M reserved
+[2024-06-15T10:00:31.051+0800][gc           ] GC(5) Major Collection (System.gc()) 640M(4%)->160M(1%) 51.054ms
+[2024-06-15T10:00:36.200+0800][gc,start     ] GC(6) Minor Collection (Allocation Stall)
+[2024-06-15T10:00:36.200+0800][gc,task      ] GC(6) Using 2 workers
+[2024-06-15T10:00:36.200+0800][gc,phases    ] GC(6) y: Pause Mark Start 0.011ms
+[2024-06-15T10:00:36.312+0800][gc,phases    ] GC(6) y: Concurrent Mark 111.456ms
+[2024-06-15T10:00:36.312+0800][gc,phases    ] GC(6) y: Concurrent Mark Continue 0.000ms
+[2024-06-15T10:00:36.312+0800][gc,phases    ] GC(6) y: Concurrent Mark Free 0.003ms
+[2024-06-15T10:00:36.313+0800][gc,phases    ] GC(6) y: Pause Mark End 0.024ms
+[2024-06-15T10:00:36.313+0800][gc,phases    ] GC(6) y: Concurrent Reset Relocation Set 0.020ms
+[2024-06-15T10:00:36.328+0800][gc,phases    ] GC(6) y: Concurrent Select Relocation Set 14.567ms
+[2024-06-15T10:00:36.328+0800][gc,phases    ] GC(6) y: Pause Relocate Start 0.013ms
+[2024-06-15T10:00:36.348+0800][gc,phases    ] GC(6) y: Concurrent Relocate 19.234ms
+[2024-06-15T10:00:36.348+0800][gc,load      ] GC(6) Load: 4.12/3.45/2.78
+[2024-06-15T10:00:36.348+0800][gc,mmu       ] GC(6) MMU: 2ms/97.8%, 5ms/98.9%, 10ms/99.3%, 20ms/99.6%, 50ms/99.8%, 100ms/99.9%
+[2024-06-15T10:00:36.348+0800][gc,metaspace ] GC(6) Metaspace: 52M used, 60M committed, 1088M reserved
+[2024-06-15T10:00:36.349+0800][gc           ] GC(6) Minor Collection (Allocation Stall) 896M(6%)->80M(0%) 158.234ms
+[2024-06-15T10:00:41.500+0800][gc,start     ] GC(7) Major Collection (Allocation Stall)
+[2024-06-15T10:00:41.500+0800][gc,task      ] GC(7) Using 2 workers
+[2024-06-15T10:00:41.500+0800][gc,phases    ] GC(7) o: Concurrent Mark 4.567ms
+[2024-06-15T10:00:41.505+0800][gc,phases    ] GC(7) o: Concurrent Mark Continue 1.123ms
+[2024-06-15T10:00:41.505+0800][gc,phases    ] GC(7) o: Concurrent Mark Free 0.014ms
+[2024-06-15T10:00:41.506+0800][gc,phases    ] GC(7) o: Pause Mark End 0.031ms
+[2024-06-15T10:00:41.528+0800][gc,phases    ] GC(7) o: Concurrent Process Non-Strong References 21.456ms
+[2024-06-15T10:00:41.528+0800][gc,phases    ] GC(7) o: Concurrent Reset Relocation Set 0.005ms
+[2024-06-15T10:00:41.534+0800][gc,phases    ] GC(7) o: Concurrent Select Relocation Set 5.234ms
+[2024-06-15T10:00:41.534+0800][gc,phases    ] GC(7) o: Pause Relocate Start 0.028ms
+[2024-06-15T10:00:41.536+0800][gc,phases    ] GC(7) o: Concurrent Relocate 0.891ms
+[2024-06-15T10:00:41.558+0800][gc,phases    ] GC(7) o: Concurrent Remap Roots 23.567ms
+[2024-06-15T10:00:41.558+0800][gc,load      ] GC(7) Load: 5.45/4.56/3.89
+[2024-06-15T10:00:41.558+0800][gc,mmu       ] GC(7) MMU: 2ms/95.8%, 5ms/97.4%, 10ms/98.2%, 20ms/98.9%, 50ms/99.4%, 100ms/99.6%
+[2024-06-15T10:00:41.558+0800][gc,metaspace ] GC(7) Metaspace: 56M used, 64M committed, 1088M reserved
+[2024-06-15T10:00:41.559+0800][gc           ] GC(7) Major Collection (Allocation Stall) 768M(5%)->192M(1%) 58.912ms

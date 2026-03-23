@@ -1,0 +1,18 @@
+[2024-06-01T12:00:00.000+0800][gc,init     ] Using G1
+[2024-06-01T12:00:00.001+0800][gc,init     ] OpenJDK 64-Bit Server VM (21.0.3+9) for linux-x86_64
+[2024-06-01T12:00:03.100+0800][gc,start    ] GC(0) Pause Young (Normal) (G1 Evacuation Pause)
+[2024-06-01T12:00:03.100+0800][gc,task     ] GC(0) Using 8 workers
+[2024-06-01T12:00:03.105+0800][gc,heap     ] GC(0) Eden regions: 25->0(41)
+[2024-06-01T12:00:03.105+0800][gc,heap     ] GC(0) Survivor regions: 0->2(8)
+[2024-06-01T12:00:03.105+0800][gc,heap     ] GC(0) Old regions: 0->3
+[2024-06-01T12:00:03.105+0800][gc,heap     ] GC(0) Humongous regions: 0->0
+[2024-06-01T12:00:03.105+0800][gc,metaspace] GC(0) Metaspace: 5120K(5632K)->5120K(5632K) committed 5888K
+[2024-06-01T12:00:03.105+0800][gc          ] GC(0) Pause Young (Normal) (G1 Evacuation Pause) 100M->50M(512M) 5.123ms
+[2024-06-01T12:00:05.200+0800][gc,start    ] GC(1) Pause Young (Normal) (G1 Evacuation Pause)
+[2024-06-01T12:00:05.200+0800][gc,task     ] GC(1) Using 8 workers
+[2024-06-01T12:00:05.205+0800][gc,heap     ] GC(1) Eden regions: 20->0(41)
+[2024-06-01T12:00:05.205+0800][gc,heap     ] GC(1) Survivor regions: 2->2(8)
+[2024-06-01T12:00:05.205+0800][gc,heap     ] GC(1) Old regions: 3->4
+[2024-06-01T12:00:05.205+0800][gc,heap     ] GC(1) Humongous regions: 0->0
+[2024-06-01T12:00:05.205+0800][gc,metaspace] GC(1) Metaspace: 5132K(5632K)->5132K(5632K) committed 5888K
+[2024-06-01T12:00:05.205+0800][gc          ] GC(1) Pause Young (Normal) (G1 Evacuation Pause) 85M->55M(512M) 4.567ms

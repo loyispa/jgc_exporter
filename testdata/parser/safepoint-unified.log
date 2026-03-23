@@ -1,0 +1,8 @@
+[2024-03-15T10:00:00.009+0800][info][gc] Using G1
+[2024-03-15T10:00:00.009+0800][info][gc,init] Version: 17.0.8+7-LTS (release)
+[2024-03-15T10:00:00.100+0800][info][gc,start     ] GC(0) Pause Young (Normal) (G1 Evacuation Pause)
+[2024-03-15T10:00:00.108+0800][info][gc           ] GC(0) Pause Young (Normal) (G1 Evacuation Pause) 12M->1M(30M) 8.923ms
+[2024-03-15T10:00:00.109+0800][info][safepoint    ] Safepoint "G1CollectForAllocation", Time since last: 123456789 ns, Reaching safepoint: 12345 ns, Cleanup: 1234 ns, At safepoint: 8923456 ns, Total: 8937035 ns
+[2024-03-15T10:00:01.200+0800][info][gc,start     ] GC(1) Pause Young (Normal) (G1 Evacuation Pause)
+[2024-03-15T10:00:01.205+0800][info][gc           ] GC(1) Pause Young (Normal) (G1 Evacuation Pause) 12M->3M(30M) 5.432ms
+[2024-03-15T10:00:01.206+0800][info][safepoint    ] Safepoint "G1CollectForAllocation", Time since last: 200000000 ns, Reaching safepoint: 5678 ns, Cleanup: 890 ns, At safepoint: 5432100 ns, Total: 5439668 ns

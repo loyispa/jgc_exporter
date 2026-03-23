@@ -1,0 +1,148 @@
+[2024-01-03T16:00:00.123+0800][gc,init] Initializing The Z Garbage Collector
+[2024-01-03T16:00:00.123+0800][gc,init] Version: 17.0.9+11-LTS (release)
+[2024-01-03T16:00:00.123+0800][gc,init] NUMA Support: Disabled
+[2024-01-03T16:00:00.123+0800][gc,init] CPUs: 8 total, 8 available
+[2024-01-03T16:00:00.123+0800][gc,init] Memory: 16384M
+[2024-01-03T16:00:00.123+0800][gc,init] Large Page Support: Disabled
+[2024-01-03T16:00:00.123+0800][gc,init] GC Workers: 2 (dynamic)
+[2024-01-03T16:00:00.124+0800][gc     ] Using The Z Garbage Collector
+[2024-01-03T16:00:05.100+0800][gc,start    ] GC(0) Garbage Collection (Warmup)
+[2024-01-03T16:00:05.100+0800][gc,task     ] GC(0) Using 2 workers
+[2024-01-03T16:00:05.101+0800][gc,phases   ] GC(0) Pause Mark Start 0.028ms
+[2024-01-03T16:00:05.128+0800][gc,phases   ] GC(0) Concurrent Mark 26.542ms
+[2024-01-03T16:00:05.128+0800][gc,phases   ] GC(0) Pause Mark End 0.011ms
+[2024-01-03T16:00:05.128+0800][gc,phases   ] GC(0) Concurrent Mark Free 0.002ms
+[2024-01-03T16:00:05.129+0800][gc,phases   ] GC(0) Concurrent Process Non-Strong References 0.385ms
+[2024-01-03T16:00:05.129+0800][gc,phases   ] GC(0) Concurrent Reset Relocation Set 0.000ms
+[2024-01-03T16:00:05.142+0800][gc,phases   ] GC(0) Concurrent Select Relocation Set 12.891ms
+[2024-01-03T16:00:05.142+0800][gc,phases   ] GC(0) Pause Relocate Start 0.008ms
+[2024-01-03T16:00:05.142+0800][gc,phases   ] GC(0) Concurrent Relocate 0.042ms
+[2024-01-03T16:00:05.142+0800][gc,load     ] GC(0) Load: 3.45/2.62/2.18
+[2024-01-03T16:00:05.142+0800][gc,mmu      ] GC(0) MMU: 2ms/98.6%, 5ms/99.2%, 10ms/99.5%, 20ms/99.7%, 50ms/99.9%, 100ms/99.9%
+[2024-01-03T16:00:05.142+0800][gc,metaspace] GC(0) Metaspace: 52M used, 56M committed, 1088M reserved
+[2024-01-03T16:00:05.142+0800][gc,heap     ] GC(0) Min Capacity: 8M(0%)
+[2024-01-03T16:00:05.142+0800][gc,heap     ] GC(0) Max Capacity: 8192M(100%)
+[2024-01-03T16:00:05.143+0800][gc,heap     ] GC(0)                Mark Start          Mark End        Relocate Start      Relocate End           High               Low
+[2024-01-03T16:00:05.143+0800][gc,heap     ] GC(0)  Capacity:     8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)
+[2024-01-03T16:00:05.143+0800][gc,heap     ] GC(0)      Used:      820M (10%)          820M (10%)          820M (10%)           12M (0%)           820M (10%)           12M (0%)
+[2024-01-03T16:00:05.143+0800][gc,heap     ] GC(0)      Free:     7372M (90%)         7372M (90%)         7372M (90%)         8180M (100%)        8180M (100%)        7372M (90%)
+[2024-01-03T16:00:10.250+0800][gc,start    ] GC(1) Garbage Collection (Allocation Rate)
+[2024-01-03T16:00:10.250+0800][gc,task     ] GC(1) Using 2 workers
+[2024-01-03T16:00:10.251+0800][gc,phases   ] GC(1) Pause Mark Start 0.041ms
+[2024-01-03T16:00:10.295+0800][gc,phases   ] GC(1) Concurrent Mark 43.782ms
+[2024-01-03T16:00:10.295+0800][gc,phases   ] GC(1) Pause Mark End 0.016ms
+[2024-01-03T16:00:10.295+0800][gc,phases   ] GC(1) Concurrent Mark Free 0.003ms
+[2024-01-03T16:00:10.296+0800][gc,phases   ] GC(1) Concurrent Process Non-Strong References 0.678ms
+[2024-01-03T16:00:10.296+0800][gc,phases   ] GC(1) Concurrent Reset Relocation Set 0.001ms
+[2024-01-03T16:00:10.312+0800][gc,phases   ] GC(1) Concurrent Select Relocation Set 15.234ms
+[2024-01-03T16:00:10.312+0800][gc,phases   ] GC(1) Pause Relocate Start 0.011ms
+[2024-01-03T16:00:10.313+0800][gc,phases   ] GC(1) Concurrent Relocate 0.098ms
+[2024-01-03T16:00:10.313+0800][gc,load     ] GC(1) Load: 4.28/3.35/2.94
+[2024-01-03T16:00:10.313+0800][gc,mmu      ] GC(1) MMU: 2ms/97.2%, 5ms/98.5%, 10ms/99.0%, 20ms/99.4%, 50ms/99.7%, 100ms/99.8%
+[2024-01-03T16:00:10.313+0800][gc,metaspace] GC(1) Metaspace: 58M used, 64M committed, 1088M reserved
+[2024-01-03T16:00:10.313+0800][gc,heap     ] GC(1) Min Capacity: 1024M(12%)
+[2024-01-03T16:00:10.313+0800][gc,heap     ] GC(1) Max Capacity: 8192M(100%)
+[2024-01-03T16:00:10.314+0800][gc,heap     ] GC(1)                Mark Start          Mark End        Relocate Start      Relocate End           High               Low
+[2024-01-03T16:00:10.314+0800][gc,heap     ] GC(1)  Capacity:     8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)
+[2024-01-03T16:00:10.314+0800][gc,heap     ] GC(1)      Used:     1802M (22%)         1802M (22%)         1802M (22%)           28M (0%)          1802M (22%)           28M (0%)
+[2024-01-03T16:00:10.314+0800][gc,heap     ] GC(1)      Free:     6390M (78%)         6390M (78%)         6390M (78%)         8164M (100%)        8164M (100%)        6390M (78%)
+[2024-01-03T16:00:15.420+0800][gc,start    ] GC(2) Garbage Collection (System.gc())
+[2024-01-03T16:00:15.420+0800][gc,task     ] GC(2) Using 2 workers
+[2024-01-03T16:00:15.421+0800][gc,phases   ] GC(2) Pause Mark Start 0.055ms
+[2024-01-03T16:00:15.478+0800][gc,phases   ] GC(2) Concurrent Mark 56.234ms
+[2024-01-03T16:00:15.478+0800][gc,phases   ] GC(2) Pause Mark End 0.021ms
+[2024-01-03T16:00:15.478+0800][gc,phases   ] GC(2) Concurrent Mark Free 0.005ms
+[2024-01-03T16:00:15.479+0800][gc,phases   ] GC(2) Concurrent Process Non-Strong References 1.245ms
+[2024-01-03T16:00:15.479+0800][gc,phases   ] GC(2) Concurrent Reset Relocation Set 0.002ms
+[2024-01-03T16:00:15.502+0800][gc,phases   ] GC(2) Concurrent Select Relocation Set 22.567ms
+[2024-01-03T16:00:15.502+0800][gc,phases   ] GC(2) Pause Relocate Start 0.014ms
+[2024-01-03T16:00:15.503+0800][gc,phases   ] GC(2) Concurrent Relocate 0.289ms
+[2024-01-03T16:00:15.503+0800][gc,load     ] GC(2) Load: 5.67/4.52/3.98
+[2024-01-03T16:00:15.503+0800][gc,mmu      ] GC(2) MMU: 2ms/95.2%, 5ms/97.1%, 10ms/98.0%, 20ms/98.8%, 50ms/99.3%, 100ms/99.6%
+[2024-01-03T16:00:15.503+0800][gc,metaspace] GC(2) Metaspace: 68M used, 76M committed, 1088M reserved
+[2024-01-03T16:00:15.503+0800][gc,heap     ] GC(2) Min Capacity: 2048M(25%)
+[2024-01-03T16:00:15.503+0800][gc,heap     ] GC(2) Max Capacity: 8192M(100%)
+[2024-01-03T16:00:15.504+0800][gc,heap     ] GC(2)                Mark Start          Mark End        Relocate Start      Relocate End           High               Low
+[2024-01-03T16:00:15.504+0800][gc,heap     ] GC(2)  Capacity:     8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)
+[2024-01-03T16:00:15.504+0800][gc,heap     ] GC(2)      Used:     2867M (35%)         2867M (35%)         2867M (35%)           56M (1%)          2867M (35%)           56M (1%)
+[2024-01-03T16:00:15.504+0800][gc,heap     ] GC(2)      Free:     5325M (65%)         5325M (65%)         5325M (65%)         8136M (99%)        8136M (99%)        5325M (65%)
+[2024-01-03T16:00:20.600+0800][gc,start    ] GC(3) Garbage Collection (Proactive)
+[2024-01-03T16:00:20.600+0800][gc,task     ] GC(3) Using 2 workers
+[2024-01-03T16:00:20.601+0800][gc,phases   ] GC(3) Pause Mark Start 0.039ms
+[2024-01-03T16:00:20.648+0800][gc,phases   ] GC(3) Concurrent Mark 46.234ms
+[2024-01-03T16:00:20.648+0800][gc,phases   ] GC(3) Pause Mark End 0.017ms
+[2024-01-03T16:00:20.648+0800][gc,phases   ] GC(3) Concurrent Mark Free 0.004ms
+[2024-01-03T16:00:20.649+0800][gc,phases   ] GC(3) Concurrent Process Non-Strong References 0.934ms
+[2024-01-03T16:00:20.649+0800][gc,phases   ] GC(3) Concurrent Reset Relocation Set 0.002ms
+[2024-01-03T16:00:20.668+0800][gc,phases   ] GC(3) Concurrent Select Relocation Set 18.567ms
+[2024-01-03T16:00:20.668+0800][gc,phases   ] GC(3) Pause Relocate Start 0.013ms
+[2024-01-03T16:00:20.669+0800][gc,phases   ] GC(3) Concurrent Relocate 0.198ms
+[2024-01-03T16:00:20.669+0800][gc,load     ] GC(3) Load: 5.12/4.28/3.76
+[2024-01-03T16:00:20.669+0800][gc,mmu      ] GC(3) MMU: 2ms/95.8%, 5ms/97.4%, 10ms/98.2%, 20ms/99.0%, 50ms/99.5%, 100ms/99.7%
+[2024-01-03T16:00:20.669+0800][gc,metaspace] GC(3) Metaspace: 72M used, 80M committed, 1088M reserved
+[2024-01-03T16:00:20.669+0800][gc,heap     ] GC(3) Min Capacity: 2560M(31%)
+[2024-01-03T16:00:20.669+0800][gc,heap     ] GC(3) Max Capacity: 8192M(100%)
+[2024-01-03T16:00:20.670+0800][gc,heap     ] GC(3)                Mark Start          Mark End        Relocate Start      Relocate End           High               Low
+[2024-01-03T16:00:20.670+0800][gc,heap     ] GC(3)  Capacity:     8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)
+[2024-01-03T16:00:20.670+0800][gc,heap     ] GC(3)      Used:     3200M (39%)         3200M (39%)         3200M (39%)           64M (1%)          3200M (39%)           64M (1%)
+[2024-01-03T16:00:20.670+0800][gc,heap     ] GC(3)      Free:     4992M (61%)         4992M (61%)         4992M (61%)         8128M (99%)        8128M (99%)        4992M (61%)
+[2024-01-03T16:00:25.750+0800][gc,start    ] GC(4) Garbage Collection (Timer)
+[2024-01-03T16:00:25.750+0800][gc,task     ] GC(4) Using 2 workers
+[2024-01-03T16:00:25.751+0800][gc,phases   ] GC(4) Pause Mark Start 0.044ms
+[2024-01-03T16:00:25.802+0800][gc,phases   ] GC(4) Concurrent Mark 50.891ms
+[2024-01-03T16:00:25.802+0800][gc,phases   ] GC(4) Pause Mark End 0.020ms
+[2024-01-03T16:00:25.802+0800][gc,phases   ] GC(4) Concurrent Mark Free 0.005ms
+[2024-01-03T16:00:25.803+0800][gc,phases   ] GC(4) Concurrent Process Non-Strong References 1.156ms
+[2024-01-03T16:00:25.803+0800][gc,phases   ] GC(4) Concurrent Reset Relocation Set 0.002ms
+[2024-01-03T16:00:25.828+0800][gc,phases   ] GC(4) Concurrent Select Relocation Set 24.234ms
+[2024-01-03T16:00:25.828+0800][gc,phases   ] GC(4) Pause Relocate Start 0.015ms
+[2024-01-03T16:00:25.829+0800][gc,phases   ] GC(4) Concurrent Relocate 0.267ms
+[2024-01-03T16:00:25.829+0800][gc,load     ] GC(4) Load: 5.45/4.56/3.98
+[2024-01-03T16:00:25.829+0800][gc,mmu      ] GC(4) MMU: 2ms/95.2%, 5ms/97.1%, 10ms/98.0%, 20ms/98.7%, 50ms/99.3%, 100ms/99.6%
+[2024-01-03T16:00:25.829+0800][gc,metaspace] GC(4) Metaspace: 76M used, 84M committed, 1088M reserved
+[2024-01-03T16:00:25.829+0800][gc,heap     ] GC(4) Min Capacity: 3072M(37%)
+[2024-01-03T16:00:25.829+0800][gc,heap     ] GC(4) Max Capacity: 8192M(100%)
+[2024-01-03T16:00:25.830+0800][gc,heap     ] GC(4)                Mark Start          Mark End        Relocate Start      Relocate End           High               Low
+[2024-01-03T16:00:25.830+0800][gc,heap     ] GC(4)  Capacity:     8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)
+[2024-01-03T16:00:25.830+0800][gc,heap     ] GC(4)      Used:     3584M (44%)         3584M (44%)         3584M (44%)           80M (1%)          3584M (44%)           80M (1%)
+[2024-01-03T16:00:25.830+0800][gc,heap     ] GC(4)      Free:     4608M (56%)         4608M (56%)         4608M (56%)         8112M (99%)        8112M (99%)        4608M (56%)
+[2024-01-03T16:00:30.900+0800][gc,start    ] GC(5) Garbage Collection (Allocation Stall)
+[2024-01-03T16:00:30.900+0800][gc,task     ] GC(5) Using 2 workers
+[2024-01-03T16:00:30.901+0800][gc,phases   ] GC(5) Pause Mark Start 0.058ms
+[2024-01-03T16:00:30.962+0800][gc,phases   ] GC(5) Concurrent Mark 60.234ms
+[2024-01-03T16:00:30.962+0800][gc,phases   ] GC(5) Pause Mark End 0.023ms
+[2024-01-03T16:00:30.962+0800][gc,phases   ] GC(5) Concurrent Mark Free 0.006ms
+[2024-01-03T16:00:30.963+0800][gc,phases   ] GC(5) Concurrent Process Non-Strong References 1.345ms
+[2024-01-03T16:00:30.963+0800][gc,phases   ] GC(5) Concurrent Reset Relocation Set 0.003ms
+[2024-01-03T16:00:30.992+0800][gc,phases   ] GC(5) Concurrent Select Relocation Set 28.567ms
+[2024-01-03T16:00:30.992+0800][gc,phases   ] GC(5) Pause Relocate Start 0.017ms
+[2024-01-03T16:00:30.993+0800][gc,phases   ] GC(5) Concurrent Relocate 0.356ms
+[2024-01-03T16:00:30.993+0800][gc,load     ] GC(5) Load: 6.12/5.23/4.56
+[2024-01-03T16:00:30.993+0800][gc,mmu      ] GC(5) MMU: 2ms/94.2%, 5ms/96.5%, 10ms/97.8%, 20ms/98.5%, 50ms/99.2%, 100ms/99.5%
+[2024-01-03T16:00:30.993+0800][gc,metaspace] GC(5) Metaspace: 80M used, 88M committed, 1088M reserved
+[2024-01-03T16:00:30.993+0800][gc,heap     ] GC(5) Min Capacity: 4096M(50%)
+[2024-01-03T16:00:30.993+0800][gc,heap     ] GC(5) Max Capacity: 8192M(100%)
+[2024-01-03T16:00:30.994+0800][gc,heap     ] GC(5)                Mark Start          Mark End        Relocate Start      Relocate End           High               Low
+[2024-01-03T16:00:30.994+0800][gc,heap     ] GC(5)  Capacity:     8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)
+[2024-01-03T16:00:30.994+0800][gc,heap     ] GC(5)      Used:     4200M (51%)         4200M (51%)         4200M (51%)          120M (1%)          4200M (51%)          120M (1%)
+[2024-01-03T16:00:30.994+0800][gc,heap     ] GC(5)      Free:     3992M (49%)         3992M (49%)         3992M (49%)         8072M (99%)        8072M (99%)        3992M (49%)
+[2024-01-03T16:00:36.050+0800][gc,start    ] GC(6) Garbage Collection (Metadata GC Threshold)
+[2024-01-03T16:00:36.050+0800][gc,task     ] GC(6) Using 2 workers
+[2024-01-03T16:00:36.051+0800][gc,phases   ] GC(6) Pause Mark Start 0.049ms
+[2024-01-03T16:00:36.108+0800][gc,phases   ] GC(6) Concurrent Mark 56.234ms
+[2024-01-03T16:00:36.108+0800][gc,phases   ] GC(6) Pause Mark End 0.020ms
+[2024-01-03T16:00:36.108+0800][gc,phases   ] GC(6) Concurrent Mark Free 0.005ms
+[2024-01-03T16:00:36.109+0800][gc,phases   ] GC(6) Concurrent Process Non-Strong References 1.234ms
+[2024-01-03T16:00:36.109+0800][gc,phases   ] GC(6) Concurrent Reset Relocation Set 0.002ms
+[2024-01-03T16:00:36.134+0800][gc,phases   ] GC(6) Concurrent Select Relocation Set 24.891ms
+[2024-01-03T16:00:36.134+0800][gc,phases   ] GC(6) Pause Relocate Start 0.016ms
+[2024-01-03T16:00:36.135+0800][gc,phases   ] GC(6) Concurrent Relocate 0.312ms
+[2024-01-03T16:00:36.135+0800][gc,load     ] GC(6) Load: 5.89/4.78/4.12
+[2024-01-03T16:00:36.135+0800][gc,mmu      ] GC(6) MMU: 2ms/94.8%, 5ms/96.9%, 10ms/97.8%, 20ms/98.6%, 50ms/99.2%, 100ms/99.6%
+[2024-01-03T16:00:36.135+0800][gc,metaspace] GC(6) Metaspace: 88M used, 96M committed, 1088M reserved
+[2024-01-03T16:00:36.135+0800][gc,heap     ] GC(6) Min Capacity: 3584M(44%)
+[2024-01-03T16:00:36.135+0800][gc,heap     ] GC(6) Max Capacity: 8192M(100%)
+[2024-01-03T16:00:36.136+0800][gc,heap     ] GC(6)                Mark Start          Mark End        Relocate Start      Relocate End           High               Low
+[2024-01-03T16:00:36.136+0800][gc,heap     ] GC(6)  Capacity:     8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)        8192M (100%)
+[2024-01-03T16:00:36.136+0800][gc,heap     ] GC(6)      Used:     4480M (55%)         4480M (55%)         4480M (55%)          136M (2%)          4480M (55%)          136M (2%)
+[2024-01-03T16:00:36.136+0800][gc,heap     ] GC(6)      Free:     3712M (45%)         3712M (45%)         3712M (45%)         8056M (98%)        8056M (98%)        3712M (45%)

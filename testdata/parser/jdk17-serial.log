@@ -1,0 +1,14 @@
+[2024-03-15T10:00:00.008+0800][info ][gc     ] Using Serial
+[2024-03-15T10:00:00.008+0800][info ][gc,init] Version: 17.0.11+9 (release)
+[2024-03-15T10:00:00.127+0800][info ][gc,start       ] GC(0) Pause Full (System.gc())
+[2024-03-15T10:00:00.138+0800][info ][gc,heap        ] GC(0) DefNew: 3147K(9792K)->0K(9920K) Eden: 3147K(8704K)->0K(8832K) From: 0K(1088K)->0K(1088K)
+[2024-03-15T10:00:00.138+0800][info ][gc,heap        ] GC(0) Tenured: 1073K(21888K)->2065K(21888K)
+[2024-03-15T10:00:00.138+0800][info ][gc,metaspace   ] GC(0) Metaspace: 342K(512K)->342K(512K)
+[2024-03-15T10:00:00.138+0800][info ][gc             ] GC(0) Pause Full (System.gc()) 4M->2M(31M) 11.316ms
+[2024-03-15T10:00:00.138+0800][info ][gc,cpu         ] GC(0) User=0.01s Sys=0.00s Real=0.01s
+[2024-03-15T10:00:08.638+0800][info ][gc,start       ] GC(1) Pause Young (Allocation Failure)
+[2024-03-15T10:00:08.639+0800][info ][gc,heap        ] GC(1) DefNew: 8704K(9920K)->542K(9920K) Eden: 8704K(8832K)->0K(8832K) From: 0K(1088K)->542K(1088K)
+[2024-03-15T10:00:08.639+0800][info ][gc,heap        ] GC(1) Tenured: 2065K(21888K)->2065K(21888K)
+[2024-03-15T10:00:08.639+0800][info ][gc,metaspace   ] GC(1) Metaspace: 9605K(9856K)->9605K(9856K)
+[2024-03-15T10:00:08.639+0800][info ][gc             ] GC(1) Pause Young (Allocation Failure) 10M->2M(31M) 0.886ms
+[2024-03-15T10:00:08.639+0800][info ][gc,cpu         ] GC(1) User=0.00s Sys=0.00s Real=0.00s

@@ -1,0 +1,10 @@
+OpenJDK 64-Bit Server VM (25.322-b06)
+CommandLine flags: -XX:+UseG1GC -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCDetails -XX:+PrintGCDateStamps
+2024-03-15T10:00:00.100+0800: 0.100: [GC pause (G1 Evacuation Pause) (young), 0.0089230 secs]
+   [Eden: 12.0M(12.0M)->0.0B(11.0M) Survivors: 0.0B->1024.0K Heap: 12.0M(30.0M)->1606.7K(30.0M)]
+ [Times: user=0.02 sys=0.00, real=0.01 secs]
+Total time for which application threads were stopped: 0.0123456 seconds, Stopping threads took: 0.0001234 seconds
+2024-03-15T10:00:01.200+0800: 1.200: [GC pause (G1 Evacuation Pause) (young), 0.0054321 secs]
+   [Eden: 11.0M(11.0M)->0.0B(10.0M) Survivors: 1024.0K->2048.0K Heap: 12.6M(30.0M)->3.2M(30.0M)]
+ [Times: user=0.01 sys=0.00, real=0.01 secs]
+Total time for which application threads were stopped: 0.0067890 seconds, Stopping threads took: 0.0000567 seconds

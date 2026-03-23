@@ -1,0 +1,13 @@
+OpenJDK 64-Bit Server VM (25.322-b06) for bsd-aarch64 JRE (1.8.0_322-b06), built on Jan 19 2022 05:50:08 by "re" with gcc Apple LLVM 12.0.0 (clang-1200.0.32.28)
+Memory: 16k page, physical 16777216k(69472k free)
+
+/proc/meminfo:
+
+CommandLine flags: -XX:InitialHeapSize=268435456 -XX:MaxHeapSize=268435456 -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseG1GC
+2024-01-02T18:35:11.712+0800: 1.083: [GC pause (G1 Evacuation Pause) (young), 0.0023410 secs]
+2024-01-02T18:35:11.850+0800: 1.221: [GC pause (G1 Evacuation Pause) (young), 0.0031256 secs]
+2024-01-02T18:35:12.100+0800: 1.471: [GC pause (G1 Evacuation Pause) (young) (initial-mark), 0.0045678 secs]
+2024-01-02T18:35:12.300+0800: 1.671: [GC pause (G1 Evacuation Pause) (mixed), 0.0052134 secs]
+2024-01-02T18:35:12.600+0800: 1.971: [GC pause (G1 Humongous Allocation) (young) (to-space exhausted), 0.0089012 secs]
+2024-01-02T18:35:13.000+0800: 2.371: [Full GC (System.gc())  204800K->51200K(262144K), 0.0921345 secs]
+2024-01-02T18:35:13.500+0800: 2.871: [Full GC (Allocation Failure)  245760K->61440K(262144K), 0.1234567 secs]
