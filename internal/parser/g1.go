@@ -10,6 +10,8 @@ type G1Parser struct {
 	handler      EventHandler
 	unified      bool
 	currentEvent *GCEvent
+	// partialByGC holds unified [gc,heap] lines that often appear before the Pause summary line for the same GC id.
+	partialByGC map[string]*GCEvent
 }
 
 func NewG1Parser(unified bool) *G1Parser {
@@ -92,6 +94,7 @@ func (p *G1Parser) emitPending() {
 		p.handler.Handle(p.currentEvent)
 		p.currentEvent = nil
 	}
+	p.partialByGC = nil
 }
 
 func (p *G1Parser) feedPreUnified(line string) {
@@ -315,13 +318,15 @@ var unifiedGCPauseHeapRe = regexp.MustCompile(
 // Pause without heap: GC(N) Pause ... Dms (fallback)
 var unifiedGCPauseRe = regexp.MustCompile(`GC\((\d+)\)\s+Pause\s+(.+?)\s+([\d.]+)ms`)
 var unifiedGCConcRe = regexp.MustCompile(`GC\((\d+)\)\s+Concurrent\s+(.+?)\s+([\d.]+)ms`)
-var unifiedHeapRe = regexp.MustCompile(`GC\(\d+\)\s+Heap\s+.*?(\d+[KMGB])\((\d+[KMGB])\)->(\d+[KMGB])\((\d+[KMGB])\)`)
-var unifiedEdenRe = regexp.MustCompile(`GC\(\d+\)\s+Eden regions:\s*(\d+)->(\d+)\((\d+)\)`)
-var unifiedSurvivorRe = regexp.MustCompile(`GC\(\d+\)\s+Survivor regions:\s*(\d+)->(\d+)\((\d+)\)`)
-var unifiedOldRe = regexp.MustCompile(`GC\(\d+\)\s+Old regions:\s*(\d+)->(\d+)`)
-var unifiedHumongousRe = regexp.MustCompile(`GC\(\d+\)\s+Humongous regions:\s*(\d+)->(\d+)`)
-var unifiedArchiveRe = regexp.MustCompile(`GC\(\d+\)\s+Archive regions:\s*(\d+)->(\d+)\((\d+)\)`)
-var unifiedMetaRe = regexp.MustCompile(`GC\(\d+\)\s+Metaspace:\s*(\d+[KMGB]?).*->(\d+[KMGB]?).*\((\d+[KMGB]?)\)`)
+// unifiedHeapRe: optional [gc,heap] GC(N) Heap line (may appear before Pause in some logs)
+var unifiedHeapRe = regexp.MustCompile(
+	`GC\((\d+)\)\s+Heap\s+(\d+[KMGB])\((\d+[KMGB])\)->(\d+[KMGB])\((\d+[KMGB])\)`)
+var unifiedEdenRe = regexp.MustCompile(`GC\((\d+)\)\s+Eden regions:\s*(\d+)->(\d+)\((\d+)\)`)
+var unifiedSurvivorRe = regexp.MustCompile(`GC\((\d+)\)\s+Survivor regions:\s*(\d+)->(\d+)\((\d+)\)`)
+var unifiedOldRe = regexp.MustCompile(`GC\((\d+)\)\s+Old regions:\s*(\d+)->(\d+)`)
+var unifiedHumongousRe = regexp.MustCompile(`GC\((\d+)\)\s+Humongous regions:\s*(\d+)->(\d+)`)
+var unifiedArchiveRe = regexp.MustCompile(`GC\((\d+)\)\s+Archive regions:\s*(\d+)->(\d+)\((\d+)\)`)
+var unifiedMetaRe = regexp.MustCompile(`GC\((\d+)\)\s+Metaspace:\s*(\d+[KMGB]?).*->(\d+[KMGB]?).*\((\d+[KMGB]?)\)`)
 
 func (p *G1Parser) feedUnified(line string) {
 	if !strings.Contains(line, "][gc") {
@@ -329,6 +334,11 @@ func (p *G1Parser) feedUnified(line string) {
 	}
 
 	ts, _ := parseUnifiedTimestamp(line)
+
+	// [gc,heap] lines usually appear *before* the Pause summary line; buffer by GC id first.
+	if p.feedUnifiedHeapDetails(line) {
+		return
+	}
 
 	// Pause with heap summary: GC(N) Pause ... XM->YM(ZM) Dms
 	if m := unifiedGCPauseHeapRe.FindStringSubmatch(line); len(m) > 0 {
@@ -345,6 +355,7 @@ func (p *G1Parser) feedUnified(line string) {
 			HeapTotalKB:  parseSizeKB(m[5]),
 			Duration:     parseFloat(m[6]) / 1000.0,
 		}
+		p.mergePartialInto(ev, m[1])
 		p.currentEvent = ev
 		return
 	}
@@ -361,6 +372,7 @@ func (p *G1Parser) feedUnified(line string) {
 			Category:  classifyUnifiedG1Pause(m[2]),
 			Duration:  parseFloat(m[3]) / 1000.0,
 		}
+		p.mergePartialInto(ev, m[1])
 		p.currentEvent = ev
 		return
 	}
@@ -377,43 +389,105 @@ func (p *G1Parser) feedUnified(line string) {
 		p.handler.Handle(ev)
 		return
 	}
+}
 
-	// Detail lines for current pause
-	if p.currentEvent != nil {
-		if m := unifiedHeapRe.FindStringSubmatch(line); len(m) > 0 {
-			p.currentEvent.HeapBeforeKB = parseSizeKB(m[1])
-			p.currentEvent.HeapTotalKB = parseSizeKB(m[2])
-			p.currentEvent.HeapAfterKB = parseSizeKB(m[3])
-		}
-		if m := unifiedMetaRe.FindStringSubmatch(line); len(m) > 0 {
-			p.currentEvent.MetaBeforeKB = parseSizeKB(m[1])
-			p.currentEvent.MetaAfterKB = parseSizeKB(m[2])
-			p.currentEvent.MetaTotalKB = parseSizeKB(m[3])
-		}
-		if m := unifiedEdenRe.FindStringSubmatch(line); len(m) > 0 {
-			p.currentEvent.G1EdenRegionBefore = parseInt(m[1])
-			p.currentEvent.G1EdenRegionAfter = parseInt(m[2])
-			p.currentEvent.G1EdenRegionAssign = parseInt(m[3])
-		}
-		if m := unifiedSurvivorRe.FindStringSubmatch(line); len(m) > 0 {
-			p.currentEvent.G1SurvivorRegionBefore = parseInt(m[1])
-			p.currentEvent.G1SurvivorRegionAfter = parseInt(m[2])
-			p.currentEvent.G1SurvivorRegionAssign = parseInt(m[3])
-		}
-		if m := unifiedOldRe.FindStringSubmatch(line); len(m) > 0 {
-			p.currentEvent.G1OldRegionBefore = parseInt(m[1])
-			p.currentEvent.G1OldRegionAfter = parseInt(m[2])
-		}
-		if m := unifiedHumongousRe.FindStringSubmatch(line); len(m) > 0 {
-			p.currentEvent.G1HumongousRegionBefore = parseInt(m[1])
-			p.currentEvent.G1HumongousRegionAfter = parseInt(m[2])
-		}
-		if m := unifiedArchiveRe.FindStringSubmatch(line); len(m) > 0 {
-			p.currentEvent.G1ArchiveRegionBefore = parseInt(m[1])
-			p.currentEvent.G1ArchiveRegionAfter = parseInt(m[2])
-			p.currentEvent.G1ArchiveRegionAssign = parseInt(m[3])
-		}
+func (p *G1Parser) getOrCreatePartial(id string) *GCEvent {
+	if p.partialByGC == nil {
+		p.partialByGC = make(map[string]*GCEvent)
 	}
+	if ev, ok := p.partialByGC[id]; ok {
+		return ev
+	}
+	ev := &GCEvent{GCType: GCTypeG1}
+	p.partialByGC[id] = ev
+	return ev
+}
+
+func (p *G1Parser) mergePartialInto(dst *GCEvent, gcID string) {
+	src := p.partialByGC[gcID]
+	delete(p.partialByGC, gcID)
+	if src == nil {
+		return
+	}
+	mergeUnifiedPartialFields(dst, src)
+}
+
+func mergeUnifiedPartialFields(dst, src *GCEvent) {
+	dst.G1EdenRegionBefore = src.G1EdenRegionBefore
+	dst.G1EdenRegionAfter = src.G1EdenRegionAfter
+	dst.G1EdenRegionAssign = src.G1EdenRegionAssign
+	dst.G1SurvivorRegionBefore = src.G1SurvivorRegionBefore
+	dst.G1SurvivorRegionAfter = src.G1SurvivorRegionAfter
+	dst.G1SurvivorRegionAssign = src.G1SurvivorRegionAssign
+	dst.G1OldRegionBefore = src.G1OldRegionBefore
+	dst.G1OldRegionAfter = src.G1OldRegionAfter
+	dst.G1HumongousRegionBefore = src.G1HumongousRegionBefore
+	dst.G1HumongousRegionAfter = src.G1HumongousRegionAfter
+	dst.G1ArchiveRegionBefore = src.G1ArchiveRegionBefore
+	dst.G1ArchiveRegionAfter = src.G1ArchiveRegionAfter
+	dst.G1ArchiveRegionAssign = src.G1ArchiveRegionAssign
+	if src.MetaBeforeKB > 0 || src.MetaAfterKB > 0 {
+		dst.MetaBeforeKB = src.MetaBeforeKB
+		dst.MetaAfterKB = src.MetaAfterKB
+		dst.MetaTotalKB = src.MetaTotalKB
+	}
+	// Optional standalone Heap line when pause summary did not carry sizes
+	if dst.HeapBeforeKB == 0 && src.HeapBeforeKB > 0 {
+		dst.HeapBeforeKB = src.HeapBeforeKB
+		dst.HeapTotalKB = src.HeapTotalKB
+		dst.HeapAfterKB = src.HeapAfterKB
+	}
+}
+
+func (p *G1Parser) feedUnifiedHeapDetails(line string) bool {
+	if m := unifiedEdenRe.FindStringSubmatch(line); len(m) > 0 {
+		s := p.getOrCreatePartial(m[1])
+		s.G1EdenRegionBefore = parseInt(m[2])
+		s.G1EdenRegionAfter = parseInt(m[3])
+		s.G1EdenRegionAssign = parseInt(m[4])
+		return true
+	}
+	if m := unifiedSurvivorRe.FindStringSubmatch(line); len(m) > 0 {
+		s := p.getOrCreatePartial(m[1])
+		s.G1SurvivorRegionBefore = parseInt(m[2])
+		s.G1SurvivorRegionAfter = parseInt(m[3])
+		s.G1SurvivorRegionAssign = parseInt(m[4])
+		return true
+	}
+	if m := unifiedOldRe.FindStringSubmatch(line); len(m) > 0 {
+		s := p.getOrCreatePartial(m[1])
+		s.G1OldRegionBefore = parseInt(m[2])
+		s.G1OldRegionAfter = parseInt(m[3])
+		return true
+	}
+	if m := unifiedHumongousRe.FindStringSubmatch(line); len(m) > 0 {
+		s := p.getOrCreatePartial(m[1])
+		s.G1HumongousRegionBefore = parseInt(m[2])
+		s.G1HumongousRegionAfter = parseInt(m[3])
+		return true
+	}
+	if m := unifiedArchiveRe.FindStringSubmatch(line); len(m) > 0 {
+		s := p.getOrCreatePartial(m[1])
+		s.G1ArchiveRegionBefore = parseInt(m[2])
+		s.G1ArchiveRegionAfter = parseInt(m[3])
+		s.G1ArchiveRegionAssign = parseInt(m[4])
+		return true
+	}
+	if m := unifiedMetaRe.FindStringSubmatch(line); len(m) > 0 {
+		s := p.getOrCreatePartial(m[1])
+		s.MetaBeforeKB = parseSizeKB(m[2])
+		s.MetaAfterKB = parseSizeKB(m[3])
+		s.MetaTotalKB = parseSizeKB(m[4])
+		return true
+	}
+	if m := unifiedHeapRe.FindStringSubmatch(line); len(m) > 0 {
+		s := p.getOrCreatePartial(m[1])
+		s.HeapBeforeKB = parseSizeKB(m[2])
+		s.HeapTotalKB = parseSizeKB(m[3])
+		s.HeapAfterKB = parseSizeKB(m[4])
+		return true
+	}
+	return false
 }
 
 func classifyUnifiedG1Pause(desc string) string {

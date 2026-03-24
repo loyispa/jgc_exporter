@@ -147,6 +147,10 @@ canvas{width:100%!important;height:220px!important}
 .gc-event-filter-option{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13px;color:#e1e4e8;cursor:pointer;user-select:none}
 .gc-event-filter-option:hover{background:#21262d}
 .gc-event-filter-option input{accent-color:#58a6ff;cursor:pointer;flex-shrink:0}
+.gc-type-filter-search-wrap{padding:6px 10px 4px;border-bottom:1px solid #21262d}
+.gc-type-filter-search{width:100%;box-sizing:border-box;padding:6px 10px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e1e4e8;font-size:12px;outline:none}
+.gc-type-filter-search:focus{border-color:#58a6ff}
+.gc-type-filter-search::placeholder{color:#6e7681}
 .text-green{color:#3fb950}.text-yellow{color:#d29922}.text-red{color:#f85149}.text-dim{color:#8b949e}
 .card-value-accent-alloc{color:#7ee787}
 .card-value-accent-gc{color:#3fb950}
@@ -174,7 +178,7 @@ canvas{width:100%!important;height:220px!important}
 </div>
 <div class="container">
   <div id="recsSection" class="section">
-    <div class="section-title">Tuning Recommendations</div>
+    <div class="section-title">Tuning Advice</div>
     <div id="recsContainer"></div>
   </div>
 
@@ -184,7 +188,7 @@ canvas{width:100%!important;height:220px!important}
         <div id="cards" class="cards"></div>
       </div>
       <div class="chart-box" style="margin-bottom:0">
-        <div class="section-title">Heap Usage Trend</div>
+        <div class="section-title">Heap Usage</div>
         <div class="chart-container"><canvas id="heapCanvas"></canvas></div>
       </div>
     </div>
@@ -199,6 +203,9 @@ canvas{width:100%!important;height:220px!important}
           <button type="button" id="gcEventFilterBtn" class="gc-event-filter-btn" aria-expanded="false" aria-haspopup="listbox">Total</button>
           <span class="gc-event-filter-arrow" aria-hidden="true">&#9662;</span>
           <div id="gcEventFilterPanel" class="gc-event-filter-panel" role="listbox" aria-multiselectable="true">
+            <div class="gc-type-filter-search-wrap">
+              <input type="search" id="gcEventFilterSearch" class="gc-type-filter-search" placeholder="Filter types..." autocomplete="off" aria-label="Filter event types"/>
+            </div>
             <div id="gcEventFilterList"></div>
           </div>
         </div>
@@ -213,6 +220,9 @@ canvas{width:100%!important;height:220px!important}
           <button type="button" id="gcDurationFilterBtn" class="gc-event-filter-btn" aria-expanded="false" aria-haspopup="listbox">Total</button>
           <span class="gc-event-filter-arrow" aria-hidden="true">&#9662;</span>
           <div id="gcDurationFilterPanel" class="gc-event-filter-panel" role="listbox" aria-multiselectable="true">
+            <div class="gc-type-filter-search-wrap">
+              <input type="search" id="gcDurationFilterSearch" class="gc-type-filter-search" placeholder="Filter types..." autocomplete="off" aria-label="Filter duration types"/>
+            </div>
             <div id="gcDurationFilterList"></div>
           </div>
         </div>
@@ -223,8 +233,8 @@ canvas{width:100%!important;height:220px!important}
 
   <div class="charts-grid">
     <div class="chart-box" style="margin-bottom:0">
-      <div class="section-title">STW Duration</div>
-      <div class="chart-container"><canvas id="pauseCanvas"></canvas></div>
+      <div class="section-title">Throughput</div>
+      <div class="chart-container"><canvas id="throughputCanvas"></canvas></div>
     </div>
     <div class="chart-box" style="margin-bottom:0">
       <div class="section-title">Allocation Rate</div>
@@ -235,7 +245,7 @@ canvas{width:100%!important;height:220px!important}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script>
-let heapChart,gcCountChart,gcDurChart,pauseChart,allocChart;
+let heapChart,gcCountChart,gcDurChart,throughputChart,allocChart;
 let lastDashboard=null;
 let selectedPath='';
 function truncateToMinuteMs(ms){
@@ -404,6 +414,7 @@ function updateGCEventTypeFilter(series){
   if(!any){setGCEventCheckboxChecked(gcEventFilterList,'__ALL__',true);}
   normalizeGCEventFilterSelection(gcEventTypeFilterRoot);
   updateGCEventFilterBtnLabel();
+  refreshGCTypeSearchFilter('gcEventFilterSearch');
 }
 if(gcEventFilterBtn&&gcEventFilterPanel){
   gcEventFilterBtn.addEventListener('click',function(e){
@@ -529,6 +540,7 @@ function updateGCDurationTypeFilter(series){
   if(!any){setGCDurationCheckboxChecked(gcDurationFilterList,'__ALL__',true);}
   normalizeGCDurationFilterSelection(gcDurationTypeFilterRoot);
   updateGCDurationFilterBtnLabel();
+  refreshGCTypeSearchFilter('gcDurationFilterSearch');
 }
 if(gcDurationFilterBtn&&gcDurationFilterPanel){
   gcDurationFilterBtn.addEventListener('click',function(e){
@@ -563,6 +575,26 @@ document.addEventListener('click',function(e){
     setGCDurationFilterPanelOpen(false);
   }
 });
+function setupGCTypeFilterSearch(inputId,listId){
+  var inp=document.getElementById(inputId);
+  var list=document.getElementById(listId);
+  if(!inp||!list){return;}
+  inp.addEventListener('input',function(){
+    var q=String(inp.value||'').trim().toLowerCase();
+    var opts=list.querySelectorAll('.gc-event-filter-option');
+    for(var i=0;i<opts.length;i++){
+      var el=opts[i];
+      var text=String(el.textContent||'').toLowerCase().replace(/\s+/g,' ');
+      el.style.display=(!q||text.indexOf(q)>=0)?'':'none';
+    }
+  });
+}
+setupGCTypeFilterSearch('gcEventFilterSearch','gcEventFilterList');
+setupGCTypeFilterSearch('gcDurationFilterSearch','gcDurationFilterList');
+function refreshGCTypeSearchFilter(inputId){
+  var inp=document.getElementById(inputId);
+  if(inp){inp.dispatchEvent(new Event('input',{bubbles:true}));}
+}
 
 function updateFileSelect(files){
   const prev=selectedPath;
@@ -599,28 +631,29 @@ function renderHeaderMeta(f){
 }
 
 function fmtVal(v){return v===undefined||v===null||(typeof v==='number'&&isNaN(v))?'-':(typeof v==='number'?v.toFixed(1):v)}
-function multiCard(label,stat,unit,fmtFn,colorFn,valueExtraClass){
+function multiCard(label,stat,unit,fmtFn,colorFn,valueExtraClass,sublabel){
   const s=stat||{};
   const v1=fmtFn?fmtFn(s.last_1m):fmtVal(s.last_1m);
-  const v5=fmtFn?fmtFn(s.avg_5m):fmtVal(s.avg_5m);
-  const vh=fmtFn?fmtFn(s.avg_1h):fmtVal(s.avg_1h);
+  const v5=fmtFn?fmtFn(s.last_5m):fmtVal(s.last_5m);
+  const vh=fmtFn?fmtFn(s.last_1h):fmtVal(s.last_1h);
   const val=(v1==='-'&&v5==='-'&&vh==='-')?'-':(v1+' / '+v5+' / '+vh);
   const color=colorFn?colorFn(s.last_1m):'';
   const extra=(valueExtraClass&&String(valueExtraClass).trim())?(' '+String(valueExtraClass).trim()):'';
-  return '<div class="card"><div class="card-label">'+label+' <span class="card-sublabel">(last-1m / 5m-avg / 1h-avg)</span></div><div class="card-value '+(color?'text-'+color:'')+extra+'">'+val+'<span class="card-unit">'+unit+'</span></div></div>';
+  const legend=(sublabel&&String(sublabel).trim())?String(sublabel).trim():'(last-1m / last-5m / last-1h)';
+  return '<div class="card"><div class="card-label">'+label+' <span class="card-sublabel">'+escHtml(legend)+'</span></div><div class="card-value '+(color?'text-'+color:'')+extra+'">'+val+'<span class="card-unit">'+unit+'</span></div></div>';
 }
 function renderCards(f){
   const c=document.getElementById('cards');
   if(!f){c.innerHTML='';return}
   const tp=f.throughput||{};
-  const p99=f.p99_pause||{};
+  const pm=f.pause_max||{};
   const gc=f.gc_rate||{};
   const fgc=f.full_gc_rate||{};
   const alloc=f.alloc_rate||{};
   const heap=f.heap_usage||{};
   c.innerHTML=''+
     multiCard('Throughput',tp,'%',function(v){return v!==undefined?(v*100).toFixed(2):'-'},function(v){return v<0.9?'red':v<0.95?'yellow':'green'})+
-    multiCard('P99 Pause',p99,'',function(v){return (v!=null&&v!==undefined&&!isNaN(v)&&v>0)?fmtMs(v):'0.0';},function(v){return v>0.5?'red':v>0.2?'yellow':'green'})+
+    multiCard('Pause Duration',pm,'',function(v){return (v!=null&&v!==undefined&&!isNaN(v)&&v>0)?fmtMs(v):'0.0';},function(v){return v>0.5?'red':v>0.2?'yellow':'green'},null,'(1m-max / 5m-max / 1h-max)')+
     multiCard('Heap Usage',heap,'%',function(v){return v!==undefined?(v*100).toFixed(0):'-'},function(v){return v>0.9?'red':v>0.8?'yellow':'green'})+
     multiCard('Full GCs',fgc,'',null,function(v){return v>0?'red':'green'})+
     multiCard('Alloc Rate',alloc,' MB/s',null,null,'card-value-accent-alloc')+
@@ -631,13 +664,12 @@ function card(label,value,unit,color){
   return '<div class="card"><div class="card-label">'+label+'</div><div class="card-value '+cl+'">'+value+'<span class="card-unit">'+unit+'</span></div></div>';
 }
 
+// Heap chart: Heap Used + Heap Total (Java heap); optional Metaspace line (includes PermGen when logged; some GCs omit).
 function renderHeapChart(history,path){
   const ctx=document.getElementById('heapCanvas');
   const filtered=(history||[]).filter(function(h){return h.path===path;}).sort(function(a,b){return new Date(a.timestamp)-new Date(b.timestamp);});
-  let hasYoung=false,hasOld=false,hasMeta=false;
+  let hasMeta=false;
   filtered.forEach(function(h){
-    if(h.young_used_kb>0)hasYoung=true;
-    if(h.old_used_kb>0)hasOld=true;
     if(h.meta_used_kb>0)hasMeta=true;
   });
   const heapOpts={responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:'index',intersect:false},scales:{x:{type:'time',time:{unit:'minute'},grid:{color:'#21262d'},ticks:{color:'#8b949e'}},y:{grid:{color:'#21262d'},ticks:{color:'#8b949e',callback:function(v){return v>=1024?(v/1024).toFixed(1)+'G':v+'M'}}}},plugins:{legend:legendWithIsolate({labels:{color:'#e1e4e8',usePointStyle:true,pointStyle:'circle',font:{size:11}}})}};
@@ -647,7 +679,7 @@ function renderHeapChart(history,path){
     const z=labels.map(function(){return 0;});
     ds=[
       {label:'Heap Used',data:z.slice(),borderColor:'#58a6ff',backgroundColor:'#58a6ff22',fill:true,tension:0.3,pointRadius:0},
-      {label:'Heap Total',data:z.slice(),borderColor:'#8b949e44',borderDash:[4,4],fill:false,tension:0.3,pointRadius:0}
+      {label:'Heap Total',data:z.slice(),borderColor:'#b1bac4',borderDash:[6,4],borderWidth:2,fill:false,tension:0.3,pointRadius:0}
     ];
   }else{
     const t0=new Date(filtered[0].timestamp).getTime();
@@ -657,10 +689,8 @@ function renderHeapChart(history,path){
     const heapTotal=mapLastPerMinute(labels,filtered,function(h){return h.timestamp;},function(h){return h.heap_total_kb/1024;});
     ds=[
       {label:'Heap Used',data:heapUsed,borderColor:'#58a6ff',backgroundColor:'#58a6ff22',fill:true,tension:0.3,pointRadius:0},
-      {label:'Heap Total',data:heapTotal,borderColor:'#8b949e44',borderDash:[4,4],fill:false,tension:0.3,pointRadius:0}
+      {label:'Heap Total',data:heapTotal,borderColor:'#b1bac4',borderDash:[6,4],borderWidth:2,fill:false,tension:0.3,pointRadius:0}
     ];
-    if(hasYoung){ds.push({label:'Young',data:mapLastPerMinute(labels,filtered,function(h){return h.timestamp;},function(h){return h.young_used_kb/1024;}),borderColor:'#3fb950',fill:false,tension:0.3,pointRadius:0,borderWidth:1.5});}
-    if(hasOld){ds.push({label:'Old',data:mapLastPerMinute(labels,filtered,function(h){return h.timestamp;},function(h){return h.old_used_kb/1024;}),borderColor:'#f0883e',fill:false,tension:0.3,pointRadius:0,borderWidth:1.5});}
     if(hasMeta){ds.push({label:'Metaspace',data:mapLastPerMinute(labels,filtered,function(h){return h.timestamp;},function(h){return h.meta_used_kb/1024;}),borderColor:'#bc8cff',fill:false,tension:0.3,pointRadius:0,borderWidth:1.5});}
   }
   if(heapChart){
@@ -877,46 +907,33 @@ function renderAllocationRateChart(history,path){
   allocChart=new Chart(ctx,{type:'line',data:{labels:finalLabels,datasets:[{label:'MB/s',data:finalVals,borderColor:'#3fb950',backgroundColor:'#3fb95022',fill:true,tension:0.3,pointRadius:1,pointHoverRadius:4}]},options:opts});
 }
 
-function renderSTWChart(rows,path){
-  const ctx=document.getElementById('pauseCanvas');
+function renderThroughputChart(rows,path){
+  const ctx=document.getElementById('throughputCanvas');
   const points=(rows||[]).filter(function(p){return p.path===path;}).sort(function(a,b){return new Date(a.timestamp)-new Date(b.timestamp);});
-  const pauseOpts={responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:'index',intersect:false},scales:{x:{type:'time',time:{unit:'minute'},grid:{color:'#21262d'},ticks:{color:'#8b949e'}},y:{beginAtZero:true,grid:{color:'#21262d'},ticks:{color:'#8b949e'}}},plugins:{legend:legendWithIsolate({labels:{color:'#e1e4e8',usePointStyle:true,pointStyle:'circle',font:{size:10}}})}};
-  let finalLabels;
-  const z=function(){return 0;};
-  const mk=function(label,data,col){
-    return{label:label,data:data,borderColor:col,backgroundColor:col+'22',fill:false,tension:0.3,pointRadius:1,pointHoverRadius:4,borderWidth:1.5};
-  };
-  let datasets;
+  const opts={responsive:true,maintainAspectRatio:false,animation:false,interaction:{mode:'index',intersect:false},scales:{x:{type:'time',time:{unit:'minute'},grid:{color:'#21262d'},ticks:{color:'#8b949e'}},y:{min:0,max:100,beginAtZero:true,grid:{color:'#21262d'},ticks:{color:'#8b949e',callback:function(v){return v+'%';}}}},plugins:{legend:{labels:{color:'#e1e4e8'}}}};
+  let finalLabels,finalVals;
   if(!points.length){
     finalLabels=defaultMinuteLabelsLastHour();
-    const zv=finalLabels.map(z);
-    datasets=[
-      mk('sum (ms)',zv,'#f0883e'),
-      mk('min (ms)',zv,'#58a6ff'),
-      mk('max (ms)',zv,'#f85149'),
-      mk('avg (ms)',zv,'#3fb950')
-    ];
+    finalVals=finalLabels.map(function(){return 0;});
   }else{
     finalLabels=points.map(function(p){return new Date(p.timestamp);});
-    datasets=[
-      mk('sum (ms)',points.map(function(p){return(!p||!p.count)?0:p.sum_sec*1000;}),'#f0883e'),
-      mk('min (ms)',points.map(function(p){return(!p||!p.count)?0:p.min_sec*1000;}),'#58a6ff'),
-      mk('max (ms)',points.map(function(p){return(!p||!p.count)?0:p.max_sec*1000;}),'#f85149'),
-      mk('avg (ms)',points.map(function(p){return(!p||!p.count)?0:p.avg_sec*1000;}),'#3fb950')
-    ];
+    finalVals=points.map(function(p){
+      var r=p.ratio;
+      return(typeof r==='number'&&!isNaN(r))?r*100:0;
+    });
   }
-  if(pauseChart){
-    pauseChart.data.labels=finalLabels;
-    pauseChart.data.datasets=datasets;
-    pauseChart.update('none');return;
+  if(throughputChart){
+    throughputChart.data.labels=finalLabels;
+    throughputChart.data.datasets[0].data=finalVals;
+    throughputChart.update('none');return;
   }
   if(typeof Chart==='undefined')return;
-  pauseChart=new Chart(ctx,{type:'line',data:{labels:finalLabels,datasets:datasets},options:pauseOpts});
+  throughputChart=new Chart(ctx,{type:'line',data:{labels:finalLabels,datasets:[{label:'Throughput (%)',data:finalVals,borderColor:'#58a6ff',backgroundColor:'#58a6ff22',fill:true,tension:0.3,pointRadius:1,pointHoverRadius:4}]},options:opts});
 }
 
 function renderRecommendations(recs){
   const el=document.getElementById('recsContainer');
-  if(!recs||!recs.length){el.innerHTML='<div class="recs-empty">No recommendations.</div>';return}
+  if(!recs||!recs.length){el.innerHTML='<div class="recs-empty">Nothing.</div>';return}
   el.innerHTML=recs.map(r=>{
     return '<div class="rec-card"><div class="rec-condition">'+escHtml(r.condition)+'</div>'+
       '<div class="rec-advice">'+escHtml(r.advice)+'</div></div>';
@@ -933,7 +950,7 @@ function renderAll(d){
   renderGCEventsChart(d.gc_events_timeseries);
   updateGCDurationTypeFilter(d.gc_duration_timeseries);
   renderGCDurationChart(d.gc_duration_timeseries);
-  renderSTWChart(d.stw_duration_history,selectedPath);
+  renderThroughputChart(d.throughput_history,selectedPath);
   renderAllocationRateChart(d.allocation_rate_history,selectedPath);
   renderRecommendations(d.recommendations);
 }

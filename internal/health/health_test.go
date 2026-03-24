@@ -72,11 +72,11 @@ func TestMonitorRecordEvent(t *testing.T) {
 	if len(snapshots) != 1 {
 		t.Fatalf("expected 1 heap snapshot, got %d", len(snapshots))
 	}
-	if snapshots[0].YoungUsedKB != 10000 {
-		t.Fatalf("expected YoungUsedKB=10000, got %d", snapshots[0].YoungUsedKB)
+	if snapshots[0].HeapUsedKB != 200000 {
+		t.Fatalf("expected HeapUsedKB=200000, got %d", snapshots[0].HeapUsedKB)
 	}
-	if snapshots[0].OldUsedKB != 190000 {
-		t.Fatalf("expected OldUsedKB=190000, got %d", snapshots[0].OldUsedKB)
+	if snapshots[0].HeapTotalKB != 1048576 {
+		t.Fatalf("expected HeapTotalKB=1048576, got %d", snapshots[0].HeapTotalKB)
 	}
 	if snapshots[0].MetaUsedKB != 5000 {
 		t.Fatalf("expected MetaUsedKB=5000, got %d", snapshots[0].MetaUsedKB)
@@ -177,41 +177,44 @@ func TestDashboardGCEventsDenseMinuteGrid(t *testing.T) {
 	}
 }
 
-func TestSTWDurationHistoryUsesPauseEventsOnly(t *testing.T) {
+func TestThroughputHistoryMatchesGCEventsGrid(t *testing.T) {
 	m := NewMonitor()
+	m.SetGCType("/x.log", "G1")
+	d := m.GetDashboard()
+	if len(d.GCEventsTimeSeries) == 0 {
+		t.Fatal("expected non-empty gc_events_timeseries")
+	}
+	if len(d.ThroughputHistory) == 0 {
+		t.Fatal("expected non-empty throughput_history when a path is registered")
+	}
+	wantPts := len(d.GCEventsTimeSeries)
+	byPath := make(map[string]int)
+	for _, p := range d.ThroughputHistory {
+		byPath[p.Path]++
+	}
+	if len(byPath) != 1 || byPath["/x.log"] != wantPts {
+		t.Fatalf("throughput points per path: got %v want %d for /x.log", byPath, wantPts)
+	}
+}
+
+func TestPauseMaxIgnoresNonSTWEvents(t *testing.T) {
+	m := NewMonitor()
+	m.SetGCType("/a.log", "G1")
 	min := time.Now().UTC().Truncate(time.Minute).Add(10 * time.Second)
 	m.RecordEvent(GCEventRecord{
 		Timestamp: min, Path: "/a.log", Category: "G1YoungGC", Duration: 0.05, IsPause: true,
 		HeapAfterKB: 100, HeapTotalKB: 1000,
 	})
 	m.RecordEvent(GCEventRecord{
-		Timestamp: min.Add(2 * time.Second), Path: "/a.log", Category: "G1YoungGC", Duration: 0.03, IsPause: true,
-		HeapAfterKB: 100, HeapTotalKB: 1000,
-	})
-	m.RecordEvent(GCEventRecord{
-		Timestamp: min.Add(4 * time.Second), Path: "/a.log", Category: "Concurrent", Duration: 1.0, IsPause: false,
+		Timestamp: min.Add(2 * time.Second), Path: "/a.log", Category: "Concurrent", Duration: 10.0, IsPause: false,
 		HeapAfterKB: 100, HeapTotalKB: 1000,
 	})
 	d := m.GetDashboard()
-	wantMin := utcMinute(min)
-	var found int
-	for _, b := range d.STWDurationHistory {
-		if b.Path != "/a.log" || !b.Timestamp.Equal(wantMin) {
-			continue
-		}
-		found++
-		if b.Count != 2 {
-			t.Fatalf("expected 2 STW pauses in bucket, got %d", b.Count)
-		}
-		if b.SumSec < 0.079 || b.SumSec > 0.081 {
-			t.Fatalf("unexpected sum_sec %v", b.SumSec)
-		}
-		if b.MinSec != 0.03 || b.MaxSec != 0.05 {
-			t.Fatalf("min/max got %v / %v", b.MinSec, b.MaxSec)
-		}
+	if len(d.Files) != 1 {
+		t.Fatalf("expected 1 file, got %d", len(d.Files))
 	}
-	if found != 1 {
-		t.Fatalf("expected exactly one matching STW bucket for path+minute, found %d", found)
+	if d.Files[0].PauseMax.Last1m != 0.05 {
+		t.Fatalf("expected max STW pause 0.05s, got %v", d.Files[0].PauseMax.Last1m)
 	}
 }
 
@@ -283,19 +286,19 @@ func TestEvaluateFileSummaryHealthHeapCritical(t *testing.T) {
 
 func TestEvaluateFileSummaryHealthPauseCritical(t *testing.T) {
 	s := evaluateFileSummaryHealth(FileSummary{
-		P99Pause: MultiWindowStat{Last1m: 0.6},
+		PauseMax: MultiWindowStat{Last1m: 0.6},
 	})
 	if s != StatusCritical {
-		t.Fatalf("expected critical for p99 >500ms, got %s", s)
+		t.Fatalf("expected critical for max STW pause >500ms, got %s", s)
 	}
 }
 
 func TestEvaluateFileSummaryHealthPauseWarning(t *testing.T) {
 	s := evaluateFileSummaryHealth(FileSummary{
-		P99Pause: MultiWindowStat{Last1m: 0.25},
+		PauseMax: MultiWindowStat{Last1m: 0.25},
 	})
 	if s != StatusWarning {
-		t.Fatalf("expected warning for p99 >200ms, got %s", s)
+		t.Fatalf("expected warning for max STW pause >200ms, got %s", s)
 	}
 }
 
@@ -329,7 +332,7 @@ func TestEvaluateOverallHealth(t *testing.T) {
 
 	s, _ = evaluateOverallHealth(nil, 0, 0.6)
 	if s != StatusCritical {
-		t.Fatalf("expected critical for p99 >500ms, got %s", s)
+		t.Fatalf("expected critical for max STW pause >500ms, got %s", s)
 	}
 }
 

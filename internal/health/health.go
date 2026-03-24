@@ -35,14 +35,13 @@ type GCEventRecord struct {
 	IsFullGC      bool      `json:"is_full_gc"`
 }
 
+// HeapSnapshot drives the dashboard heap chart: Java heap used/total and Metaspace/PermGen used (when logged).
 type HeapSnapshot struct {
 	Timestamp   time.Time `json:"timestamp"`
 	Path        string    `json:"path"`
 	HeapUsedKB  int64     `json:"heap_used_kb"`
 	HeapTotalKB int64     `json:"heap_total_kb"`
-	YoungUsedKB int64     `json:"young_used_kb"`
-	OldUsedKB   int64     `json:"old_used_kb"`
-	MetaUsedKB  int64     `json:"meta_used_kb"`
+	MetaUsedKB  int64     `json:"meta_used_kb,omitempty"`
 }
 
 type RawLogEntry struct {
@@ -56,11 +55,13 @@ type Recommendation struct {
 	Advice    string `json:"advice"`
 }
 
-// MultiWindowStat holds metric values for last-1m, 5m-avg, 1h-avg (per-minute granularity).
+// MultiWindowStat holds values for three rolling UTC windows ending at the current minute:
+// Last1m = current minute only; Last5m / Last1h = aggregates over the last 5 / 60 minutes.
+// Semantics per field differ (e.g. PauseMax uses max in-window; GCRate divides event count by 5 or 60).
 type MultiWindowStat struct {
 	Last1m float64 `json:"last_1m"`
-	Avg5m  float64 `json:"avg_5m"`
-	Avg1h  float64 `json:"avg_1h"`
+	Last5m float64 `json:"last_5m"`
+	Last1h float64 `json:"last_1h"`
 }
 
 type FileSummary struct {
@@ -77,25 +78,21 @@ type FileSummary struct {
 	CategoryCounts           map[string]int `json:"category_counts"`
 	Status                   Status         `json:"status"`
 
-	// Multi-window stats (last-1m / 5m-avg / 1h-avg, per-minute granularity)
+	// Multi-window stats (last-1m / last-5m / last-1h windows; see MultiWindowStat)
 	Throughput MultiWindowStat `json:"throughput"`
-	P99Pause   MultiWindowStat `json:"p99_pause"`
-	GCRate     MultiWindowStat `json:"gc_rate"`
+	// PauseMax holds max STW pause duration (seconds) per window; only IsPause events with duration>=0.
+	PauseMax MultiWindowStat `json:"pause_max"`
+	GCRate   MultiWindowStat `json:"gc_rate"`
 	FullGCRate MultiWindowStat `json:"full_gc_rate"`
 	AllocRate  MultiWindowStat `json:"alloc_rate"`
 	HeapUsage  MultiWindowStat `json:"heap_usage"`
 }
 
-// STWDurationBucket is one UTC-minute bucket of stop-the-world pause stats for a path.
-// Only GC events with IsPause==true and non-negative Duration are aggregated (parser marks true STW pauses).
-type STWDurationBucket struct {
+// ThroughputPoint is application throughput ratio (0..1) for one path at a UTC minute: 1 - (STW pause sum / second span).
+type ThroughputPoint struct {
 	Timestamp time.Time `json:"timestamp"`
 	Path      string    `json:"path"`
-	Count     int       `json:"count"`
-	SumSec    float64   `json:"sum_sec"`
-	MinSec    float64   `json:"min_sec"`
-	MaxSec    float64   `json:"max_sec"`
-	AvgSec    float64   `json:"avg_sec"`
+	Ratio     float64   `json:"ratio"`
 }
 
 // GCEventsBucket is a time bucket with per-category event counts (for last 1h).
@@ -122,14 +119,16 @@ type Dashboard struct {
 	Alerts                []string              `json:"alerts"`
 	Files                 []FileSummary         `json:"files"`
 	RecentFullGCs         []GCEventRecord       `json:"recent_full_gcs"`
+	// RecentFullGCs5m is Full GC events in the last 5 UTC minutes (tuning advice; less noisy than recent_full_gcs).
+	RecentFullGCs5m       []GCEventRecord       `json:"recent_full_gcs_5m,omitempty"`
 	HeapHistory           []HeapSnapshot        `json:"heap_history"`
-	STWDurationHistory    []STWDurationBucket   `json:"stw_duration_history"`
 	CategoryCounts        map[string]int        `json:"category_counts"`
 	Recommendations       []Recommendation      `json:"recommendations"`
 	ThroughputRatio       float64               `json:"throughput_ratio"`
-	P99PauseSec           float64               `json:"p99_pause_sec"`
+	MaxSTWPause1mSec      float64               `json:"max_stw_pause_1m_sec"`
 	GCEventsTimeSeries    []GCEventsBucket      `json:"gc_events_timeseries"`
 	GCDurationTimeSeries  []GCDurationBucket    `json:"gc_duration_timeseries"`
+	ThroughputHistory     []ThroughputPoint     `json:"throughput_history"`
 	AllocationRateHistory []AllocationRatePoint `json:"allocation_rate_history"`
 }
 
@@ -237,8 +236,6 @@ func (m *Monitor) RecordEvent(rec GCEventRecord) {
 			Path:        rec.Path,
 			HeapUsedKB:  rec.HeapAfterKB,
 			HeapTotalKB: rec.HeapTotalKB,
-			YoungUsedKB: rec.YoungAfterKB,
-			OldUsedKB:   rec.OldAfterKB,
 			MetaUsedKB:  rec.MetaAfterKB,
 		})
 	}
@@ -317,12 +314,13 @@ func (m *Monitor) GetDashboard() Dashboard {
 	pathWindows := make(map[string]*pathWindowStats)
 
 	var recentFullGCs []GCEventRecord
+	var recentFullGCs5m []GCEventRecord
 	var allPauses1m []float64
 	totalPauseTime1m := 0.0
 	recentFullGCCount := 0
 
 	categoryCounts1h := make(map[string]int)
-	stwAggs := make(map[pathMinuteKey]*stwAgg)
+	pathMinPauseSum := make(map[pathMinuteKey]float64)
 
 	events := m.events.Slice()
 	var events1h []GCEventRecord
@@ -334,25 +332,7 @@ func (m *Monitor) GetDashboard() Dashboard {
 		events1h = append(events1h, ev)
 
 		if ev.IsPause && ev.Duration >= 0 && ev.Path != "" {
-			k := pathMinuteKey{ev.Path, em}
-			a := stwAggs[k]
-			if a == nil {
-				a = &stwAgg{}
-				stwAggs[k] = a
-			}
-			if a.count == 0 {
-				a.min = ev.Duration
-				a.max = ev.Duration
-			} else {
-				if ev.Duration < a.min {
-					a.min = ev.Duration
-				}
-				if ev.Duration > a.max {
-					a.max = ev.Duration
-				}
-			}
-			a.sum += ev.Duration
-			a.count++
+			pathMinPauseSum[pathMinuteKey{ev.Path, em}] += ev.Duration
 		}
 		if ev.Category != "" {
 			categoryCounts1h[ev.Category]++
@@ -369,7 +349,7 @@ func (m *Monitor) GetDashboard() Dashboard {
 
 		if em.Equal(refMin) {
 			pw.events1m++
-			if ev.IsPause {
+			if ev.IsPause && ev.Duration >= 0 {
 				pw.pause1m = append(pw.pause1m, ev.Duration)
 				pw.totalPause1m += ev.Duration
 				allPauses1m = append(allPauses1m, ev.Duration)
@@ -383,16 +363,17 @@ func (m *Monitor) GetDashboard() Dashboard {
 		}
 		if !em.Before(fiveMinStartMin) && !em.After(refMin) {
 			pw.events5m++
-			if ev.IsPause {
+			if ev.IsPause && ev.Duration >= 0 {
 				pw.pause5m = append(pw.pause5m, ev.Duration)
 				pw.totalPause5m += ev.Duration
 			}
 			if ev.IsFullGC {
 				pw.fullGC5m++
+				recentFullGCs5m = append(recentFullGCs5m, ev)
 			}
 		}
 		pw.events1h++
-		if ev.IsPause {
+		if ev.IsPause && ev.Duration >= 0 {
 			pw.pause1h = append(pw.pause1h, ev.Duration)
 			pw.totalPause1h += ev.Duration
 		}
@@ -404,7 +385,11 @@ func (m *Monitor) GetDashboard() Dashboard {
 	if len(recentFullGCs) > maxFullGCs {
 		recentFullGCs = recentFullGCs[len(recentFullGCs)-maxFullGCs:]
 	}
+	if len(recentFullGCs5m) > maxFullGCs {
+		recentFullGCs5m = recentFullGCs5m[len(recentFullGCs5m)-maxFullGCs:]
+	}
 	d.RecentFullGCs = recentFullGCs
+	d.RecentFullGCs5m = recentFullGCs5m
 	d.CategoryCounts = categoryCounts1h
 
 	curMinElapsed := now.Sub(refMin).Seconds()
@@ -420,7 +405,7 @@ func (m *Monitor) GetDashboard() Dashboard {
 		d.ThroughputRatio = 1.0
 	}
 	if len(allPauses1m) > 0 {
-		d.P99PauseSec = percentile(allPauses1m, 0.99)
+		d.MaxSTWPause1mSec = maxFloat(allPauses1m)
 	}
 
 	heapSlice := m.heapHistory.Slice()
@@ -530,41 +515,41 @@ func (m *Monitor) GetDashboard() Dashboard {
 					summary.Throughput.Last1m = 0
 				}
 			}
-			summary.Throughput.Avg5m = 1.0
+			summary.Throughput.Last5m = 1.0
 			if pw.totalPause5m > 0 {
-				summary.Throughput.Avg5m = 1.0 - (pw.totalPause5m / fiveMinElapsed)
-				if summary.Throughput.Avg5m < 0 {
-					summary.Throughput.Avg5m = 0
+				summary.Throughput.Last5m = 1.0 - (pw.totalPause5m / fiveMinElapsed)
+				if summary.Throughput.Last5m < 0 {
+					summary.Throughput.Last5m = 0
 				}
 			}
-			summary.Throughput.Avg1h = 1.0
+			summary.Throughput.Last1h = 1.0
 			if pw.totalPause1h > 0 {
-				summary.Throughput.Avg1h = 1.0 - (pw.totalPause1h / chartSpanElapsed)
-				if summary.Throughput.Avg1h < 0 {
-					summary.Throughput.Avg1h = 0
+				summary.Throughput.Last1h = 1.0 - (pw.totalPause1h / chartSpanElapsed)
+				if summary.Throughput.Last1h < 0 {
+					summary.Throughput.Last1h = 0
 				}
 			}
 
-			// P99 Pause
+			// Max STW pause per window (same event set as throughput: IsPause && duration>=0)
 			if len(pw.pause1m) > 0 {
-				summary.P99Pause.Last1m = percentile(pw.pause1m, 0.99)
+				summary.PauseMax.Last1m = maxFloat(pw.pause1m)
 			}
 			if len(pw.pause5m) > 0 {
-				summary.P99Pause.Avg5m = percentile(pw.pause5m, 0.99)
+				summary.PauseMax.Last5m = maxFloat(pw.pause5m)
 			}
 			if len(pw.pause1h) > 0 {
-				summary.P99Pause.Avg1h = percentile(pw.pause1h, 0.99)
+				summary.PauseMax.Last1h = maxFloat(pw.pause1h)
 			}
 
 			// GC Rate: events per minute (last 1m = count in 1min, 5m = total/5, 1h = total/60)
 			summary.GCRate.Last1m = float64(pw.events1m)
-			summary.GCRate.Avg5m = float64(pw.events5m) / 5.0
-			summary.GCRate.Avg1h = float64(pw.events1h) / 60.0
+			summary.GCRate.Last5m = float64(pw.events5m) / 5.0
+			summary.GCRate.Last1h = float64(pw.events1h) / 60.0
 
 			// Full GC Rate
 			summary.FullGCRate.Last1m = float64(pw.fullGC1m)
-			summary.FullGCRate.Avg5m = float64(pw.fullGC5m) / 5.0
-			summary.FullGCRate.Avg1h = float64(pw.fullGC1h) / 60.0
+			summary.FullGCRate.Last5m = float64(pw.fullGC5m) / 5.0
+			summary.FullGCRate.Last1h = float64(pw.fullGC1h) / 60.0
 
 			// Alloc Rate: average MB/s in each window
 			allocPoints := allocRateByPath[path]
@@ -589,18 +574,27 @@ func (m *Monitor) GetDashboard() Dashboard {
 				summary.AllocRate.Last1m = sum1m / float64(n1m)
 			}
 			if n5m > 0 {
-				summary.AllocRate.Avg5m = sum5m / float64(n5m)
+				summary.AllocRate.Last5m = sum5m / float64(n5m)
 			}
 			if n1h > 0 {
-				summary.AllocRate.Avg1h = sum1h / float64(n1h)
+				summary.AllocRate.Last1h = sum1h / float64(n1h)
 			}
 		} else {
 			summary.Throughput.Last1m = 1.0
-			summary.Throughput.Avg5m = 1.0
-			summary.Throughput.Avg1h = 1.0
+			summary.Throughput.Last5m = 1.0
+			summary.Throughput.Last1h = 1.0
 		}
 
-		// Heap Usage: average ratio from heap_history in each time window
+		// Heap Usage (Last1m / Last5m / Last1h): mean of per-sample Java heap usage ratios in each UTC window.
+		//
+		// Each sample is r_i = HeapUsedKB / HeapTotalKB from HeapSnapshot, filled from GCEventRecord.HeapAfterKB /
+		// HeapTotalKB when RecordEvent pushes to heapHistory. Those two fields are whatever the collector-specific
+		// parser extracted as the JVM's total heap used and total heap capacity after that GC (same definition the
+		// log line uses for the Java heap as a whole). Generational splits (eden, survivor, old, humongous, etc.)
+		// are collector-dependent; we do not re-sum regions for this card — that would risk double-counting or
+		// mismatching the JVM's own "heap" total. MetaUsedKB (Metaspace or PermGen in logs) is for the chart only;
+		// metaspace is outside the Java heap in HotSpot, so it is not included in HeapUsedKB/HeapTotalKB when
+		// parsers follow standard log semantics.
 		var sum1m, sum5m, sum1h float64
 		var n1m, n5m, n1h int
 		for _, h := range sparseHeap {
@@ -626,20 +620,20 @@ func (m *Monitor) GetDashboard() Dashboard {
 			summary.HeapUsage.Last1m = sum1m / float64(n1m)
 		}
 		if n5m > 0 {
-			summary.HeapUsage.Avg5m = sum5m / float64(n5m)
+			summary.HeapUsage.Last5m = sum5m / float64(n5m)
 		}
 		if n1h > 0 {
-			summary.HeapUsage.Avg1h = sum1h / float64(n1h)
+			summary.HeapUsage.Last1h = sum1h / float64(n1h)
 		}
 		// Fallback to current ratio when no history
 		if n1m == 0 && summary.HeapTotalKB > 0 {
 			summary.HeapUsage.Last1m = summary.HeapUsageRatio
 		}
 		if n5m == 0 && summary.HeapTotalKB > 0 {
-			summary.HeapUsage.Avg5m = summary.HeapUsageRatio
+			summary.HeapUsage.Last5m = summary.HeapUsageRatio
 		}
 		if n1h == 0 && summary.HeapTotalKB > 0 {
-			summary.HeapUsage.Avg1h = summary.HeapUsageRatio
+			summary.HeapUsage.Last1h = summary.HeapUsageRatio
 		}
 
 		summary.Status = evaluateFileSummaryHealth(summary)
@@ -649,12 +643,12 @@ func (m *Monitor) GetDashboard() Dashboard {
 	pathList := sortedFilePaths(m.fileSummary)
 	d.GCEventsTimeSeries = densifyGCEventsBuckets(bucketCounts, chartStartMin, chartEndMin)
 	d.GCDurationTimeSeries = densifyGCDurationBuckets(durationBucketSums, chartStartMin, chartEndMin)
-	d.STWDurationHistory = densifySTWHistory(stwAggs, pathList, chartStartMin, chartEndMin)
+	d.ThroughputHistory = densifyThroughputHistory(pathMinPauseSum, pathList, chartStartMin, chartEndMin, refMin, now)
 	d.AllocationRateHistory = densifyAllocationRateHistory(sparseAlloc, pathList, chartStartMin, chartEndMin)
 	d.HeapHistory = densifyHeapHistory(sparseHeap, pathList, chartStartMin, chartEndMin)
 
-	d.OverallStatus, d.Alerts = evaluateOverallHealth(d.Files, recentFullGCCount, d.P99PauseSec)
-	d.Recommendations = computeRecommendations(d.Files, d.ThroughputRatio, d.P99PauseSec, recentFullGCCount, recentFullGCs)
+	d.OverallStatus, d.Alerts = evaluateOverallHealth(d.Files, recentFullGCCount, d.MaxSTWPause1mSec)
+	d.Recommendations = computeRecommendations(d)
 	return d
 }
 
@@ -672,16 +666,16 @@ func evaluateFileSummaryHealth(s FileSummary) Status {
 	if s.HeapTotalKB > 0 && s.HeapUsageRatio > 0.8 {
 		return StatusWarning
 	}
-	if s.P99Pause.Last1m > 0.5 {
+	if s.PauseMax.Last1m > 0.5 {
 		return StatusCritical
 	}
-	if s.P99Pause.Last1m > 0.2 {
+	if s.PauseMax.Last1m > 0.2 {
 		return StatusWarning
 	}
 	return StatusHealthy
 }
 
-func evaluateOverallHealth(files []FileSummary, recentFullGCCount int, p99 float64) (Status, []string) {
+func evaluateOverallHealth(files []FileSummary, recentFullGCCount int, maxSTWPause1mSec float64) (Status, []string) {
 	status := StatusHealthy
 	var alerts []string
 
@@ -695,14 +689,14 @@ func evaluateOverallHealth(files []FileSummary, recentFullGCCount int, p99 float
 		alerts = append(alerts, fmt.Sprintf("Warning: %d Full GC in the last 1min", recentFullGCCount))
 	}
 
-	if p99 > 0.5 {
+	if maxSTWPause1mSec > 0.5 {
 		status = StatusCritical
-		alerts = append(alerts, fmt.Sprintf("Critical: P99 pause %.0fms exceeds 500ms", p99*1000))
-	} else if p99 > 0.2 {
+		alerts = append(alerts, fmt.Sprintf("Critical: max STW pause %.0fms exceeds 500ms", maxSTWPause1mSec*1000))
+	} else if maxSTWPause1mSec > 0.2 {
 		if status != StatusCritical {
 			status = StatusWarning
 		}
-		alerts = append(alerts, fmt.Sprintf("Warning: P99 pause %.0fms exceeds 200ms", p99*1000))
+		alerts = append(alerts, fmt.Sprintf("Warning: max STW pause %.0fms exceeds 200ms", maxSTWPause1mSec*1000))
 	}
 
 	for _, f := range files {
@@ -756,108 +750,6 @@ func maxFloat(data []float64) float64 {
 		}
 	}
 	return m
-}
-
-func computeRecommendations(files []FileSummary, throughput, p99 float64, recentFullGCCount int, recentFullGCs []GCEventRecord) []Recommendation {
-	var recs []Recommendation
-
-	if recentFullGCCount >= 1 {
-		recs = append(recs, Recommendation{
-			Condition: fmt.Sprintf("%d Full GC(s) in the last 1min", recentFullGCCount),
-			Advice:    "Check Old Gen pressure. For G1, lower -XX:InitiatingHeapOccupancyPercent or increase heap size. Investigate the root cause (Allocation Failure, System.gc, etc).",
-		})
-	}
-
-	hasAllocationFailureFGC := false
-	hasSystemGCFGC := false
-	for _, fgc := range recentFullGCs {
-		causeLower := strings.ToLower(fgc.Cause)
-		if strings.Contains(causeLower, "allocation failure") {
-			hasAllocationFailureFGC = true
-		}
-		if strings.Contains(causeLower, "system.gc") || strings.Contains(causeLower, "system") {
-			hasSystemGCFGC = true
-		}
-	}
-	if hasAllocationFailureFGC {
-		recs = append(recs, Recommendation{
-			Condition: "Full GC caused by Allocation Failure",
-			Advice:    "Old Gen cannot accommodate promoted objects. Increase -Xmx, analyze object lifecycle, or reduce long-lived object allocation.",
-		})
-	}
-	if hasSystemGCFGC {
-		recs = append(recs, Recommendation{
-			Condition: "Full GC caused by System.gc()",
-			Advice:    "Application or framework is calling System.gc(). Consider -XX:+DisableExplicitGC or -XX:+ExplicitGCInvokesConcurrent.",
-		})
-	}
-
-	if p99 > 0.5 {
-		recs = append(recs, Recommendation{
-			Condition: fmt.Sprintf("P99 pause %.0fms exceeds 500ms", p99*1000),
-			Advice:    "Pause time is critically high. Consider switching to ZGC or Shenandoah for sub-millisecond pauses, or increase -XX:MaxGCPauseMillis for G1.",
-		})
-	} else if p99 > 0.2 {
-		recs = append(recs, Recommendation{
-			Condition: fmt.Sprintf("P99 pause %.0fms exceeds 200ms", p99*1000),
-			Advice:    "Exceeds G1 default MaxGCPauseMillis (200ms). Adjust -XX:MaxGCPauseMillis or optimize Young Gen sizing.",
-		})
-	}
-
-	if throughput < 0.9 && throughput > 0 {
-		recs = append(recs, Recommendation{
-			Condition: fmt.Sprintf("Throughput %.1f%% is below 90%%", throughput*100),
-			Advice:    "GC is consuming too much time. Adjust heap ratios, reduce allocation rate, or relax MaxGCPauseMillis to allow larger young gen.",
-		})
-	}
-
-	for _, f := range files {
-		if f.HeapUsageRatio > 0.9 {
-			recs = append(recs, Recommendation{
-				Condition: fmt.Sprintf("%s heap usage %.0f%% exceeds 90%%", shortPath(f.Path), f.HeapUsageRatio*100),
-				Advice:    "Heap is nearly exhausted. Increase -Xmx or investigate memory leaks with heap dump analysis.",
-			})
-		} else if f.HeapUsageRatio > 0.8 {
-			recs = append(recs, Recommendation{
-				Condition: fmt.Sprintf("%s heap usage %.0f%% exceeds 80%%", shortPath(f.Path), f.HeapUsageRatio*100),
-				Advice:    "Heap pressure is high. Consider increasing heap or optimizing object retention.",
-			})
-		}
-
-		if f.PromotionFailedCount > 0 {
-			recs = append(recs, Recommendation{
-				Condition: fmt.Sprintf("%s: %d Promotion Failure(s)", shortPath(f.Path), f.PromotionFailedCount),
-				Advice:    "CMS Old Gen space insufficient for promotion. Lower CMSInitiatingOccupancyFraction or increase Old Gen size.",
-			})
-		}
-		if f.ConcurrentModeFailCount > 0 {
-			recs = append(recs, Recommendation{
-				Condition: fmt.Sprintf("%s: %d Concurrent Mode Failure(s)", shortPath(f.Path), f.ConcurrentModeFailCount),
-				Advice:    "CMS concurrent marking could not finish in time. Lower CMSInitiatingOccupancyFraction or increase heap.",
-			})
-		}
-		if f.ToSpaceExhaustedCount > 0 {
-			recs = append(recs, Recommendation{
-				Condition: fmt.Sprintf("%s: %d To-Space Exhausted event(s)", shortPath(f.Path), f.ToSpaceExhaustedCount),
-				Advice:    "G1 survivor space is insufficient. Increase -XX:G1ReservePercent or enlarge heap.",
-			})
-		}
-		if f.HumongousAllocationCount > 0 {
-			recs = append(recs, Recommendation{
-				Condition: fmt.Sprintf("%s: %d Humongous Allocation(s)", shortPath(f.Path), f.HumongousAllocationCount),
-				Advice:    "Large objects cause G1 region fragmentation. Consider -XX:G1HeapRegionSize or reduce large object allocation in application code.",
-			})
-		}
-		if f.GCRate.Last1m > 10 {
-			recs = append(recs, Recommendation{
-				Condition: fmt.Sprintf("%s: %.1f GC events/min (high frequency)", shortPath(f.Path), f.GCRate.Last1m),
-				Advice:    "High allocation pressure. Increase Young Gen or optimize allocation rate. For G1, do NOT set -Xmn manually.",
-			})
-		}
-
-	}
-
-	return recs
 }
 
 func shortPath(p string) string {

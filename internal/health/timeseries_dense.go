@@ -77,41 +77,30 @@ type pathMinuteKey struct {
 	minute time.Time
 }
 
-// stwAgg accumulates IsPause durations per path per UTC minute.
-type stwAgg struct {
-	sum   float64
-	count int
-	min   float64
-	max   float64
-}
-
-// densifySTWHistory emits one STWDurationBucket per (path, minute) from aggregated STW stats.
-func densifySTWHistory(aggs map[pathMinuteKey]*stwAgg, paths []string, start, end time.Time) []STWDurationBucket {
-	var out []STWDurationBucket
+// densifyThroughputHistory emits one ThroughputPoint per (path, UTC minute). Ratio = 1 - pauseSum/wallSeconds, clamped [0,1].
+// Wall time is 60s for completed minutes; for refMin (current minute) uses now.Sub(refMin).
+func densifyThroughputHistory(pauseSumSec map[pathMinuteKey]float64, paths []string, start, end, refMin, now time.Time) []ThroughputPoint {
+	curEl := now.Sub(refMin).Seconds()
+	if curEl < 1 {
+		curEl = 1
+	}
+	refMin = utcMinute(refMin)
+	var out []ThroughputPoint
 	for _, path := range paths {
 		for _, t := range denseMinuteRange(start, end) {
-			a := aggs[pathMinuteKey{path, t}]
-			if a == nil || a.count == 0 {
-				out = append(out, STWDurationBucket{
-					Timestamp: t,
-					Path:      path,
-					Count:     0,
-					SumSec:    0,
-					MinSec:    0,
-					MaxSec:    0,
-					AvgSec:    0,
-				})
-				continue
+			sum := pauseSumSec[pathMinuteKey{path, t}]
+			denom := 60.0
+			if t.Equal(refMin) {
+				denom = curEl
 			}
-			out = append(out, STWDurationBucket{
-				Timestamp: t,
-				Path:      path,
-				Count:     a.count,
-				SumSec:    a.sum,
-				MinSec:    a.min,
-				MaxSec:    a.max,
-				AvgSec:    a.sum / float64(a.count),
-			})
+			r := 1.0 - sum/denom
+			if r < 0 {
+				r = 0
+			}
+			if r > 1 {
+				r = 1
+			}
+			out = append(out, ThroughputPoint{Timestamp: t, Path: path, Ratio: r})
 		}
 	}
 	return out
@@ -177,8 +166,6 @@ func densifyHeapHistory(sparse []HeapSnapshot, paths []string, start, end time.T
 				Path:        path,
 				HeapUsedKB:  carry.HeapUsedKB,
 				HeapTotalKB: carry.HeapTotalKB,
-				YoungUsedKB: carry.YoungUsedKB,
-				OldUsedKB:   carry.OldUsedKB,
 				MetaUsedKB:  carry.MetaUsedKB,
 			})
 		}

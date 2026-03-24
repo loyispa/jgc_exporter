@@ -96,6 +96,12 @@ func TestG1UnifiedJDK11(t *testing.T) {
 	requireEventCount(t, h.events, 18)
 	cats := categoryCounts(h.events)
 
+	// Unified [gc,heap] lines precede Pause summary; merge must attach region counts.
+	ev0 := h.events[0]
+	if ev0.G1SurvivorRegionAfter != 2 {
+		t.Errorf("event[0] G1SurvivorRegionAfter want 2 got %d", ev0.G1SurvivorRegionAfter)
+	}
+
 	requireCategory(t, cats, "G1YoungGC")
 	requireCategory(t, cats, "G1ConcurrentStart")
 	requireCategory(t, cats, "G1PrepareMixed")

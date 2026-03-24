@@ -29,84 +29,44 @@ var (
 		Objectives: map[float64]float64{0: 0.05, 0.5: 0.05, 0.75: 0.05, 1.0: 0.05},
 	}, []string{"path", "host"})
 
-	HeapOccupancyBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_heap_occupancy_before_collection_bytes",
-		Help: "Heap occupancy (used) before collection",
+	HeapUsedBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_heap_used_before_collection_bytes",
+		Help: "Heap used bytes before collection (from GC log used/total)",
 	}, []string{"path", "host"})
 
-	HeapOccupancyAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_heap_occupancy_after_collection_bytes",
-		Help: "Heap occupancy (used) after collection",
+	HeapUsedAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_heap_used_after_collection_bytes",
+		Help: "Heap used bytes after collection (from GC log used/total)",
 	}, []string{"path", "host"})
 
 	HeapSizeBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "jgc_heap_size_before_collection_bytes",
-		Help: "Heap size before collection",
+		Help: "Heap committed capacity in bytes at collection (total from GC log; distinct from used bytes)",
 	}, []string{"path", "host"})
 
 	HeapSizeAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "jgc_heap_size_after_collection_bytes",
-		Help: "Heap size after collection",
+		Help: "Heap committed capacity in bytes after collection (same total as before when log reports single heap size)",
 	}, []string{"path", "host"})
 
-	YoungOccupancyBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_young_occupancy_before_collection_bytes",
-		Help: "Young generation occupancy before collection",
+	MetaspaceUsedBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_metaspace_used_before_collection_bytes",
+		Help: "Metaspace used bytes before collection",
 	}, []string{"path", "host"})
 
-	YoungOccupancyAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_young_occupancy_after_collection_bytes",
-		Help: "Young generation occupancy after collection",
-	}, []string{"path", "host"})
-
-	YoungSizeBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_young_size_before_collection_bytes",
-		Help: "Young generation size before collection",
-	}, []string{"path", "host"})
-
-	YoungSizeAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_young_size_after_collection_bytes",
-		Help: "Young generation size after collection",
-	}, []string{"path", "host"})
-
-	OldOccupancyBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_old_occupancy_before_collection_bytes",
-		Help: "Old generation occupancy before collection",
-	}, []string{"path", "host"})
-
-	OldOccupancyAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_old_occupancy_after_collection_bytes",
-		Help: "Old generation occupancy after collection",
-	}, []string{"path", "host"})
-
-	OldSizeBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_old_size_before_collection_bytes",
-		Help: "Old generation size before collection",
-	}, []string{"path", "host"})
-
-	OldSizeAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_old_size_after_collection_bytes",
-		Help: "Old generation size after collection",
-	}, []string{"path", "host"})
-
-	MetaspaceOccupancyBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_metaspace_occupancy_before_collection_bytes",
-		Help: "Metaspace occupancy before collection",
-	}, []string{"path", "host"})
-
-	MetaspaceOccupancyAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_metaspace_occupancy_after_collection_bytes",
-		Help: "Metaspace occupancy after collection",
+	MetaspaceUsedAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_metaspace_used_after_collection_bytes",
+		Help: "Metaspace used bytes after collection",
 	}, []string{"path", "host"})
 
 	MetaspaceSizeBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "jgc_metaspace_size_before_collection_bytes",
-		Help: "Metaspace size before collection",
+		Help: "Metaspace committed capacity before collection (distinct from used bytes)",
 	}, []string{"path", "host"})
 
 	MetaspaceSizeAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "jgc_metaspace_size_after_collection_bytes",
-		Help: "Metaspace size after collection",
+		Help: "Metaspace committed capacity after collection (distinct from used bytes)",
 	}, []string{"path", "host"})
 
 	// ZGC-specific
@@ -136,47 +96,47 @@ var (
 	}, []string{"path", "host"})
 
 	ZGCLoad1m = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_zgc_1m_cpu_load",
+		Name: "jgc_zgc_cpu_load_1m",
 		Help: "ZGC latest 1 minute CPU load average",
 	}, []string{"path", "host"})
 
 	ZGCLoad5m = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_zgc_5m_cpu_load",
+		Name: "jgc_zgc_cpu_load_5m",
 		Help: "ZGC latest 5 minute CPU load average",
 	}, []string{"path", "host"})
 
 	ZGCLoad15m = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_zgc_15m_cpu_load",
+		Name: "jgc_zgc_cpu_load_15m",
 		Help: "ZGC latest 15 minute CPU load average",
 	}, []string{"path", "host"})
 
 	ZGCMMU2ms = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_zgc_2ms_mmu_ratio",
+		Name: "jgc_zgc_mmu_ratio_2ms",
 		Help: "ZGC 2ms MMU ratio",
 	}, []string{"path", "host"})
 
 	ZGCMMU5ms = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_zgc_5ms_mmu_ratio",
+		Name: "jgc_zgc_mmu_ratio_5ms",
 		Help: "ZGC 5ms MMU ratio",
 	}, []string{"path", "host"})
 
 	ZGCMMU10ms = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_zgc_10ms_mmu_ratio",
+		Name: "jgc_zgc_mmu_ratio_10ms",
 		Help: "ZGC 10ms MMU ratio",
 	}, []string{"path", "host"})
 
 	ZGCMMU20ms = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_zgc_20ms_mmu_ratio",
+		Name: "jgc_zgc_mmu_ratio_20ms",
 		Help: "ZGC 20ms MMU ratio",
 	}, []string{"path", "host"})
 
 	ZGCMMU50ms = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_zgc_50ms_mmu_ratio",
+		Name: "jgc_zgc_mmu_ratio_50ms",
 		Help: "ZGC 50ms MMU ratio",
 	}, []string{"path", "host"})
 
 	ZGCMMU100ms = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_zgc_100ms_mmu_ratio",
+		Name: "jgc_zgc_mmu_ratio_100ms",
 		Help: "ZGC 100ms MMU ratio",
 	}, []string{"path", "host"})
 
@@ -201,16 +161,10 @@ var (
 		Help: "Time taken to stop application threads for safepoint",
 	}, []string{"path", "host"})
 
-	// GC Phase duration (unified: gc,phases lines)
-	GCPhaseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Name: "jgc_gc_phase_duration_seconds",
-		Help: "Duration of individual GC phases (e.g., Marking Phase, Compaction Phase)",
-	}, []string{"path", "host", "phase"})
-
-	// GC Worker count
+	// GC Worker count (unified JVM log [gc,task] lines; not collector-specific)
 	GCWorkers = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "jgc_gc_workers",
-		Help: "Number of GC worker threads used",
+		Help: "GC worker thread count)",
 	}, []string{"path", "host"})
 
 	// CMS String/Symbol table durations (from CMS Remark or unified gc,phases)
@@ -230,7 +184,7 @@ var (
 	}, []string{"path", "host"})
 
 	CMSSymbolAndStringTableProcessDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Name: "jgc_cms_symbol_and_string_table_process_seconds",
+		Name: "jgc_cms_symbol_and_string_table_process_duration_seconds",
 		Help: "Symbol and string table process duration",
 	}, []string{"path", "host"})
 
@@ -255,162 +209,181 @@ var (
 		Help: "ZGC concurrent select relocationset duration",
 	}, []string{"path", "host"})
 
-	// G1-specific (eden, survivor)
-	G1EdenOccupancyBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_eden_occupancy_before_collection_bytes",
-		Help: "G1 Eden heap occupancy bytes before collection",
-	}, []string{"path", "host"})
-
-	G1EdenOccupancyAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_eden_occupancy_after_collection_bytes",
-		Help: "G1 Eden occupancy bytes after collection",
-	}, []string{"path", "host"})
-
-	G1EdenSizeBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_eden_size_before_collection_bytes",
-		Help: "G1 Eden size before collection",
-	}, []string{"path", "host"})
-
-	G1EdenSizeAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_eden_size_after_collection_bytes",
-		Help: "G1 Eden size after collection",
-	}, []string{"path", "host"})
-
-	G1SurvivorHeapOccupancyBeforeCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_survivor_heap_occupancy_before_collection_bytes",
-		Help: "G1 survivor heap occupancy bytes before collection",
-	}, []string{"path", "host"})
-
-	G1SurvivorHeapOccupancyAfterCollection = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_survivor_heap_occupancy_after_collection_bytes",
-		Help: "G1 survivor heap occupancy bytes after collection",
-	}, []string{"path", "host"})
-
-	G1SurvivorSizeBytes = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_survivor_size_bytes",
-		Help: "G1 survivor size",
-	}, []string{"path", "host"})
-
-	// G1 region counts
+	// G1-specific: region counts (unified log); no generic young/old gauges.
 	G1EdenBeforeCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_eden_before_collection_regions",
-		Help: "Amount of G1 Eden region before collection",
+		Name: "jgc_g1_eden_heap_before_collection_regions",
+		Help: "G1 Eden heap regions before collection",
 	}, []string{"path", "host"})
 
 	G1EdenAfterCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_eden_after_collection_regions",
-		Help: "Amount of G1 Eden region after collection",
+		Name: "jgc_g1_eden_heap_after_collection_regions",
+		Help: "G1 Eden heap regions after collection",
 	}, []string{"path", "host"})
 
 	G1EdenAssignRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_eden_assign_regions",
-		Help: "Amount of G1 Eden assign regions",
+		Name: "jgc_g1_eden_heap_assign_regions",
+		Help: "G1 Eden heap assign region max",
 	}, []string{"path", "host"})
 
 	G1SurvivorBeforeCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_survivor_before_collection_regions",
-		Help: "Amount of G1 survivor region before collection",
+		Name: "jgc_g1_survivor_heap_before_collection_regions",
+		Help: "G1 survivor heap regions before collection",
 	}, []string{"path", "host"})
 
 	G1SurvivorAfterCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_survivor_after_collection_regions",
-		Help: "Amount of G1 survivor region after collection",
+		Name: "jgc_g1_survivor_heap_after_collection_regions",
+		Help: "G1 survivor heap regions after collection",
 	}, []string{"path", "host"})
 
 	G1SurvivorAssignRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_survivor_assign_regions",
-		Help: "Amount of G1 survivor assign regions",
+		Name: "jgc_g1_survivor_heap_assign_regions",
+		Help: "G1 survivor heap assign region max",
 	}, []string{"path", "host"})
 
 	G1OldBeforeCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_old_before_collection_regions",
-		Help: "Amount of G1 old regions before collection",
+		Name: "jgc_g1_old_heap_before_collection_regions",
+		Help: "G1 old heap regions before collection",
 	}, []string{"path", "host"})
 
 	G1OldAfterCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_old_after_collection_regions",
-		Help: "Amount of G1 old regions after collection",
+		Name: "jgc_g1_old_heap_after_collection_regions",
+		Help: "G1 old heap regions after collection",
 	}, []string{"path", "host"})
 
 	G1HumongousBeforeCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_humongous_before_collection_regions",
-		Help: "Amount of G1 humongous regions before collection",
+		Name: "jgc_g1_humongous_heap_before_collection_regions",
+		Help: "G1 humongous heap regions before collection",
 	}, []string{"path", "host"})
 
 	G1HumongousAfterCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_humongous_after_collection_regions",
-		Help: "Amount of G1 humongous regions after collection",
+		Name: "jgc_g1_humongous_heap_after_collection_regions",
+		Help: "G1 humongous heap regions after collection",
 	}, []string{"path", "host"})
 
 	G1ArchiveBeforeCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_archive_before_collection_regions",
-		Help: "Amount of G1 archive regions before collection",
+		Name: "jgc_g1_archive_heap_before_collection_regions",
+		Help: "G1 archive heap regions before collection",
 	}, []string{"path", "host"})
 
 	G1ArchiveAfterCollectionRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_archive_after_collection_regions",
-		Help: "Amount of G1 archive regions after collection",
+		Name: "jgc_g1_archive_heap_after_collection_regions",
+		Help: "G1 archive heap regions after collection",
 	}, []string{"path", "host"})
 
 	G1ArchiveAssignRegions = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_g1_archive_assign_regions",
-		Help: "Amount of G1 archive assign regions",
+		Name: "jgc_g1_archive_heap_assign_regions",
+		Help: "G1 archive heap assign region max",
 	}, []string{"path", "host"})
 
-	// Reference processing
-	SoftReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_soft_references",
-		Help: "Amount of soft references",
+	// Reference processing: G1 Remark / CMS Remark with PrintReferenceGC (parsers in g1.go, cms.go only)
+	G1SoftReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_g1_soft_references",
+		Help: "G1 soft reference count from remark output (PrintReferenceGC)",
 	}, []string{"path", "host"})
 
-	SoftReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Name: "jgc_soft_reference_pause_duration_seconds",
-		Help: "Soft reference pause duration",
+	G1SoftReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_g1_soft_reference_pause_duration_seconds",
+		Help: "G1 soft reference processing pause (remark)",
 	}, []string{"path", "host"})
 
-	WeakReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_weak_references",
-		Help: "Amount of weak references",
+	CMSSoftReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_cms_soft_references",
+		Help: "CMS soft reference count from remark output (PrintReferenceGC)",
 	}, []string{"path", "host"})
 
-	WeakReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Name: "jgc_weak_reference_pause_seconds",
-		Help: "Weak reference pause duration",
+	CMSSoftReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_cms_soft_reference_pause_duration_seconds",
+		Help: "CMS soft reference processing pause (remark)",
 	}, []string{"path", "host"})
 
-	FinalReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_final_references",
-		Help: "Amount of final references",
+	G1WeakReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_g1_weak_references",
+		Help: "G1 weak reference count from remark output (PrintReferenceGC)",
 	}, []string{"path", "host"})
 
-	FinalReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Name: "jgc_final_reference_pause_duration_seconds",
-		Help: "Final reference pause duration",
+	G1WeakReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_g1_weak_reference_pause_duration_seconds",
+		Help: "G1 weak reference processing pause (remark)",
 	}, []string{"path", "host"})
 
-	PhantomReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_phantom_references",
-		Help: "Amount of phantom references",
+	CMSWeakReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_cms_weak_references",
+		Help: "CMS weak reference count from remark output (PrintReferenceGC)",
 	}, []string{"path", "host"})
 
-	FreePhantomReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_free_phantom_references",
-		Help: "Amount of free phantom references",
+	CMSWeakReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_cms_weak_reference_pause_duration_seconds",
+		Help: "CMS weak reference processing pause (remark)",
 	}, []string{"path", "host"})
 
-	PhantomReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Name: "jgc_phantom_reference_pause_duration_seconds",
-		Help: "Phantom reference pause duration",
+	G1FinalReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_g1_final_references",
+		Help: "G1 final reference count from remark output (PrintReferenceGC)",
 	}, []string{"path", "host"})
 
-	JNIWeakReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "jgc_jni_weak_references",
-		Help: "Amount of JNI weak references",
+	G1FinalReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_g1_final_reference_pause_duration_seconds",
+		Help: "G1 final reference processing pause (remark)",
 	}, []string{"path", "host"})
 
-	JNIWeakReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
-		Name: "jgc_jni_weak_reference_pause_duration_seconds",
-		Help: "JNI weak reference pause duration",
+	CMSFinalReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_cms_final_references",
+		Help: "CMS final reference count from remark output (PrintReferenceGC)",
+	}, []string{"path", "host"})
+
+	CMSFinalReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_cms_final_reference_pause_duration_seconds",
+		Help: "CMS final reference processing pause (remark)",
+	}, []string{"path", "host"})
+
+	G1PhantomReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_g1_phantom_references",
+		Help: "G1 phantom reference count from remark output (PrintReferenceGC)",
+	}, []string{"path", "host"})
+
+	G1FreePhantomReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_g1_free_phantom_references",
+		Help: "G1 free phantom references from remark output (PrintReferenceGC)",
+	}, []string{"path", "host"})
+
+	G1PhantomReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_g1_phantom_reference_pause_duration_seconds",
+		Help: "G1 phantom reference processing pause (remark)",
+	}, []string{"path", "host"})
+
+	CMSPhantomReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_cms_phantom_references",
+		Help: "CMS phantom reference count from remark output (PrintReferenceGC)",
+	}, []string{"path", "host"})
+
+	CMSFreePhantomReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_cms_free_phantom_references",
+		Help: "CMS free phantom references from remark output (PrintReferenceGC)",
+	}, []string{"path", "host"})
+
+	CMSPhantomReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_cms_phantom_reference_pause_duration_seconds",
+		Help: "CMS phantom reference processing pause (remark)",
+	}, []string{"path", "host"})
+
+	G1JNIWeakReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_g1_jni_weak_references",
+		Help: "G1 JNI weak reference slot (count may be unset depending on log line)",
+	}, []string{"path", "host"})
+
+	G1JNIWeakReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_g1_jni_weak_reference_pause_duration_seconds",
+		Help: "G1 JNI weak reference processing pause (remark)",
+	}, []string{"path", "host"})
+
+	CMSJNIWeakReferences = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "jgc_cms_jni_weak_references",
+		Help: "CMS JNI weak reference slot (count may be unset depending on log line)",
+	}, []string{"path", "host"})
+
+	CMSJNIWeakReferencePauseDuration = prometheus.NewSummaryVec(prometheus.SummaryOpts{
+		Name: "jgc_cms_jni_weak_reference_pause_duration_seconds",
+		Help: "CMS JNI weak reference processing pause (remark)",
 	}, []string{"path", "host"})
 
 	// ZGC heap memory details
@@ -476,13 +449,9 @@ func AllVecMetrics() []prometheus.Collector {
 	return []prometheus.Collector{
 		EventDuration, EventPauseDuration,
 		EventLastMinDuration, EventLastMinPauseDuration,
-		HeapOccupancyBeforeCollection, HeapOccupancyAfterCollection,
+		HeapUsedBeforeCollection, HeapUsedAfterCollection,
 		HeapSizeBeforeCollection, HeapSizeAfterCollection,
-		YoungOccupancyBeforeCollection, YoungOccupancyAfterCollection,
-		YoungSizeBeforeCollection, YoungSizeAfterCollection,
-		OldOccupancyBeforeCollection, OldOccupancyAfterCollection,
-		OldSizeBeforeCollection, OldSizeAfterCollection,
-		MetaspaceOccupancyBeforeCollection, MetaspaceOccupancyAfterCollection,
+		MetaspaceUsedBeforeCollection, MetaspaceUsedAfterCollection,
 		MetaspaceSizeBeforeCollection, MetaspaceSizeAfterCollection,
 		ZGCPauseMarkStartDuration, ZGCConcurrentMarkDuration,
 		ZGCPauseMarkEndDuration, ZGCPauseRelocateStartDuration,
@@ -491,25 +460,26 @@ func AllVecMetrics() []prometheus.Collector {
 		ZGCMMU2ms, ZGCMMU5ms, ZGCMMU10ms, ZGCMMU20ms, ZGCMMU50ms, ZGCMMU100ms,
 		ZGCMetaspaceUsed, ZGCMetaspaceCommitted,
 		SafepointDuration, SafepointStopThreadsDuration,
-		GCPhaseDuration, GCWorkers,
+		GCWorkers,
 		CMSSymbolTableProcessDuration, CMSStringTableProcessDuration,
 		CMSClassUnloadingProcessDuration, CMSSymbolAndStringTableProcessDuration,
 		ZGCConcurrentMarkFreeDuration, ZGCProcessNonStrongReferencesDuration,
 		ZGCConcurrentResetRelocationsetDuration, ZGCConcurrentSelectRelocationsetDuration,
-		G1EdenOccupancyBeforeCollection, G1EdenOccupancyAfterCollection,
-		G1EdenSizeBeforeCollection, G1EdenSizeAfterCollection,
-		G1SurvivorHeapOccupancyBeforeCollection, G1SurvivorHeapOccupancyAfterCollection,
-		G1SurvivorSizeBytes,
 		G1EdenBeforeCollectionRegions, G1EdenAfterCollectionRegions, G1EdenAssignRegions,
 		G1SurvivorBeforeCollectionRegions, G1SurvivorAfterCollectionRegions, G1SurvivorAssignRegions,
 		G1OldBeforeCollectionRegions, G1OldAfterCollectionRegions,
 		G1HumongousBeforeCollectionRegions, G1HumongousAfterCollectionRegions,
 		G1ArchiveBeforeCollectionRegions, G1ArchiveAfterCollectionRegions, G1ArchiveAssignRegions,
-		SoftReferences, SoftReferencePauseDuration,
-		WeakReferences, WeakReferencePauseDuration,
-		FinalReferences, FinalReferencePauseDuration,
-		PhantomReferences, FreePhantomReferences, PhantomReferencePauseDuration,
-		JNIWeakReferences, JNIWeakReferencePauseDuration,
+		G1SoftReferences, G1SoftReferencePauseDuration,
+		CMSSoftReferences, CMSSoftReferencePauseDuration,
+		G1WeakReferences, G1WeakReferencePauseDuration,
+		CMSWeakReferences, CMSWeakReferencePauseDuration,
+		G1FinalReferences, G1FinalReferencePauseDuration,
+		CMSFinalReferences, CMSFinalReferencePauseDuration,
+		G1PhantomReferences, G1FreePhantomReferences, G1PhantomReferencePauseDuration,
+		CMSPhantomReferences, CMSFreePhantomReferences, CMSPhantomReferencePauseDuration,
+		G1JNIWeakReferences, G1JNIWeakReferencePauseDuration,
+		CMSJNIWeakReferences, CMSJNIWeakReferencePauseDuration,
 		ZGCMarkStartUsedBytes, ZGCMarkStartFreeBytes,
 		ZGCMarkEndUsedBytes, ZGCMarkEndFreeBytes,
 		ZGCRelocateStartUsedBytes, ZGCRelocateStartFreeBytes,

@@ -134,7 +134,7 @@ func (pl *Pipeline) registerParser(path string, gcType GCType, unified bool) {
 	pl.unifiedByPath[path] = unified
 	pl.mu.Unlock()
 
-	slog.Info("registered parser", "path", path, "gc_type", gcType, "unified", unified)
+	slog.Info("registered log", "path", path, "gc_type", gcType, "unified", unified)
 }
 
 // parserFeedLine normalizes unified JVM log lines (strip decorator brackets, reattach timestamp+[gc]) for GC parsers.
@@ -170,20 +170,12 @@ func (pl *Pipeline) OnClose(path string) {
 	metric.EventPauseDuration.DeletePartialMatch(pathLabel)
 	metric.EventLastMinDuration.DeletePartialMatch(pathLabel)
 	metric.EventLastMinPauseDuration.DeletePartialMatch(pathLabel)
-	metric.HeapOccupancyBeforeCollection.DeletePartialMatch(pathLabel)
-	metric.HeapOccupancyAfterCollection.DeletePartialMatch(pathLabel)
+	metric.HeapUsedBeforeCollection.DeletePartialMatch(pathLabel)
+	metric.HeapUsedAfterCollection.DeletePartialMatch(pathLabel)
 	metric.HeapSizeBeforeCollection.DeletePartialMatch(pathLabel)
 	metric.HeapSizeAfterCollection.DeletePartialMatch(pathLabel)
-	metric.YoungOccupancyBeforeCollection.DeletePartialMatch(pathLabel)
-	metric.YoungOccupancyAfterCollection.DeletePartialMatch(pathLabel)
-	metric.YoungSizeBeforeCollection.DeletePartialMatch(pathLabel)
-	metric.YoungSizeAfterCollection.DeletePartialMatch(pathLabel)
-	metric.OldOccupancyBeforeCollection.DeletePartialMatch(pathLabel)
-	metric.OldOccupancyAfterCollection.DeletePartialMatch(pathLabel)
-	metric.OldSizeBeforeCollection.DeletePartialMatch(pathLabel)
-	metric.OldSizeAfterCollection.DeletePartialMatch(pathLabel)
-	metric.MetaspaceOccupancyBeforeCollection.DeletePartialMatch(pathLabel)
-	metric.MetaspaceOccupancyAfterCollection.DeletePartialMatch(pathLabel)
+	metric.MetaspaceUsedBeforeCollection.DeletePartialMatch(pathLabel)
+	metric.MetaspaceUsedAfterCollection.DeletePartialMatch(pathLabel)
 	metric.MetaspaceSizeBeforeCollection.DeletePartialMatch(pathLabel)
 	metric.MetaspaceSizeAfterCollection.DeletePartialMatch(pathLabel)
 	metric.ZGCPauseMarkStartDuration.DeletePartialMatch(pathLabel)
@@ -204,7 +196,6 @@ func (pl *Pipeline) OnClose(path string) {
 	metric.ZGCMetaspaceCommitted.DeletePartialMatch(pathLabel)
 	metric.SafepointDuration.DeletePartialMatch(pathLabel)
 	metric.SafepointStopThreadsDuration.DeletePartialMatch(pathLabel)
-	metric.GCPhaseDuration.DeletePartialMatch(pathLabel)
 	metric.GCWorkers.DeletePartialMatch(pathLabel)
 	metric.CMSSymbolTableProcessDuration.DeletePartialMatch(pathLabel)
 	metric.CMSStringTableProcessDuration.DeletePartialMatch(pathLabel)
@@ -214,13 +205,6 @@ func (pl *Pipeline) OnClose(path string) {
 	metric.ZGCProcessNonStrongReferencesDuration.DeletePartialMatch(pathLabel)
 	metric.ZGCConcurrentResetRelocationsetDuration.DeletePartialMatch(pathLabel)
 	metric.ZGCConcurrentSelectRelocationsetDuration.DeletePartialMatch(pathLabel)
-	metric.G1EdenOccupancyBeforeCollection.DeletePartialMatch(pathLabel)
-	metric.G1EdenOccupancyAfterCollection.DeletePartialMatch(pathLabel)
-	metric.G1EdenSizeBeforeCollection.DeletePartialMatch(pathLabel)
-	metric.G1EdenSizeAfterCollection.DeletePartialMatch(pathLabel)
-	metric.G1SurvivorHeapOccupancyBeforeCollection.DeletePartialMatch(pathLabel)
-	metric.G1SurvivorHeapOccupancyAfterCollection.DeletePartialMatch(pathLabel)
-	metric.G1SurvivorSizeBytes.DeletePartialMatch(pathLabel)
 	metric.G1EdenBeforeCollectionRegions.DeletePartialMatch(pathLabel)
 	metric.G1EdenAfterCollectionRegions.DeletePartialMatch(pathLabel)
 	metric.G1EdenAssignRegions.DeletePartialMatch(pathLabel)
@@ -234,17 +218,28 @@ func (pl *Pipeline) OnClose(path string) {
 	metric.G1ArchiveBeforeCollectionRegions.DeletePartialMatch(pathLabel)
 	metric.G1ArchiveAfterCollectionRegions.DeletePartialMatch(pathLabel)
 	metric.G1ArchiveAssignRegions.DeletePartialMatch(pathLabel)
-	metric.SoftReferences.DeletePartialMatch(pathLabel)
-	metric.SoftReferencePauseDuration.DeletePartialMatch(pathLabel)
-	metric.WeakReferences.DeletePartialMatch(pathLabel)
-	metric.WeakReferencePauseDuration.DeletePartialMatch(pathLabel)
-	metric.FinalReferences.DeletePartialMatch(pathLabel)
-	metric.FinalReferencePauseDuration.DeletePartialMatch(pathLabel)
-	metric.PhantomReferences.DeletePartialMatch(pathLabel)
-	metric.FreePhantomReferences.DeletePartialMatch(pathLabel)
-	metric.PhantomReferencePauseDuration.DeletePartialMatch(pathLabel)
-	metric.JNIWeakReferences.DeletePartialMatch(pathLabel)
-	metric.JNIWeakReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.G1SoftReferences.DeletePartialMatch(pathLabel)
+	metric.G1SoftReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.CMSSoftReferences.DeletePartialMatch(pathLabel)
+	metric.CMSSoftReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.G1WeakReferences.DeletePartialMatch(pathLabel)
+	metric.G1WeakReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.CMSWeakReferences.DeletePartialMatch(pathLabel)
+	metric.CMSWeakReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.G1FinalReferences.DeletePartialMatch(pathLabel)
+	metric.G1FinalReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.CMSFinalReferences.DeletePartialMatch(pathLabel)
+	metric.CMSFinalReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.G1PhantomReferences.DeletePartialMatch(pathLabel)
+	metric.G1FreePhantomReferences.DeletePartialMatch(pathLabel)
+	metric.G1PhantomReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.CMSPhantomReferences.DeletePartialMatch(pathLabel)
+	metric.CMSFreePhantomReferences.DeletePartialMatch(pathLabel)
+	metric.CMSPhantomReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.G1JNIWeakReferences.DeletePartialMatch(pathLabel)
+	metric.G1JNIWeakReferencePauseDuration.DeletePartialMatch(pathLabel)
+	metric.CMSJNIWeakReferences.DeletePartialMatch(pathLabel)
+	metric.CMSJNIWeakReferencePauseDuration.DeletePartialMatch(pathLabel)
 	metric.ZGCMarkStartUsedBytes.DeletePartialMatch(pathLabel)
 	metric.ZGCMarkStartFreeBytes.DeletePartialMatch(pathLabel)
 	metric.ZGCMarkEndUsedBytes.DeletePartialMatch(pathLabel)
@@ -263,7 +258,7 @@ func (pl *Pipeline) OnClose(path string) {
 	pl.mu.Unlock()
 
 	pl.monitor.RemoveFile(path)
-	slog.Info("unregistered parser (metrics cleaned)", "path", path)
+	slog.Info("unregistered log", "path", path)
 }
 
 func truncateForLog(s string, max int) string {
@@ -321,18 +316,6 @@ func (pl *Pipeline) OnRead(path string, line string) {
 			}
 		}
 		return
-	}
-
-	// GC Phase durations (unified): [gc,phases] lines
-	if strings.Contains(line, "[gc,phases") && !strings.Contains(line, ",start]") {
-		if m := unifiedGCPhaseRe.FindStringSubmatch(line); len(m) > 0 {
-			phase := strings.TrimSpace(m[1])
-			// Strip generational ZGC prefix (y:/o:) for uniform phase naming
-			phase = strings.TrimPrefix(phase, "y: ")
-			phase = strings.TrimPrefix(phase, "o: ")
-			durMs := parseFloat(m[2])
-			metric.GCPhaseDuration.WithLabelValues(path, pl.hostname, phase).Observe(durMs / 1000.0)
-		}
 	}
 
 	// GC Worker count (unified): [gc,task] lines
@@ -434,35 +417,25 @@ func (h *metricsHandler) Handle(ev *GCEvent) {
 	}
 
 	if ev.HeapTotalKB > 0 {
-		metric.HeapOccupancyBeforeCollection.WithLabelValues(labels...).Set(float64(ev.HeapBeforeKB) * 1024)
-		metric.HeapOccupancyAfterCollection.WithLabelValues(labels...).Set(float64(ev.HeapAfterKB) * 1024)
+		metric.HeapUsedBeforeCollection.WithLabelValues(labels...).Set(float64(ev.HeapBeforeKB) * 1024)
+		metric.HeapUsedAfterCollection.WithLabelValues(labels...).Set(float64(ev.HeapAfterKB) * 1024)
 		metric.HeapSizeBeforeCollection.WithLabelValues(labels...).Set(float64(ev.HeapTotalKB) * 1024)
 		metric.HeapSizeAfterCollection.WithLabelValues(labels...).Set(float64(ev.HeapTotalKB) * 1024)
 	}
 
-	if ev.YoungTotalKB > 0 {
-		metric.YoungOccupancyBeforeCollection.WithLabelValues(labels...).Set(float64(ev.YoungBeforeKB) * 1024)
-		metric.YoungOccupancyAfterCollection.WithLabelValues(labels...).Set(float64(ev.YoungAfterKB) * 1024)
-		metric.YoungSizeBeforeCollection.WithLabelValues(labels...).Set(float64(ev.YoungTotalKB) * 1024)
-		metric.YoungSizeAfterCollection.WithLabelValues(labels...).Set(float64(ev.YoungTotalKB) * 1024)
-	}
-
-	if ev.OldTotalKB > 0 {
-		metric.OldOccupancyBeforeCollection.WithLabelValues(labels...).Set(float64(ev.OldBeforeKB) * 1024)
-		metric.OldOccupancyAfterCollection.WithLabelValues(labels...).Set(float64(ev.OldAfterKB) * 1024)
-		metric.OldSizeBeforeCollection.WithLabelValues(labels...).Set(float64(ev.OldTotalKB) * 1024)
-		metric.OldSizeAfterCollection.WithLabelValues(labels...).Set(float64(ev.OldTotalKB) * 1024)
-	}
-
 	if ev.MetaTotalKB > 0 {
-		metric.MetaspaceOccupancyBeforeCollection.WithLabelValues(labels...).Set(float64(ev.MetaBeforeKB) * 1024)
-		metric.MetaspaceOccupancyAfterCollection.WithLabelValues(labels...).Set(float64(ev.MetaAfterKB) * 1024)
+		metric.MetaspaceUsedBeforeCollection.WithLabelValues(labels...).Set(float64(ev.MetaBeforeKB) * 1024)
+		metric.MetaspaceUsedAfterCollection.WithLabelValues(labels...).Set(float64(ev.MetaAfterKB) * 1024)
 		metric.MetaspaceSizeBeforeCollection.WithLabelValues(labels...).Set(float64(ev.MetaTotalKB) * 1024)
 		metric.MetaspaceSizeAfterCollection.WithLabelValues(labels...).Set(float64(ev.MetaTotalKB) * 1024)
 	}
 
 	isFullGC := strings.Contains(strings.ToLower(ev.Category), "full") ||
 		strings.Contains(strings.ToLower(ev.Category), "systemgc")
+	metaAfter := ev.MetaAfterKB
+	if metaAfter == 0 && ev.ZGCMetaspaceUsedKB > 0 {
+		metaAfter = ev.ZGCMetaspaceUsedKB
+	}
 	h.monitor.RecordEvent(health.GCEventRecord{
 		Timestamp:     ev.Timestamp,
 		Path:          h.path,
@@ -477,7 +450,7 @@ func (h *metricsHandler) Handle(ev *GCEvent) {
 		OldBeforeKB:   ev.OldBeforeKB,
 		OldAfterKB:    ev.OldAfterKB,
 		MetaBeforeKB:  ev.MetaBeforeKB,
-		MetaAfterKB:   ev.MetaAfterKB,
+		MetaAfterKB:   metaAfter,
 		Cause:         ev.Cause,
 		IsFullGC:      isFullGC,
 	})
@@ -575,32 +548,8 @@ func (h *metricsHandler) Handle(ev *GCEvent) {
 		}
 	}
 
-	// G1-specific (eden, survivor)
+	// G1-specific: region counts (unified log); no generic young/old gauges.
 	if ev.GCType == GCTypeG1 {
-		if ev.G1EdenBeforeKB > 0 {
-			metric.G1EdenOccupancyBeforeCollection.WithLabelValues(labels...).Set(float64(ev.G1EdenBeforeKB) * 1024)
-		}
-		if ev.G1EdenAfterKB > 0 {
-			metric.G1EdenOccupancyAfterCollection.WithLabelValues(labels...).Set(float64(ev.G1EdenAfterKB) * 1024)
-		}
-		if ev.G1EdenTotalKB > 0 {
-			metric.G1EdenSizeBeforeCollection.WithLabelValues(labels...).Set(float64(ev.G1EdenTotalKB) * 1024)
-			metric.G1EdenSizeAfterCollection.WithLabelValues(labels...).Set(float64(ev.G1EdenTotalKB) * 1024)
-		}
-		if ev.G1SurvivorBeforeKB > 0 {
-			metric.G1SurvivorHeapOccupancyBeforeCollection.WithLabelValues(labels...).Set(float64(ev.G1SurvivorBeforeKB) * 1024)
-		}
-		if ev.G1SurvivorAfterKB > 0 {
-			metric.G1SurvivorHeapOccupancyAfterCollection.WithLabelValues(labels...).Set(float64(ev.G1SurvivorAfterKB) * 1024)
-		}
-		if ev.G1SurvivorBeforeKB > 0 || ev.G1SurvivorAfterKB > 0 {
-			survivorSize := ev.G1SurvivorBeforeKB
-			if ev.G1SurvivorAfterKB > survivorSize {
-				survivorSize = ev.G1SurvivorAfterKB
-			}
-			metric.G1SurvivorSizeBytes.WithLabelValues(labels...).Set(float64(survivorSize) * 1024)
-		}
-		// G1 region counts (unified log)
 		if ev.G1EdenRegionBefore > 0 || ev.G1EdenRegionAfter > 0 {
 			metric.G1EdenBeforeCollectionRegions.WithLabelValues(labels...).Set(float64(ev.G1EdenRegionBefore))
 			metric.G1EdenAfterCollectionRegions.WithLabelValues(labels...).Set(float64(ev.G1EdenRegionAfter))
@@ -626,25 +575,64 @@ func (h *metricsHandler) Handle(ev *GCEvent) {
 		}
 	}
 
-	// Reference processing (G1 Remark, CMS Remark with PrintReferenceGC)
+	emitReferenceProcessingMetrics(ev, labels)
+}
+
+// emitReferenceProcessingMetrics records G1- or CMS-specific reference metrics (Remark + PrintReferenceGC).
+func emitReferenceProcessingMetrics(ev *GCEvent, labels []string) {
+	if ev.GCType != GCTypeG1 && ev.GCType != GCTypeCMS {
+		return
+	}
+	isG1 := ev.GCType == GCTypeG1
+
 	if ev.SoftRefPauseMs > 0 || ev.SoftRefCount > 0 {
-		metric.SoftReferences.WithLabelValues(labels...).Set(float64(ev.SoftRefCount))
-		metric.SoftReferencePauseDuration.WithLabelValues(labels...).Observe(ev.SoftRefPauseMs / 1000.0)
+		sec := ev.SoftRefPauseMs / 1000.0
+		if isG1 {
+			metric.G1SoftReferences.WithLabelValues(labels...).Set(float64(ev.SoftRefCount))
+			metric.G1SoftReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		} else {
+			metric.CMSSoftReferences.WithLabelValues(labels...).Set(float64(ev.SoftRefCount))
+			metric.CMSSoftReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		}
 	}
 	if ev.WeakRefPauseMs > 0 || ev.WeakRefCount > 0 {
-		metric.WeakReferences.WithLabelValues(labels...).Set(float64(ev.WeakRefCount))
-		metric.WeakReferencePauseDuration.WithLabelValues(labels...).Observe(ev.WeakRefPauseMs / 1000.0)
+		sec := ev.WeakRefPauseMs / 1000.0
+		if isG1 {
+			metric.G1WeakReferences.WithLabelValues(labels...).Set(float64(ev.WeakRefCount))
+			metric.G1WeakReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		} else {
+			metric.CMSWeakReferences.WithLabelValues(labels...).Set(float64(ev.WeakRefCount))
+			metric.CMSWeakReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		}
 	}
 	if ev.FinalRefPauseMs > 0 || ev.FinalRefCount > 0 {
-		metric.FinalReferences.WithLabelValues(labels...).Set(float64(ev.FinalRefCount))
-		metric.FinalReferencePauseDuration.WithLabelValues(labels...).Observe(ev.FinalRefPauseMs / 1000.0)
+		sec := ev.FinalRefPauseMs / 1000.0
+		if isG1 {
+			metric.G1FinalReferences.WithLabelValues(labels...).Set(float64(ev.FinalRefCount))
+			metric.G1FinalReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		} else {
+			metric.CMSFinalReferences.WithLabelValues(labels...).Set(float64(ev.FinalRefCount))
+			metric.CMSFinalReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		}
 	}
 	if ev.PhantomRefPauseMs > 0 || ev.PhantomRefCount > 0 || ev.PhantomRefFree > 0 {
-		metric.PhantomReferences.WithLabelValues(labels...).Set(float64(ev.PhantomRefCount))
-		metric.FreePhantomReferences.WithLabelValues(labels...).Set(float64(ev.PhantomRefFree))
-		metric.PhantomReferencePauseDuration.WithLabelValues(labels...).Observe(ev.PhantomRefPauseMs / 1000.0)
+		sec := ev.PhantomRefPauseMs / 1000.0
+		if isG1 {
+			metric.G1PhantomReferences.WithLabelValues(labels...).Set(float64(ev.PhantomRefCount))
+			metric.G1FreePhantomReferences.WithLabelValues(labels...).Set(float64(ev.PhantomRefFree))
+			metric.G1PhantomReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		} else {
+			metric.CMSPhantomReferences.WithLabelValues(labels...).Set(float64(ev.PhantomRefCount))
+			metric.CMSFreePhantomReferences.WithLabelValues(labels...).Set(float64(ev.PhantomRefFree))
+			metric.CMSPhantomReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		}
 	}
 	if ev.JNIWeakRefPauseMs > 0 {
-		metric.JNIWeakReferencePauseDuration.WithLabelValues(labels...).Observe(ev.JNIWeakRefPauseMs / 1000.0)
+		sec := ev.JNIWeakRefPauseMs / 1000.0
+		if isG1 {
+			metric.G1JNIWeakReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		} else {
+			metric.CMSJNIWeakReferencePauseDuration.WithLabelValues(labels...).Observe(sec)
+		}
 	}
 }

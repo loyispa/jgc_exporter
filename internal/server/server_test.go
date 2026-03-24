@@ -65,14 +65,17 @@ func TestUIEndpoint(t *testing.T) {
 		t.Fatalf("UI must contain recommendations section: recsSection=%v recsContainer=%v",
 			contains(body, "recsSection"), contains(body, "recsContainer"))
 	}
-	if !contains(body, "Tuning Recommendations") {
-		t.Fatal("UI must contain Tuning Recommendations heading")
+	if !contains(body, "Tuning Advice") {
+		t.Fatal("UI must contain Tuning Advice heading")
 	}
 	if !contains(body, "gcEventTypeFilter") || !contains(body, ">Total</button>") {
 		t.Fatal("UI must contain GC event type filter")
 	}
-	if !contains(body, "STW Duration") || !contains(body, "pauseCanvas") {
-		t.Fatal("UI must contain STW Duration chart")
+	if !contains(body, "Throughput") || !contains(body, "throughputCanvas") {
+		t.Fatal("UI must contain Throughput chart")
+	}
+	if !contains(body, "gcEventFilterSearch") || !contains(body, "gcDurationFilterSearch") {
+		t.Fatal("UI must contain type filter search inputs")
 	}
 	if !contains(body, "GC Duration") || !contains(body, "gcDurationTypeFilter") {
 		t.Fatal("UI must contain GC Duration chart and type filter")
